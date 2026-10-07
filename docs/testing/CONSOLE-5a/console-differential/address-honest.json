@@ -1,0 +1,658 @@
+{
+  "schema": 1,
+  "passed": true,
+  "engine": "LiteSVM 0.8.0; compiled SBF; isolated Linux Node 24 process",
+  "runtime": {
+    "node": "v24.21.0",
+    "platform": "linux"
+  },
+  "scenario": {
+    "id": "address-honest",
+    "template": "address",
+    "behavior": "honest",
+    "designatedAgent": false,
+    "message": "12/12 ROWS VALID"
+  },
+  "sourceSha256": {
+    "sbf": "7c93e61315ea26fcb7092380ffe02a7efba7c938e9c66e197dbc7b3db4381ab8",
+    "idl": "0bf513e2d5138be9b4eeb44c3814aa04176ec3329444924213d528ce68275cba",
+    "bundle": "11fd73a2ee21035ff8fe07f696e0c13ef979bed055f8ce4bb33c58ffc368f47c"
+  },
+  "artifacts": {
+    "criteria": {
+      "hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+      "json": "{\"crossChecks\":[\"address.normalized_postcodes\"],\"model\":\"address.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"rows\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"city\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"country\":{\"const\":\"FR\",\"type\":\"string\"},\"name\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"postcode\":{\"pattern\":\"^[0-9]{5}$\",\"type\":\"string\"},\"street\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"name\",\"street\",\"city\",\"postcode\",\"country\"],\"type\":\"object\"},\"maxItems\":12,\"minItems\":12,\"type\":\"array\"}},\"required\":[\"rows\"],\"type\":\"object\"}}\n",
+      "value": {
+        "model": "address.v1",
+        "schema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rows"
+          ],
+          "properties": {
+            "rows": {
+              "type": "array",
+              "minItems": 12,
+              "maxItems": 12,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "street",
+                  "city",
+                  "postcode",
+                  "country"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "street": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "city": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "postcode": {
+                    "type": "string",
+                    "pattern": "^[0-9]{5}$"
+                  },
+                  "country": {
+                    "type": "string",
+                    "const": "FR"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "crossChecks": [
+          "address.normalized_postcodes"
+        ]
+      },
+      "nodeConsoleValuesEqual": true,
+      "nodeConsoleUtf8Equal": true,
+      "nodeConsoleHashEqual": true
+    },
+    "delivery": {
+      "hash": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784",
+      "json": "{\"rows\":[{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 1\",\"postcode\":\"01000\",\"street\":\"1 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 2\",\"postcode\":\"75001\",\"street\":\"2 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 3\",\"postcode\":\"75001\",\"street\":\"3 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 4\",\"postcode\":\"75001\",\"street\":\"4 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 5\",\"postcode\":\"75001\",\"street\":\"5 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 6\",\"postcode\":\"75001\",\"street\":\"6 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 7\",\"postcode\":\"75001\",\"street\":\"7 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 8\",\"postcode\":\"75001\",\"street\":\"8 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 9\",\"postcode\":\"75001\",\"street\":\"9 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 10\",\"postcode\":\"75001\",\"street\":\"10 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 11\",\"postcode\":\"75001\",\"street\":\"11 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 12\",\"postcode\":\"75001\",\"street\":\"12 rue Exemple\"}]}\n",
+      "value": {
+        "rows": [
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 1",
+            "postcode": "01000",
+            "street": "1 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 2",
+            "postcode": "75001",
+            "street": "2 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 3",
+            "postcode": "75001",
+            "street": "3 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 4",
+            "postcode": "75001",
+            "street": "4 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 5",
+            "postcode": "75001",
+            "street": "5 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 6",
+            "postcode": "75001",
+            "street": "6 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 7",
+            "postcode": "75001",
+            "street": "7 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 8",
+            "postcode": "75001",
+            "street": "8 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 9",
+            "postcode": "75001",
+            "street": "9 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 10",
+            "postcode": "75001",
+            "street": "10 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 11",
+            "postcode": "75001",
+            "street": "11 rue Exemple"
+          },
+          {
+            "city": "Ville Exemple",
+            "country": "FR",
+            "name": "Fixture recipient 12",
+            "postcode": "75001",
+            "street": "12 rue Exemple"
+          }
+        ]
+      },
+      "nodeConsoleValuesEqual": true,
+      "nodeConsoleUtf8Equal": true,
+      "nodeConsoleHashEqual": true
+    },
+    "report": {
+      "hash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf",
+      "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4\",\"delivery_hash\":\"7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784\",\"message\":\"12/12 ROWS VALID\",\"mission\":\"SIM-MISSION-address-honest\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"row.1\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.2\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.3\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.4\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.5\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.6\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.7\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.8\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.9\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.10\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.11\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.12\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"address.normalized_postcodes\",\"detail\":\"12 French postcodes normalized to five ASCII digits\",\"pass\":true}],\"schema\":\"address.v1\"}\n",
+      "value": {
+        "mission": "SIM-MISSION-address-honest",
+        "schema": "address.v1",
+        "results": [
+          {
+            "check": "json-schema.2020-12",
+            "pass": true,
+            "detail": "All JSON Schema constraints passed"
+          },
+          {
+            "check": "row.1",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.2",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.3",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.4",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.5",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.6",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.7",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.8",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.9",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.10",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.11",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "row.12",
+            "pass": true,
+            "detail": "Row valid"
+          },
+          {
+            "check": "address.normalized_postcodes",
+            "pass": true,
+            "detail": "12 French postcodes normalized to five ASCII digits"
+          }
+        ],
+        "pass": true,
+        "message": "12/12 ROWS VALID",
+        "agent": "agent de référence scripté",
+        "criteria_hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+        "delivery_hash": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784"
+      },
+      "nodeConsoleValuesEqual": true,
+      "nodeConsoleUtf8Equal": true,
+      "nodeConsoleHashEqual": true
+    }
+  },
+  "reference": {
+    "value": "SIM-MISSION-address-honest",
+    "scope": "Only the report reference is symbolic; validateMission normally passes its real mission PDA."
+  },
+  "validatorMessage": {
+    "node": "12/12 ROWS VALID",
+    "console": "12/12 ROWS VALID",
+    "equal": true
+  },
+  "trace": [
+    {
+      "instruction": "create_mission",
+      "actor": "client",
+      "now": "1700000000",
+      "console": {
+        "before": {
+          "status": "absent",
+          "balances": {
+            "client": "100000000",
+            "agent": "0",
+            "vault": "0"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "after": {
+          "status": "open",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "delta": {
+          "client": "-5000000",
+          "agent": "0",
+          "vault": "5000000"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "absent",
+          "balances": {
+            "client": "100000000",
+            "agent": "0",
+            "vault": "0"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "after": {
+          "status": "open",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "delta": {
+          "client": "-5000000",
+          "agent": "0",
+          "vault": "5000000"
+        },
+        "event": {
+          "name": "MissionCreated",
+          "status": "open",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    },
+    {
+      "instruction": "accept_mission",
+      "actor": "agent",
+      "now": "1700000000",
+      "console": {
+        "before": {
+          "status": "open",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "after": {
+          "status": "accepted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "open",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "after": {
+          "status": "accepted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        },
+        "event": {
+          "name": "MissionAccepted",
+          "status": "accepted",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    },
+    {
+      "instruction": "submit_delivery",
+      "actor": "agent",
+      "now": "1700000000",
+      "console": {
+        "before": {
+          "status": "accepted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "after": {
+          "status": "submitted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "accepted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "after": {
+          "status": "submitted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        },
+        "event": {
+          "name": "DeliverySubmitted",
+          "status": "submitted",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    },
+    {
+      "instruction": "record_verdict",
+      "actor": "validator",
+      "now": "1700000000",
+      "console": {
+        "before": {
+          "status": "submitted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "after": {
+          "status": "passed",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "submitted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "after": {
+          "status": "passed",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        },
+        "event": {
+          "name": "VerdictRecorded",
+          "status": "passed",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    },
+    {
+      "instruction": "finalize",
+      "actor": "outsider",
+      "now": "1700000060",
+      "console": {
+        "before": {
+          "status": "passed",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        },
+        "after": {
+          "status": "settled",
+          "balances": {
+            "client": "95000000",
+            "agent": "5000000",
+            "vault": "0"
+          },
+          "agent": "agent",
+          "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        },
+        "delta": {
+          "client": "0",
+          "agent": "5000000",
+          "vault": "-5000000"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "passed",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        },
+        "after": {
+          "status": "settled",
+          "balances": {
+            "client": "95000000",
+            "agent": "5000000",
+            "vault": "0"
+          },
+          "agent": "agent",
+          "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        },
+        "delta": {
+          "client": "0",
+          "agent": "5000000",
+          "vault": "-5000000"
+        },
+        "event": {
+          "name": "MissionSettled",
+          "status": "settled",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    }
+  ],
+  "reportHash": {
+    "node": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf",
+    "console": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf",
+    "onChain": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf",
+    "equal": true
+  },
+  "final": {
+    "console": {
+      "status": "settled",
+      "balances": {
+        "client": "95000000",
+        "agent": "5000000",
+        "vault": "0"
+      },
+      "agent": "agent",
+      "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+    },
+    "sbf": {
+      "status": "settled",
+      "balances": {
+        "client": "95000000",
+        "agent": "5000000",
+        "vault": "0"
+      },
+      "agent": "agent",
+      "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+    },
+    "equal": true,
+    "missionClosed": true,
+    "vaultClosed": true,
+    "terminalSource": "Successful SBF terminal event; pre-close on-chain agent/report hash retained for comparison.",
+    "clientRent": {
+      "deposited": "7579440",
+      "returned": "7579440",
+      "exact": true
+    }
+  }
+}

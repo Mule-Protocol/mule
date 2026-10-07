@@ -1,0 +1,3418 @@
+{
+  "node": [
+    {
+      "id": "invoice-honest",
+      "template": "invoice",
+      "behavior": "honest",
+      "designated": false,
+      "expectedMessage": "6/6 FIELDS VALID",
+      "missionReference": "SIM-MISSION-invoice-honest",
+      "message": "6/6 FIELDS VALID",
+      "pass": true,
+      "artifacts": {
+        "criteria": {
+          "json": "{\"crossChecks\":[\"invoice.total_matches_lines\"],\"model\":\"invoice.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"currency\":{\"pattern\":\"^[A-Z]{3}$\",\"type\":\"string\"},\"date\":{\"format\":\"date\",\"type\":\"string\"},\"line_items\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"},\"description\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"description\",\"amount\"],\"type\":\"object\"},\"maxItems\":100,\"minItems\":1,\"type\":\"array\"},\"number\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"supplier\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"total_amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"}},\"required\":[\"supplier\",\"date\",\"number\",\"currency\",\"total_amount\",\"line_items\"],\"type\":\"object\"}}\n",
+          "hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "json": "{\"currency\":\"EUR\",\"date\":\"2026-01-01\",\"line_items\":[{\"amount\":\"100.10\",\"description\":\"Fixture item A\"},{\"amount\":\"23.35\",\"description\":\"Fixture item B\"}],\"number\":\"FIXTURE-001\",\"supplier\":\"MULE Fixture Supplier\",\"total_amount\":\"123.45\"}\n",
+          "hash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+        },
+        "report": {
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc\",\"delivery_hash\":\"4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335\",\"message\":\"6/6 FIELDS VALID\",\"mission\":\"SIM-MISSION-invoice-honest\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"field.supplier\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.number\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.currency\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.total_amount\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.line_items\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"invoice.total_matches_lines\",\"detail\":\"total_cents=12345; line_sum_cents=12345\",\"pass\":true}],\"schema\":\"invoice.v1\"}\n",
+          "hash": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+        }
+      }
+    },
+    {
+      "id": "invoice-dishonest",
+      "template": "invoice",
+      "behavior": "dishonest",
+      "designated": false,
+      "expectedMessage": "5/6 · MISSING: total_amount",
+      "missionReference": "SIM-MISSION-invoice-dishonest",
+      "message": "5/6 · MISSING: total_amount",
+      "pass": false,
+      "artifacts": {
+        "criteria": {
+          "json": "{\"crossChecks\":[\"invoice.total_matches_lines\"],\"model\":\"invoice.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"currency\":{\"pattern\":\"^[A-Z]{3}$\",\"type\":\"string\"},\"date\":{\"format\":\"date\",\"type\":\"string\"},\"line_items\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"},\"description\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"description\",\"amount\"],\"type\":\"object\"},\"maxItems\":100,\"minItems\":1,\"type\":\"array\"},\"number\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"supplier\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"total_amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"}},\"required\":[\"supplier\",\"date\",\"number\",\"currency\",\"total_amount\",\"line_items\"],\"type\":\"object\"}}\n",
+          "hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "json": "{\"currency\":\"EUR\",\"date\":\"2026-01-01\",\"line_items\":[{\"amount\":\"100.10\",\"description\":\"Fixture item A\"},{\"amount\":\"23.35\",\"description\":\"Fixture item B\"}],\"number\":\"FIXTURE-001\",\"supplier\":\"MULE Fixture Supplier\"}\n",
+          "hash": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0"
+        },
+        "report": {
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc\",\"delivery_hash\":\"eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0\",\"message\":\"5/6 · MISSING: total_amount\",\"mission\":\"SIM-MISSION-invoice-dishonest\",\"pass\":false,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"[{\\\"instancePath\\\":\\\"\\\",\\\"keyword\\\":\\\"required\\\",\\\"message\\\":\\\"must have required property 'total_amount'\\\",\\\"params\\\":{\\\"missingProperty\\\":\\\"total_amount\\\"},\\\"schemaPath\\\":\\\"#/required\\\"}]\",\"pass\":false},{\"check\":\"field.supplier\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.number\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.currency\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.total_amount\",\"detail\":\"Missing required field\",\"pass\":false},{\"check\":\"field.line_items\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"invoice.total_matches_lines\",\"detail\":\"Invalid monetary fields prevent exact decimal comparison\",\"pass\":false}],\"schema\":\"invoice.v1\"}\n",
+          "hash": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+        }
+      }
+    },
+    {
+      "id": "contract-honest",
+      "template": "contract",
+      "behavior": "honest",
+      "designated": false,
+      "expectedMessage": "5/5 FIELDS VALID",
+      "missionReference": "SIM-MISSION-contract-honest",
+      "message": "5/5 FIELDS VALID",
+      "pass": true,
+      "artifacts": {
+        "criteria": {
+          "json": "{\"crossChecks\":[],\"model\":\"contract.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"effective_date\":{\"format\":\"date\",\"type\":\"string\"},\"governing_law\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"parties\":{\"items\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"maxItems\":10,\"minItems\":2,\"type\":\"array\",\"uniqueItems\":true},\"termination\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"title\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"title\",\"parties\",\"effective_date\",\"termination\",\"governing_law\"],\"type\":\"object\"}}\n",
+          "hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37"
+        },
+        "delivery": {
+          "json": "{\"effective_date\":\"2026-01-01\",\"governing_law\":\"French law\",\"parties\":[\"Fixture Client\",\"Fixture Supplier\"],\"termination\":\"Either party may terminate with 30 days written notice.\",\"title\":\"Synthetic data-processing contract\"}\n",
+          "hash": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1"
+        },
+        "report": {
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37\",\"delivery_hash\":\"449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1\",\"message\":\"5/5 FIELDS VALID\",\"mission\":\"SIM-MISSION-contract-honest\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"field.title\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.parties\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.effective_date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.termination\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.governing_law\",\"detail\":\"Field valid\",\"pass\":true}],\"schema\":\"contract.v1\"}\n",
+          "hash": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+        }
+      }
+    },
+    {
+      "id": "contract-dishonest",
+      "template": "contract",
+      "behavior": "dishonest",
+      "designated": false,
+      "expectedMessage": "4/5 · MISSING: governing_law",
+      "missionReference": "SIM-MISSION-contract-dishonest",
+      "message": "4/5 · MISSING: governing_law",
+      "pass": false,
+      "artifacts": {
+        "criteria": {
+          "json": "{\"crossChecks\":[],\"model\":\"contract.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"effective_date\":{\"format\":\"date\",\"type\":\"string\"},\"governing_law\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"parties\":{\"items\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"maxItems\":10,\"minItems\":2,\"type\":\"array\",\"uniqueItems\":true},\"termination\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"title\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"title\",\"parties\",\"effective_date\",\"termination\",\"governing_law\"],\"type\":\"object\"}}\n",
+          "hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37"
+        },
+        "delivery": {
+          "json": "{\"effective_date\":\"2026-01-01\",\"parties\":[\"Fixture Client\",\"Fixture Supplier\"],\"termination\":\"Either party may terminate with 30 days written notice.\",\"title\":\"Synthetic data-processing contract\"}\n",
+          "hash": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f"
+        },
+        "report": {
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37\",\"delivery_hash\":\"7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f\",\"message\":\"4/5 · MISSING: governing_law\",\"mission\":\"SIM-MISSION-contract-dishonest\",\"pass\":false,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"[{\\\"instancePath\\\":\\\"\\\",\\\"keyword\\\":\\\"required\\\",\\\"message\\\":\\\"must have required property 'governing_law'\\\",\\\"params\\\":{\\\"missingProperty\\\":\\\"governing_law\\\"},\\\"schemaPath\\\":\\\"#/required\\\"}]\",\"pass\":false},{\"check\":\"field.title\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.parties\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.effective_date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.termination\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.governing_law\",\"detail\":\"Missing required field\",\"pass\":false}],\"schema\":\"contract.v1\"}\n",
+          "hash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        }
+      }
+    },
+    {
+      "id": "address-honest",
+      "template": "address",
+      "behavior": "honest",
+      "designated": false,
+      "expectedMessage": "12/12 ROWS VALID",
+      "missionReference": "SIM-MISSION-address-honest",
+      "message": "12/12 ROWS VALID",
+      "pass": true,
+      "artifacts": {
+        "criteria": {
+          "json": "{\"crossChecks\":[\"address.normalized_postcodes\"],\"model\":\"address.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"rows\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"city\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"country\":{\"const\":\"FR\",\"type\":\"string\"},\"name\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"postcode\":{\"pattern\":\"^[0-9]{5}$\",\"type\":\"string\"},\"street\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"name\",\"street\",\"city\",\"postcode\",\"country\"],\"type\":\"object\"},\"maxItems\":12,\"minItems\":12,\"type\":\"array\"}},\"required\":[\"rows\"],\"type\":\"object\"}}\n",
+          "hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4"
+        },
+        "delivery": {
+          "json": "{\"rows\":[{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 1\",\"postcode\":\"01000\",\"street\":\"1 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 2\",\"postcode\":\"75001\",\"street\":\"2 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 3\",\"postcode\":\"75001\",\"street\":\"3 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 4\",\"postcode\":\"75001\",\"street\":\"4 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 5\",\"postcode\":\"75001\",\"street\":\"5 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 6\",\"postcode\":\"75001\",\"street\":\"6 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 7\",\"postcode\":\"75001\",\"street\":\"7 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 8\",\"postcode\":\"75001\",\"street\":\"8 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 9\",\"postcode\":\"75001\",\"street\":\"9 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 10\",\"postcode\":\"75001\",\"street\":\"10 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 11\",\"postcode\":\"75001\",\"street\":\"11 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 12\",\"postcode\":\"75001\",\"street\":\"12 rue Exemple\"}]}\n",
+          "hash": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784"
+        },
+        "report": {
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4\",\"delivery_hash\":\"7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784\",\"message\":\"12/12 ROWS VALID\",\"mission\":\"SIM-MISSION-address-honest\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"row.1\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.2\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.3\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.4\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.5\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.6\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.7\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.8\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.9\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.10\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.11\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.12\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"address.normalized_postcodes\",\"detail\":\"12 French postcodes normalized to five ASCII digits\",\"pass\":true}],\"schema\":\"address.v1\"}\n",
+          "hash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        }
+      }
+    },
+    {
+      "id": "address-dishonest",
+      "template": "address",
+      "behavior": "dishonest",
+      "designated": false,
+      "expectedMessage": "11/12 · INVALID POSTCODE, ROW 7",
+      "missionReference": "SIM-MISSION-address-dishonest",
+      "message": "11/12 · INVALID POSTCODE, ROW 7",
+      "pass": false,
+      "artifacts": {
+        "criteria": {
+          "json": "{\"crossChecks\":[\"address.normalized_postcodes\"],\"model\":\"address.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"rows\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"city\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"country\":{\"const\":\"FR\",\"type\":\"string\"},\"name\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"postcode\":{\"pattern\":\"^[0-9]{5}$\",\"type\":\"string\"},\"street\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"name\",\"street\",\"city\",\"postcode\",\"country\"],\"type\":\"object\"},\"maxItems\":12,\"minItems\":12,\"type\":\"array\"}},\"required\":[\"rows\"],\"type\":\"object\"}}\n",
+          "hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4"
+        },
+        "delivery": {
+          "json": "{\"rows\":[{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 1\",\"postcode\":\"01000\",\"street\":\"1 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 2\",\"postcode\":\"75001\",\"street\":\"2 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 3\",\"postcode\":\"75001\",\"street\":\"3 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 4\",\"postcode\":\"75001\",\"street\":\"4 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 5\",\"postcode\":\"75001\",\"street\":\"5 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 6\",\"postcode\":\"75001\",\"street\":\"6 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 7\",\"postcode\":\"INVALID\",\"street\":\"7 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 8\",\"postcode\":\"75001\",\"street\":\"8 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 9\",\"postcode\":\"75001\",\"street\":\"9 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 10\",\"postcode\":\"75001\",\"street\":\"10 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 11\",\"postcode\":\"75001\",\"street\":\"11 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 12\",\"postcode\":\"75001\",\"street\":\"12 rue Exemple\"}]}\n",
+          "hash": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30"
+        },
+        "report": {
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4\",\"delivery_hash\":\"c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30\",\"message\":\"11/12 · INVALID POSTCODE, ROW 7\",\"mission\":\"SIM-MISSION-address-dishonest\",\"pass\":false,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"[{\\\"instancePath\\\":\\\"/rows/6/postcode\\\",\\\"keyword\\\":\\\"pattern\\\",\\\"message\\\":\\\"must match pattern \\\\\\\"^[0-9]{5}$\\\\\\\"\\\",\\\"params\\\":{\\\"pattern\\\":\\\"^[0-9]{5}$\\\"},\\\"schemaPath\\\":\\\"#/properties/rows/items/properties/postcode/pattern\\\"}]\",\"pass\":false},{\"check\":\"row.1\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.2\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.3\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.4\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.5\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.6\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.7\",\"detail\":\"Row violates address.v1 schema\",\"pass\":false},{\"check\":\"row.8\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.9\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.10\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.11\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.12\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"address.normalized_postcodes\",\"detail\":\"Expected exactly 12 normalized French postcodes\",\"pass\":false}],\"schema\":\"address.v1\"}\n",
+          "hash": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+        }
+      }
+    },
+    {
+      "id": "invoice-designated",
+      "template": "invoice",
+      "behavior": "honest",
+      "designated": true,
+      "expectedMessage": "6/6 FIELDS VALID",
+      "missionReference": "SIM-MISSION-invoice-designated",
+      "message": "6/6 FIELDS VALID",
+      "pass": true,
+      "artifacts": {
+        "criteria": {
+          "json": "{\"crossChecks\":[\"invoice.total_matches_lines\"],\"model\":\"invoice.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"currency\":{\"pattern\":\"^[A-Z]{3}$\",\"type\":\"string\"},\"date\":{\"format\":\"date\",\"type\":\"string\"},\"line_items\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"},\"description\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"description\",\"amount\"],\"type\":\"object\"},\"maxItems\":100,\"minItems\":1,\"type\":\"array\"},\"number\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"supplier\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"total_amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"}},\"required\":[\"supplier\",\"date\",\"number\",\"currency\",\"total_amount\",\"line_items\"],\"type\":\"object\"}}\n",
+          "hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "json": "{\"currency\":\"EUR\",\"date\":\"2026-01-01\",\"line_items\":[{\"amount\":\"100.10\",\"description\":\"Fixture item A\"},{\"amount\":\"23.35\",\"description\":\"Fixture item B\"}],\"number\":\"FIXTURE-001\",\"supplier\":\"MULE Fixture Supplier\",\"total_amount\":\"123.45\"}\n",
+          "hash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+        },
+        "report": {
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc\",\"delivery_hash\":\"4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335\",\"message\":\"6/6 FIELDS VALID\",\"mission\":\"SIM-MISSION-invoice-designated\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"field.supplier\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.number\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.currency\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.total_amount\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.line_items\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"invoice.total_matches_lines\",\"detail\":\"total_cents=12345; line_sum_cents=12345\",\"pass\":true}],\"schema\":\"invoice.v1\"}\n",
+          "hash": "4bc5292a24c79b782edaaf7b6c35f4dbd5a8f4b07d7bee2c2eaf24265468cefd"
+        }
+      }
+    }
+  ],
+  "browser": [
+    {
+      "id": "invoice-honest",
+      "template": "invoice",
+      "behavior": "honest",
+      "designated": false,
+      "expectedMessage": "6/6 FIELDS VALID",
+      "missionReference": "SIM-MISSION-invoice-honest",
+      "artifacts": {
+        "criteria": {
+          "value": {
+            "crossChecks": [
+              "invoice.total_matches_lines"
+            ],
+            "model": "invoice.v1",
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "additionalProperties": false,
+              "properties": {
+                "currency": {
+                  "pattern": "^[A-Z]{3}$",
+                  "type": "string"
+                },
+                "date": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "line_items": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "amount": {
+                        "pattern": "^(0|[1-9][0-9]{0,17})\\.[0-9]{2}$",
+                        "type": "string"
+                      },
+                      "description": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "description",
+                      "amount"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "number": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "supplier": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "total_amount": {
+                  "pattern": "^(0|[1-9][0-9]{0,17})\\.[0-9]{2}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "supplier",
+                "date",
+                "number",
+                "currency",
+                "total_amount",
+                "line_items"
+              ],
+              "type": "object"
+            }
+          },
+          "json": "{\"crossChecks\":[\"invoice.total_matches_lines\"],\"model\":\"invoice.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"currency\":{\"pattern\":\"^[A-Z]{3}$\",\"type\":\"string\"},\"date\":{\"format\":\"date\",\"type\":\"string\"},\"line_items\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"},\"description\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"description\",\"amount\"],\"type\":\"object\"},\"maxItems\":100,\"minItems\":1,\"type\":\"array\"},\"number\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"supplier\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"total_amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"}},\"required\":[\"supplier\",\"date\",\"number\",\"currency\",\"total_amount\",\"line_items\"],\"type\":\"object\"}}\n",
+          "hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "value": {
+            "currency": "EUR",
+            "date": "2026-01-01",
+            "line_items": [
+              {
+                "amount": "100.10",
+                "description": "Fixture item A"
+              },
+              {
+                "amount": "23.35",
+                "description": "Fixture item B"
+              }
+            ],
+            "number": "FIXTURE-001",
+            "supplier": "MULE Fixture Supplier",
+            "total_amount": "123.45"
+          },
+          "json": "{\"currency\":\"EUR\",\"date\":\"2026-01-01\",\"line_items\":[{\"amount\":\"100.10\",\"description\":\"Fixture item A\"},{\"amount\":\"23.35\",\"description\":\"Fixture item B\"}],\"number\":\"FIXTURE-001\",\"supplier\":\"MULE Fixture Supplier\",\"total_amount\":\"123.45\"}\n",
+          "hash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+        },
+        "report": {
+          "value": {
+            "mission": "SIM-MISSION-invoice-honest",
+            "schema": "invoice.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "field.supplier",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.number",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.currency",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.total_amount",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.line_items",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "invoice.total_matches_lines",
+                "pass": true,
+                "detail": "total_cents=12345; line_sum_cents=12345"
+              }
+            ],
+            "pass": true,
+            "message": "6/6 FIELDS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery_hash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+          },
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc\",\"delivery_hash\":\"4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335\",\"message\":\"6/6 FIELDS VALID\",\"mission\":\"SIM-MISSION-invoice-honest\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"field.supplier\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.number\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.currency\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.total_amount\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.line_items\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"invoice.total_matches_lines\",\"detail\":\"total_cents=12345; line_sum_cents=12345\",\"pass\":true}],\"schema\":\"invoice.v1\"}\n",
+          "hash": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+        }
+      },
+      "trace": [
+        {
+          "instruction": "create_mission",
+          "actor": "client",
+          "now": "1700000000",
+          "before": {
+            "status": "absent",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "delta": {
+            "client": "-5000000",
+            "agent": "0",
+            "vault": "5000000"
+          }
+        },
+        {
+          "instruction": "accept_mission",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "submit_delivery",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "record_verdict",
+          "actor": "validator",
+          "now": "1700000000",
+          "before": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "passed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "finalize",
+          "actor": "outsider",
+          "now": "1700000060",
+          "before": {
+            "status": "passed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+          },
+          "after": {
+            "status": "settled",
+            "balances": {
+              "client": "95000000",
+              "agent": "5000000",
+              "vault": "0"
+            },
+            "agent": "agent",
+            "reportHash": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "5000000",
+            "vault": "-5000000"
+          }
+        }
+      ],
+      "final": {
+        "status": "settled",
+        "balances": {
+          "client": "95000000",
+          "agent": "5000000",
+          "vault": "0"
+        },
+        "agent": "agent",
+        "reportHash": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+      },
+      "steps": [
+        {
+          "station": 1,
+          "text": "ESCROW LOCKED · 5.00 dUSDC · SIM-TX-LOCK-6cd24534"
+        },
+        {
+          "station": 2,
+          "text": "MISSION ACCEPTED · AGENT MULE-01 · INVOICE TO JSON"
+        },
+        {
+          "station": 3,
+          "text": "DELIVERY SUBMITTED · sha256:4b8d…3335"
+        },
+        {
+          "station": 4,
+          "text": "INSPECTION · 6/6 FIELDS VALID",
+          "failed": false,
+          "hashes": {
+            "criteria": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335",
+            "report": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+          },
+          "report": {
+            "mission": "SIM-MISSION-invoice-honest",
+            "schema": "invoice.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "field.supplier",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.number",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.currency",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.total_amount",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.line_items",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "invoice.total_matches_lines",
+                "pass": true,
+                "detail": "total_cents=12345; line_sum_cents=12345"
+              }
+            ],
+            "pass": true,
+            "message": "6/6 FIELDS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery_hash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+          }
+        },
+        {
+          "station": 5,
+          "text": "SETTLED · 5.00 dUSDC PAID TO AGENT · SIM-TX-CLOSE-24bebc6d",
+          "failed": false,
+          "outcome": "settled",
+          "hashes": {
+            "criteria": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335",
+            "report": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+          },
+          "report": {
+            "mission": "SIM-MISSION-invoice-honest",
+            "schema": "invoice.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "field.supplier",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.number",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.currency",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.total_amount",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.line_items",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "invoice.total_matches_lines",
+                "pass": true,
+                "detail": "total_cents=12345; line_sum_cents=12345"
+              }
+            ],
+            "pass": true,
+            "message": "6/6 FIELDS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery_hash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+          }
+        }
+      ]
+    },
+    {
+      "id": "invoice-dishonest",
+      "template": "invoice",
+      "behavior": "dishonest",
+      "designated": false,
+      "expectedMessage": "5/6 · MISSING: total_amount",
+      "missionReference": "SIM-MISSION-invoice-dishonest",
+      "artifacts": {
+        "criteria": {
+          "value": {
+            "crossChecks": [
+              "invoice.total_matches_lines"
+            ],
+            "model": "invoice.v1",
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "additionalProperties": false,
+              "properties": {
+                "currency": {
+                  "pattern": "^[A-Z]{3}$",
+                  "type": "string"
+                },
+                "date": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "line_items": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "amount": {
+                        "pattern": "^(0|[1-9][0-9]{0,17})\\.[0-9]{2}$",
+                        "type": "string"
+                      },
+                      "description": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "description",
+                      "amount"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "number": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "supplier": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "total_amount": {
+                  "pattern": "^(0|[1-9][0-9]{0,17})\\.[0-9]{2}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "supplier",
+                "date",
+                "number",
+                "currency",
+                "total_amount",
+                "line_items"
+              ],
+              "type": "object"
+            }
+          },
+          "json": "{\"crossChecks\":[\"invoice.total_matches_lines\"],\"model\":\"invoice.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"currency\":{\"pattern\":\"^[A-Z]{3}$\",\"type\":\"string\"},\"date\":{\"format\":\"date\",\"type\":\"string\"},\"line_items\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"},\"description\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"description\",\"amount\"],\"type\":\"object\"},\"maxItems\":100,\"minItems\":1,\"type\":\"array\"},\"number\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"supplier\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"total_amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"}},\"required\":[\"supplier\",\"date\",\"number\",\"currency\",\"total_amount\",\"line_items\"],\"type\":\"object\"}}\n",
+          "hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "value": {
+            "currency": "EUR",
+            "date": "2026-01-01",
+            "line_items": [
+              {
+                "amount": "100.10",
+                "description": "Fixture item A"
+              },
+              {
+                "amount": "23.35",
+                "description": "Fixture item B"
+              }
+            ],
+            "number": "FIXTURE-001",
+            "supplier": "MULE Fixture Supplier"
+          },
+          "json": "{\"currency\":\"EUR\",\"date\":\"2026-01-01\",\"line_items\":[{\"amount\":\"100.10\",\"description\":\"Fixture item A\"},{\"amount\":\"23.35\",\"description\":\"Fixture item B\"}],\"number\":\"FIXTURE-001\",\"supplier\":\"MULE Fixture Supplier\"}\n",
+          "hash": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0"
+        },
+        "report": {
+          "value": {
+            "mission": "SIM-MISSION-invoice-dishonest",
+            "schema": "invoice.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"\",\"keyword\":\"required\",\"message\":\"must have required property 'total_amount'\",\"params\":{\"missingProperty\":\"total_amount\"},\"schemaPath\":\"#/required\"}]"
+              },
+              {
+                "check": "field.supplier",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.number",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.currency",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.total_amount",
+                "pass": false,
+                "detail": "Missing required field"
+              },
+              {
+                "check": "field.line_items",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "invoice.total_matches_lines",
+                "pass": false,
+                "detail": "Invalid monetary fields prevent exact decimal comparison"
+              }
+            ],
+            "pass": false,
+            "message": "5/6 · MISSING: total_amount",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery_hash": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0"
+          },
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc\",\"delivery_hash\":\"eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0\",\"message\":\"5/6 · MISSING: total_amount\",\"mission\":\"SIM-MISSION-invoice-dishonest\",\"pass\":false,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"[{\\\"instancePath\\\":\\\"\\\",\\\"keyword\\\":\\\"required\\\",\\\"message\\\":\\\"must have required property 'total_amount'\\\",\\\"params\\\":{\\\"missingProperty\\\":\\\"total_amount\\\"},\\\"schemaPath\\\":\\\"#/required\\\"}]\",\"pass\":false},{\"check\":\"field.supplier\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.number\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.currency\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.total_amount\",\"detail\":\"Missing required field\",\"pass\":false},{\"check\":\"field.line_items\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"invoice.total_matches_lines\",\"detail\":\"Invalid monetary fields prevent exact decimal comparison\",\"pass\":false}],\"schema\":\"invoice.v1\"}\n",
+          "hash": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+        }
+      },
+      "trace": [
+        {
+          "instruction": "create_mission",
+          "actor": "client",
+          "now": "1700000000",
+          "before": {
+            "status": "absent",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "delta": {
+            "client": "-5000000",
+            "agent": "0",
+            "vault": "5000000"
+          }
+        },
+        {
+          "instruction": "accept_mission",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "submit_delivery",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "record_verdict",
+          "actor": "validator",
+          "now": "1700000000",
+          "before": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "failed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "finalize",
+          "actor": "outsider",
+          "now": "1700000060",
+          "before": {
+            "status": "failed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+          },
+          "after": {
+            "status": "refunded",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": "agent",
+            "reportHash": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+          },
+          "delta": {
+            "client": "5000000",
+            "agent": "0",
+            "vault": "-5000000"
+          }
+        }
+      ],
+      "final": {
+        "status": "refunded",
+        "balances": {
+          "client": "100000000",
+          "agent": "0",
+          "vault": "0"
+        },
+        "agent": "agent",
+        "reportHash": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+      },
+      "steps": [
+        {
+          "station": 1,
+          "text": "ESCROW LOCKED · 5.00 dUSDC · SIM-TX-LOCK-6cd24534"
+        },
+        {
+          "station": 2,
+          "text": "MISSION ACCEPTED · AGENT MULE-01 · INVOICE TO JSON"
+        },
+        {
+          "station": 3,
+          "text": "DELIVERY SUBMITTED · sha256:eb9d…95a0"
+        },
+        {
+          "station": 4,
+          "text": "INSPECTION · 5/6 · MISSING: total_amount",
+          "failed": true,
+          "hashes": {
+            "criteria": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0",
+            "report": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+          },
+          "report": {
+            "mission": "SIM-MISSION-invoice-dishonest",
+            "schema": "invoice.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"\",\"keyword\":\"required\",\"message\":\"must have required property 'total_amount'\",\"params\":{\"missingProperty\":\"total_amount\"},\"schemaPath\":\"#/required\"}]"
+              },
+              {
+                "check": "field.supplier",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.number",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.currency",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.total_amount",
+                "pass": false,
+                "detail": "Missing required field"
+              },
+              {
+                "check": "field.line_items",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "invoice.total_matches_lines",
+                "pass": false,
+                "detail": "Invalid monetary fields prevent exact decimal comparison"
+              }
+            ],
+            "pass": false,
+            "message": "5/6 · MISSING: total_amount",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery_hash": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0"
+          }
+        },
+        {
+          "station": 5,
+          "text": "RETURNED · 5.00 dUSDC REFUNDED TO CLIENT · SIM-TX-CLOSE-d0916655",
+          "failed": true,
+          "outcome": "returned",
+          "hashes": {
+            "criteria": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0",
+            "report": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+          },
+          "report": {
+            "mission": "SIM-MISSION-invoice-dishonest",
+            "schema": "invoice.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"\",\"keyword\":\"required\",\"message\":\"must have required property 'total_amount'\",\"params\":{\"missingProperty\":\"total_amount\"},\"schemaPath\":\"#/required\"}]"
+              },
+              {
+                "check": "field.supplier",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.number",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.currency",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.total_amount",
+                "pass": false,
+                "detail": "Missing required field"
+              },
+              {
+                "check": "field.line_items",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "invoice.total_matches_lines",
+                "pass": false,
+                "detail": "Invalid monetary fields prevent exact decimal comparison"
+              }
+            ],
+            "pass": false,
+            "message": "5/6 · MISSING: total_amount",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery_hash": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "contract-honest",
+      "template": "contract",
+      "behavior": "honest",
+      "designated": false,
+      "expectedMessage": "5/5 FIELDS VALID",
+      "missionReference": "SIM-MISSION-contract-honest",
+      "artifacts": {
+        "criteria": {
+          "value": {
+            "crossChecks": [],
+            "model": "contract.v1",
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "additionalProperties": false,
+              "properties": {
+                "effective_date": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "governing_law": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "parties": {
+                  "items": {
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 10,
+                  "minItems": 2,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "termination": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "title": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "parties",
+                "effective_date",
+                "termination",
+                "governing_law"
+              ],
+              "type": "object"
+            }
+          },
+          "json": "{\"crossChecks\":[],\"model\":\"contract.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"effective_date\":{\"format\":\"date\",\"type\":\"string\"},\"governing_law\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"parties\":{\"items\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"maxItems\":10,\"minItems\":2,\"type\":\"array\",\"uniqueItems\":true},\"termination\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"title\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"title\",\"parties\",\"effective_date\",\"termination\",\"governing_law\"],\"type\":\"object\"}}\n",
+          "hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37"
+        },
+        "delivery": {
+          "value": {
+            "effective_date": "2026-01-01",
+            "governing_law": "French law",
+            "parties": [
+              "Fixture Client",
+              "Fixture Supplier"
+            ],
+            "termination": "Either party may terminate with 30 days written notice.",
+            "title": "Synthetic data-processing contract"
+          },
+          "json": "{\"effective_date\":\"2026-01-01\",\"governing_law\":\"French law\",\"parties\":[\"Fixture Client\",\"Fixture Supplier\"],\"termination\":\"Either party may terminate with 30 days written notice.\",\"title\":\"Synthetic data-processing contract\"}\n",
+          "hash": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1"
+        },
+        "report": {
+          "value": {
+            "mission": "SIM-MISSION-contract-honest",
+            "schema": "contract.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "field.title",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.parties",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.effective_date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.termination",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.governing_law",
+                "pass": true,
+                "detail": "Field valid"
+              }
+            ],
+            "pass": true,
+            "message": "5/5 FIELDS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery_hash": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1"
+          },
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37\",\"delivery_hash\":\"449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1\",\"message\":\"5/5 FIELDS VALID\",\"mission\":\"SIM-MISSION-contract-honest\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"field.title\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.parties\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.effective_date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.termination\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.governing_law\",\"detail\":\"Field valid\",\"pass\":true}],\"schema\":\"contract.v1\"}\n",
+          "hash": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+        }
+      },
+      "trace": [
+        {
+          "instruction": "create_mission",
+          "actor": "client",
+          "now": "1700000000",
+          "before": {
+            "status": "absent",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "delta": {
+            "client": "-5000000",
+            "agent": "0",
+            "vault": "5000000"
+          }
+        },
+        {
+          "instruction": "accept_mission",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "submit_delivery",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "record_verdict",
+          "actor": "validator",
+          "now": "1700000000",
+          "before": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "passed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "finalize",
+          "actor": "outsider",
+          "now": "1700000060",
+          "before": {
+            "status": "passed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+          },
+          "after": {
+            "status": "settled",
+            "balances": {
+              "client": "95000000",
+              "agent": "5000000",
+              "vault": "0"
+            },
+            "agent": "agent",
+            "reportHash": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "5000000",
+            "vault": "-5000000"
+          }
+        }
+      ],
+      "final": {
+        "status": "settled",
+        "balances": {
+          "client": "95000000",
+          "agent": "5000000",
+          "vault": "0"
+        },
+        "agent": "agent",
+        "reportHash": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+      },
+      "steps": [
+        {
+          "station": 1,
+          "text": "ESCROW LOCKED · 5.00 dUSDC · SIM-TX-LOCK-dc19ca94"
+        },
+        {
+          "station": 2,
+          "text": "MISSION ACCEPTED · AGENT MULE-01 · CONTRACT SUMMARY"
+        },
+        {
+          "station": 3,
+          "text": "DELIVERY SUBMITTED · sha256:449d…ceb1"
+        },
+        {
+          "station": 4,
+          "text": "INSPECTION · 5/5 FIELDS VALID",
+          "failed": false,
+          "hashes": {
+            "criteria": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1",
+            "report": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+          },
+          "report": {
+            "mission": "SIM-MISSION-contract-honest",
+            "schema": "contract.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "field.title",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.parties",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.effective_date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.termination",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.governing_law",
+                "pass": true,
+                "detail": "Field valid"
+              }
+            ],
+            "pass": true,
+            "message": "5/5 FIELDS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery_hash": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1"
+          }
+        },
+        {
+          "station": 5,
+          "text": "SETTLED · 5.00 dUSDC PAID TO AGENT · SIM-TX-CLOSE-23a95be0",
+          "failed": false,
+          "outcome": "settled",
+          "hashes": {
+            "criteria": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1",
+            "report": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+          },
+          "report": {
+            "mission": "SIM-MISSION-contract-honest",
+            "schema": "contract.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "field.title",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.parties",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.effective_date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.termination",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.governing_law",
+                "pass": true,
+                "detail": "Field valid"
+              }
+            ],
+            "pass": true,
+            "message": "5/5 FIELDS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery_hash": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "contract-dishonest",
+      "template": "contract",
+      "behavior": "dishonest",
+      "designated": false,
+      "expectedMessage": "4/5 · MISSING: governing_law",
+      "missionReference": "SIM-MISSION-contract-dishonest",
+      "artifacts": {
+        "criteria": {
+          "value": {
+            "crossChecks": [],
+            "model": "contract.v1",
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "additionalProperties": false,
+              "properties": {
+                "effective_date": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "governing_law": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "parties": {
+                  "items": {
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "maxItems": 10,
+                  "minItems": 2,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "termination": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "title": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "parties",
+                "effective_date",
+                "termination",
+                "governing_law"
+              ],
+              "type": "object"
+            }
+          },
+          "json": "{\"crossChecks\":[],\"model\":\"contract.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"effective_date\":{\"format\":\"date\",\"type\":\"string\"},\"governing_law\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"parties\":{\"items\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"maxItems\":10,\"minItems\":2,\"type\":\"array\",\"uniqueItems\":true},\"termination\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"title\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"title\",\"parties\",\"effective_date\",\"termination\",\"governing_law\"],\"type\":\"object\"}}\n",
+          "hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37"
+        },
+        "delivery": {
+          "value": {
+            "effective_date": "2026-01-01",
+            "parties": [
+              "Fixture Client",
+              "Fixture Supplier"
+            ],
+            "termination": "Either party may terminate with 30 days written notice.",
+            "title": "Synthetic data-processing contract"
+          },
+          "json": "{\"effective_date\":\"2026-01-01\",\"parties\":[\"Fixture Client\",\"Fixture Supplier\"],\"termination\":\"Either party may terminate with 30 days written notice.\",\"title\":\"Synthetic data-processing contract\"}\n",
+          "hash": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f"
+        },
+        "report": {
+          "value": {
+            "mission": "SIM-MISSION-contract-dishonest",
+            "schema": "contract.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"\",\"keyword\":\"required\",\"message\":\"must have required property 'governing_law'\",\"params\":{\"missingProperty\":\"governing_law\"},\"schemaPath\":\"#/required\"}]"
+              },
+              {
+                "check": "field.title",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.parties",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.effective_date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.termination",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.governing_law",
+                "pass": false,
+                "detail": "Missing required field"
+              }
+            ],
+            "pass": false,
+            "message": "4/5 · MISSING: governing_law",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery_hash": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f"
+          },
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37\",\"delivery_hash\":\"7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f\",\"message\":\"4/5 · MISSING: governing_law\",\"mission\":\"SIM-MISSION-contract-dishonest\",\"pass\":false,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"[{\\\"instancePath\\\":\\\"\\\",\\\"keyword\\\":\\\"required\\\",\\\"message\\\":\\\"must have required property 'governing_law'\\\",\\\"params\\\":{\\\"missingProperty\\\":\\\"governing_law\\\"},\\\"schemaPath\\\":\\\"#/required\\\"}]\",\"pass\":false},{\"check\":\"field.title\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.parties\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.effective_date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.termination\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.governing_law\",\"detail\":\"Missing required field\",\"pass\":false}],\"schema\":\"contract.v1\"}\n",
+          "hash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        }
+      },
+      "trace": [
+        {
+          "instruction": "create_mission",
+          "actor": "client",
+          "now": "1700000000",
+          "before": {
+            "status": "absent",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "delta": {
+            "client": "-5000000",
+            "agent": "0",
+            "vault": "5000000"
+          }
+        },
+        {
+          "instruction": "accept_mission",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "submit_delivery",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "record_verdict",
+          "actor": "validator",
+          "now": "1700000000",
+          "before": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "failed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "finalize",
+          "actor": "outsider",
+          "now": "1700000060",
+          "before": {
+            "status": "failed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+          },
+          "after": {
+            "status": "refunded",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": "agent",
+            "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+          },
+          "delta": {
+            "client": "5000000",
+            "agent": "0",
+            "vault": "-5000000"
+          }
+        }
+      ],
+      "final": {
+        "status": "refunded",
+        "balances": {
+          "client": "100000000",
+          "agent": "0",
+          "vault": "0"
+        },
+        "agent": "agent",
+        "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+      },
+      "steps": [
+        {
+          "station": 1,
+          "text": "ESCROW LOCKED · 5.00 dUSDC · SIM-TX-LOCK-dc19ca94"
+        },
+        {
+          "station": 2,
+          "text": "MISSION ACCEPTED · AGENT MULE-01 · CONTRACT SUMMARY"
+        },
+        {
+          "station": 3,
+          "text": "DELIVERY SUBMITTED · sha256:7f71…c90f"
+        },
+        {
+          "station": 4,
+          "text": "INSPECTION · 4/5 · MISSING: governing_law",
+          "failed": true,
+          "hashes": {
+            "criteria": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f",
+            "report": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+          },
+          "report": {
+            "mission": "SIM-MISSION-contract-dishonest",
+            "schema": "contract.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"\",\"keyword\":\"required\",\"message\":\"must have required property 'governing_law'\",\"params\":{\"missingProperty\":\"governing_law\"},\"schemaPath\":\"#/required\"}]"
+              },
+              {
+                "check": "field.title",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.parties",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.effective_date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.termination",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.governing_law",
+                "pass": false,
+                "detail": "Missing required field"
+              }
+            ],
+            "pass": false,
+            "message": "4/5 · MISSING: governing_law",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery_hash": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f"
+          }
+        },
+        {
+          "station": 5,
+          "text": "RETURNED · 5.00 dUSDC REFUNDED TO CLIENT · SIM-TX-CLOSE-ea5c5420",
+          "failed": true,
+          "outcome": "returned",
+          "hashes": {
+            "criteria": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f",
+            "report": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+          },
+          "report": {
+            "mission": "SIM-MISSION-contract-dishonest",
+            "schema": "contract.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"\",\"keyword\":\"required\",\"message\":\"must have required property 'governing_law'\",\"params\":{\"missingProperty\":\"governing_law\"},\"schemaPath\":\"#/required\"}]"
+              },
+              {
+                "check": "field.title",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.parties",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.effective_date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.termination",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.governing_law",
+                "pass": false,
+                "detail": "Missing required field"
+              }
+            ],
+            "pass": false,
+            "message": "4/5 · MISSING: governing_law",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+            "delivery_hash": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f"
+          }
+        }
+      ]
+    },
+    {
+      "id": "address-honest",
+      "template": "address",
+      "behavior": "honest",
+      "designated": false,
+      "expectedMessage": "12/12 ROWS VALID",
+      "missionReference": "SIM-MISSION-address-honest",
+      "artifacts": {
+        "criteria": {
+          "value": {
+            "crossChecks": [
+              "address.normalized_postcodes"
+            ],
+            "model": "address.v1",
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "additionalProperties": false,
+              "properties": {
+                "rows": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "city": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "country": {
+                        "const": "FR",
+                        "type": "string"
+                      },
+                      "name": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "postcode": {
+                        "pattern": "^[0-9]{5}$",
+                        "type": "string"
+                      },
+                      "street": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "street",
+                      "city",
+                      "postcode",
+                      "country"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 12,
+                  "minItems": 12,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "rows"
+              ],
+              "type": "object"
+            }
+          },
+          "json": "{\"crossChecks\":[\"address.normalized_postcodes\"],\"model\":\"address.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"rows\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"city\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"country\":{\"const\":\"FR\",\"type\":\"string\"},\"name\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"postcode\":{\"pattern\":\"^[0-9]{5}$\",\"type\":\"string\"},\"street\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"name\",\"street\",\"city\",\"postcode\",\"country\"],\"type\":\"object\"},\"maxItems\":12,\"minItems\":12,\"type\":\"array\"}},\"required\":[\"rows\"],\"type\":\"object\"}}\n",
+          "hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4"
+        },
+        "delivery": {
+          "value": {
+            "rows": [
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 1",
+                "postcode": "01000",
+                "street": "1 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 2",
+                "postcode": "75001",
+                "street": "2 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 3",
+                "postcode": "75001",
+                "street": "3 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 4",
+                "postcode": "75001",
+                "street": "4 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 5",
+                "postcode": "75001",
+                "street": "5 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 6",
+                "postcode": "75001",
+                "street": "6 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 7",
+                "postcode": "75001",
+                "street": "7 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 8",
+                "postcode": "75001",
+                "street": "8 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 9",
+                "postcode": "75001",
+                "street": "9 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 10",
+                "postcode": "75001",
+                "street": "10 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 11",
+                "postcode": "75001",
+                "street": "11 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 12",
+                "postcode": "75001",
+                "street": "12 rue Exemple"
+              }
+            ]
+          },
+          "json": "{\"rows\":[{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 1\",\"postcode\":\"01000\",\"street\":\"1 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 2\",\"postcode\":\"75001\",\"street\":\"2 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 3\",\"postcode\":\"75001\",\"street\":\"3 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 4\",\"postcode\":\"75001\",\"street\":\"4 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 5\",\"postcode\":\"75001\",\"street\":\"5 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 6\",\"postcode\":\"75001\",\"street\":\"6 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 7\",\"postcode\":\"75001\",\"street\":\"7 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 8\",\"postcode\":\"75001\",\"street\":\"8 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 9\",\"postcode\":\"75001\",\"street\":\"9 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 10\",\"postcode\":\"75001\",\"street\":\"10 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 11\",\"postcode\":\"75001\",\"street\":\"11 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 12\",\"postcode\":\"75001\",\"street\":\"12 rue Exemple\"}]}\n",
+          "hash": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784"
+        },
+        "report": {
+          "value": {
+            "mission": "SIM-MISSION-address-honest",
+            "schema": "address.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "row.1",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.2",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.3",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.4",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.5",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.6",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.7",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.8",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.9",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.10",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.11",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.12",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "address.normalized_postcodes",
+                "pass": true,
+                "detail": "12 French postcodes normalized to five ASCII digits"
+              }
+            ],
+            "pass": true,
+            "message": "12/12 ROWS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery_hash": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784"
+          },
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4\",\"delivery_hash\":\"7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784\",\"message\":\"12/12 ROWS VALID\",\"mission\":\"SIM-MISSION-address-honest\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"row.1\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.2\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.3\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.4\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.5\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.6\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.7\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.8\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.9\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.10\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.11\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.12\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"address.normalized_postcodes\",\"detail\":\"12 French postcodes normalized to five ASCII digits\",\"pass\":true}],\"schema\":\"address.v1\"}\n",
+          "hash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        }
+      },
+      "trace": [
+        {
+          "instruction": "create_mission",
+          "actor": "client",
+          "now": "1700000000",
+          "before": {
+            "status": "absent",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "delta": {
+            "client": "-5000000",
+            "agent": "0",
+            "vault": "5000000"
+          }
+        },
+        {
+          "instruction": "accept_mission",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "submit_delivery",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "record_verdict",
+          "actor": "validator",
+          "now": "1700000000",
+          "before": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "passed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "finalize",
+          "actor": "outsider",
+          "now": "1700000060",
+          "before": {
+            "status": "passed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+          },
+          "after": {
+            "status": "settled",
+            "balances": {
+              "client": "95000000",
+              "agent": "5000000",
+              "vault": "0"
+            },
+            "agent": "agent",
+            "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "5000000",
+            "vault": "-5000000"
+          }
+        }
+      ],
+      "final": {
+        "status": "settled",
+        "balances": {
+          "client": "95000000",
+          "agent": "5000000",
+          "vault": "0"
+        },
+        "agent": "agent",
+        "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+      },
+      "steps": [
+        {
+          "station": 1,
+          "text": "ESCROW LOCKED · 5.00 dUSDC · SIM-TX-LOCK-6a1653a0"
+        },
+        {
+          "station": 2,
+          "text": "MISSION ACCEPTED · AGENT MULE-01 · ADDRESS NORMALIZATION"
+        },
+        {
+          "station": 3,
+          "text": "DELIVERY SUBMITTED · sha256:7fcc…e784"
+        },
+        {
+          "station": 4,
+          "text": "INSPECTION · 12/12 ROWS VALID",
+          "failed": false,
+          "hashes": {
+            "criteria": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784",
+            "report": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+          },
+          "report": {
+            "mission": "SIM-MISSION-address-honest",
+            "schema": "address.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "row.1",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.2",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.3",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.4",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.5",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.6",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.7",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.8",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.9",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.10",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.11",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.12",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "address.normalized_postcodes",
+                "pass": true,
+                "detail": "12 French postcodes normalized to five ASCII digits"
+              }
+            ],
+            "pass": true,
+            "message": "12/12 ROWS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery_hash": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784"
+          }
+        },
+        {
+          "station": 5,
+          "text": "SETTLED · 5.00 dUSDC PAID TO AGENT · SIM-TX-CLOSE-0430753b",
+          "failed": false,
+          "outcome": "settled",
+          "hashes": {
+            "criteria": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784",
+            "report": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+          },
+          "report": {
+            "mission": "SIM-MISSION-address-honest",
+            "schema": "address.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "row.1",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.2",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.3",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.4",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.5",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.6",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.7",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.8",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.9",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.10",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.11",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.12",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "address.normalized_postcodes",
+                "pass": true,
+                "detail": "12 French postcodes normalized to five ASCII digits"
+              }
+            ],
+            "pass": true,
+            "message": "12/12 ROWS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery_hash": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784"
+          }
+        }
+      ]
+    },
+    {
+      "id": "address-dishonest",
+      "template": "address",
+      "behavior": "dishonest",
+      "designated": false,
+      "expectedMessage": "11/12 · INVALID POSTCODE, ROW 7",
+      "missionReference": "SIM-MISSION-address-dishonest",
+      "artifacts": {
+        "criteria": {
+          "value": {
+            "crossChecks": [
+              "address.normalized_postcodes"
+            ],
+            "model": "address.v1",
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "additionalProperties": false,
+              "properties": {
+                "rows": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "city": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "country": {
+                        "const": "FR",
+                        "type": "string"
+                      },
+                      "name": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "postcode": {
+                        "pattern": "^[0-9]{5}$",
+                        "type": "string"
+                      },
+                      "street": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "street",
+                      "city",
+                      "postcode",
+                      "country"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 12,
+                  "minItems": 12,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "rows"
+              ],
+              "type": "object"
+            }
+          },
+          "json": "{\"crossChecks\":[\"address.normalized_postcodes\"],\"model\":\"address.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"rows\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"city\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"country\":{\"const\":\"FR\",\"type\":\"string\"},\"name\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"postcode\":{\"pattern\":\"^[0-9]{5}$\",\"type\":\"string\"},\"street\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"name\",\"street\",\"city\",\"postcode\",\"country\"],\"type\":\"object\"},\"maxItems\":12,\"minItems\":12,\"type\":\"array\"}},\"required\":[\"rows\"],\"type\":\"object\"}}\n",
+          "hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4"
+        },
+        "delivery": {
+          "value": {
+            "rows": [
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 1",
+                "postcode": "01000",
+                "street": "1 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 2",
+                "postcode": "75001",
+                "street": "2 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 3",
+                "postcode": "75001",
+                "street": "3 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 4",
+                "postcode": "75001",
+                "street": "4 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 5",
+                "postcode": "75001",
+                "street": "5 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 6",
+                "postcode": "75001",
+                "street": "6 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 7",
+                "postcode": "INVALID",
+                "street": "7 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 8",
+                "postcode": "75001",
+                "street": "8 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 9",
+                "postcode": "75001",
+                "street": "9 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 10",
+                "postcode": "75001",
+                "street": "10 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 11",
+                "postcode": "75001",
+                "street": "11 rue Exemple"
+              },
+              {
+                "city": "Ville Exemple",
+                "country": "FR",
+                "name": "Fixture recipient 12",
+                "postcode": "75001",
+                "street": "12 rue Exemple"
+              }
+            ]
+          },
+          "json": "{\"rows\":[{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 1\",\"postcode\":\"01000\",\"street\":\"1 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 2\",\"postcode\":\"75001\",\"street\":\"2 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 3\",\"postcode\":\"75001\",\"street\":\"3 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 4\",\"postcode\":\"75001\",\"street\":\"4 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 5\",\"postcode\":\"75001\",\"street\":\"5 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 6\",\"postcode\":\"75001\",\"street\":\"6 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 7\",\"postcode\":\"INVALID\",\"street\":\"7 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 8\",\"postcode\":\"75001\",\"street\":\"8 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 9\",\"postcode\":\"75001\",\"street\":\"9 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 10\",\"postcode\":\"75001\",\"street\":\"10 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 11\",\"postcode\":\"75001\",\"street\":\"11 rue Exemple\"},{\"city\":\"Ville Exemple\",\"country\":\"FR\",\"name\":\"Fixture recipient 12\",\"postcode\":\"75001\",\"street\":\"12 rue Exemple\"}]}\n",
+          "hash": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30"
+        },
+        "report": {
+          "value": {
+            "mission": "SIM-MISSION-address-dishonest",
+            "schema": "address.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"/rows/6/postcode\",\"keyword\":\"pattern\",\"message\":\"must match pattern \\\"^[0-9]{5}$\\\"\",\"params\":{\"pattern\":\"^[0-9]{5}$\"},\"schemaPath\":\"#/properties/rows/items/properties/postcode/pattern\"}]"
+              },
+              {
+                "check": "row.1",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.2",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.3",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.4",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.5",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.6",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.7",
+                "pass": false,
+                "detail": "Row violates address.v1 schema"
+              },
+              {
+                "check": "row.8",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.9",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.10",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.11",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.12",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "address.normalized_postcodes",
+                "pass": false,
+                "detail": "Expected exactly 12 normalized French postcodes"
+              }
+            ],
+            "pass": false,
+            "message": "11/12 · INVALID POSTCODE, ROW 7",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery_hash": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30"
+          },
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4\",\"delivery_hash\":\"c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30\",\"message\":\"11/12 · INVALID POSTCODE, ROW 7\",\"mission\":\"SIM-MISSION-address-dishonest\",\"pass\":false,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"[{\\\"instancePath\\\":\\\"/rows/6/postcode\\\",\\\"keyword\\\":\\\"pattern\\\",\\\"message\\\":\\\"must match pattern \\\\\\\"^[0-9]{5}$\\\\\\\"\\\",\\\"params\\\":{\\\"pattern\\\":\\\"^[0-9]{5}$\\\"},\\\"schemaPath\\\":\\\"#/properties/rows/items/properties/postcode/pattern\\\"}]\",\"pass\":false},{\"check\":\"row.1\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.2\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.3\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.4\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.5\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.6\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.7\",\"detail\":\"Row violates address.v1 schema\",\"pass\":false},{\"check\":\"row.8\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.9\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.10\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.11\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"row.12\",\"detail\":\"Row valid\",\"pass\":true},{\"check\":\"address.normalized_postcodes\",\"detail\":\"Expected exactly 12 normalized French postcodes\",\"pass\":false}],\"schema\":\"address.v1\"}\n",
+          "hash": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+        }
+      },
+      "trace": [
+        {
+          "instruction": "create_mission",
+          "actor": "client",
+          "now": "1700000000",
+          "before": {
+            "status": "absent",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "delta": {
+            "client": "-5000000",
+            "agent": "0",
+            "vault": "5000000"
+          }
+        },
+        {
+          "instruction": "accept_mission",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "submit_delivery",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "record_verdict",
+          "actor": "validator",
+          "now": "1700000000",
+          "before": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "failed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "finalize",
+          "actor": "outsider",
+          "now": "1700000060",
+          "before": {
+            "status": "failed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+          },
+          "after": {
+            "status": "refunded",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": "agent",
+            "reportHash": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+          },
+          "delta": {
+            "client": "5000000",
+            "agent": "0",
+            "vault": "-5000000"
+          }
+        }
+      ],
+      "final": {
+        "status": "refunded",
+        "balances": {
+          "client": "100000000",
+          "agent": "0",
+          "vault": "0"
+        },
+        "agent": "agent",
+        "reportHash": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+      },
+      "steps": [
+        {
+          "station": 1,
+          "text": "ESCROW LOCKED · 5.00 dUSDC · SIM-TX-LOCK-6a1653a0"
+        },
+        {
+          "station": 2,
+          "text": "MISSION ACCEPTED · AGENT MULE-01 · ADDRESS NORMALIZATION"
+        },
+        {
+          "station": 3,
+          "text": "DELIVERY SUBMITTED · sha256:c9f3…3f30"
+        },
+        {
+          "station": 4,
+          "text": "INSPECTION · 11/12 · INVALID POSTCODE, ROW 7",
+          "failed": true,
+          "hashes": {
+            "criteria": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30",
+            "report": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+          },
+          "report": {
+            "mission": "SIM-MISSION-address-dishonest",
+            "schema": "address.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"/rows/6/postcode\",\"keyword\":\"pattern\",\"message\":\"must match pattern \\\"^[0-9]{5}$\\\"\",\"params\":{\"pattern\":\"^[0-9]{5}$\"},\"schemaPath\":\"#/properties/rows/items/properties/postcode/pattern\"}]"
+              },
+              {
+                "check": "row.1",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.2",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.3",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.4",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.5",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.6",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.7",
+                "pass": false,
+                "detail": "Row violates address.v1 schema"
+              },
+              {
+                "check": "row.8",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.9",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.10",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.11",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.12",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "address.normalized_postcodes",
+                "pass": false,
+                "detail": "Expected exactly 12 normalized French postcodes"
+              }
+            ],
+            "pass": false,
+            "message": "11/12 · INVALID POSTCODE, ROW 7",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery_hash": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30"
+          }
+        },
+        {
+          "station": 5,
+          "text": "RETURNED · 5.00 dUSDC REFUNDED TO CLIENT · SIM-TX-CLOSE-16f88af6",
+          "failed": true,
+          "outcome": "returned",
+          "hashes": {
+            "criteria": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30",
+            "report": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+          },
+          "report": {
+            "mission": "SIM-MISSION-address-dishonest",
+            "schema": "address.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": false,
+                "detail": "[{\"instancePath\":\"/rows/6/postcode\",\"keyword\":\"pattern\",\"message\":\"must match pattern \\\"^[0-9]{5}$\\\"\",\"params\":{\"pattern\":\"^[0-9]{5}$\"},\"schemaPath\":\"#/properties/rows/items/properties/postcode/pattern\"}]"
+              },
+              {
+                "check": "row.1",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.2",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.3",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.4",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.5",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.6",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.7",
+                "pass": false,
+                "detail": "Row violates address.v1 schema"
+              },
+              {
+                "check": "row.8",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.9",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.10",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.11",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "row.12",
+                "pass": true,
+                "detail": "Row valid"
+              },
+              {
+                "check": "address.normalized_postcodes",
+                "pass": false,
+                "detail": "Expected exactly 12 normalized French postcodes"
+              }
+            ],
+            "pass": false,
+            "message": "11/12 · INVALID POSTCODE, ROW 7",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+            "delivery_hash": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30"
+          }
+        }
+      ]
+    },
+    {
+      "id": "invoice-designated",
+      "template": "invoice",
+      "behavior": "honest",
+      "designated": true,
+      "expectedMessage": "6/6 FIELDS VALID",
+      "missionReference": "SIM-MISSION-invoice-designated",
+      "artifacts": {
+        "criteria": {
+          "value": {
+            "crossChecks": [
+              "invoice.total_matches_lines"
+            ],
+            "model": "invoice.v1",
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "additionalProperties": false,
+              "properties": {
+                "currency": {
+                  "pattern": "^[A-Z]{3}$",
+                  "type": "string"
+                },
+                "date": {
+                  "format": "date",
+                  "type": "string"
+                },
+                "line_items": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "amount": {
+                        "pattern": "^(0|[1-9][0-9]{0,17})\\.[0-9]{2}$",
+                        "type": "string"
+                      },
+                      "description": {
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "description",
+                      "amount"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "number": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "supplier": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "total_amount": {
+                  "pattern": "^(0|[1-9][0-9]{0,17})\\.[0-9]{2}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "supplier",
+                "date",
+                "number",
+                "currency",
+                "total_amount",
+                "line_items"
+              ],
+              "type": "object"
+            }
+          },
+          "json": "{\"crossChecks\":[\"invoice.total_matches_lines\"],\"model\":\"invoice.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"currency\":{\"pattern\":\"^[A-Z]{3}$\",\"type\":\"string\"},\"date\":{\"format\":\"date\",\"type\":\"string\"},\"line_items\":{\"items\":{\"additionalProperties\":false,\"properties\":{\"amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"},\"description\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"description\",\"amount\"],\"type\":\"object\"},\"maxItems\":100,\"minItems\":1,\"type\":\"array\"},\"number\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"supplier\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"total_amount\":{\"pattern\":\"^(0|[1-9][0-9]{0,17})\\\\.[0-9]{2}$\",\"type\":\"string\"}},\"required\":[\"supplier\",\"date\",\"number\",\"currency\",\"total_amount\",\"line_items\"],\"type\":\"object\"}}\n",
+          "hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "value": {
+            "currency": "EUR",
+            "date": "2026-01-01",
+            "line_items": [
+              {
+                "amount": "100.10",
+                "description": "Fixture item A"
+              },
+              {
+                "amount": "23.35",
+                "description": "Fixture item B"
+              }
+            ],
+            "number": "FIXTURE-001",
+            "supplier": "MULE Fixture Supplier",
+            "total_amount": "123.45"
+          },
+          "json": "{\"currency\":\"EUR\",\"date\":\"2026-01-01\",\"line_items\":[{\"amount\":\"100.10\",\"description\":\"Fixture item A\"},{\"amount\":\"23.35\",\"description\":\"Fixture item B\"}],\"number\":\"FIXTURE-001\",\"supplier\":\"MULE Fixture Supplier\",\"total_amount\":\"123.45\"}\n",
+          "hash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+        },
+        "report": {
+          "value": {
+            "mission": "SIM-MISSION-invoice-designated",
+            "schema": "invoice.v1",
+            "results": [
+              {
+                "check": "json-schema.2020-12",
+                "pass": true,
+                "detail": "All JSON Schema constraints passed"
+              },
+              {
+                "check": "field.supplier",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.date",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.number",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.currency",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.total_amount",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "field.line_items",
+                "pass": true,
+                "detail": "Field valid"
+              },
+              {
+                "check": "invoice.total_matches_lines",
+                "pass": true,
+                "detail": "total_cents=12345; line_sum_cents=12345"
+              }
+            ],
+            "pass": true,
+            "message": "6/6 FIELDS VALID",
+            "agent": "agent de référence scripté",
+            "criteria_hash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+            "delivery_hash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+          },
+          "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc\",\"delivery_hash\":\"4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335\",\"message\":\"6/6 FIELDS VALID\",\"mission\":\"SIM-MISSION-invoice-designated\",\"pass\":true,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"All JSON Schema constraints passed\",\"pass\":true},{\"check\":\"field.supplier\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.number\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.currency\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.total_amount\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.line_items\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"invoice.total_matches_lines\",\"detail\":\"total_cents=12345; line_sum_cents=12345\",\"pass\":true}],\"schema\":\"invoice.v1\"}\n",
+          "hash": "4bc5292a24c79b782edaaf7b6c35f4dbd5a8f4b07d7bee2c2eaf24265468cefd"
+        }
+      },
+      "trace": [
+        {
+          "instruction": "create_mission",
+          "actor": "client",
+          "now": "1700000000",
+          "before": {
+            "status": "absent",
+            "balances": {
+              "client": "100000000",
+              "agent": "0",
+              "vault": "0"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "delta": {
+            "client": "-5000000",
+            "agent": "0",
+            "vault": "5000000"
+          }
+        },
+        {
+          "instruction": "accept_mission",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "open",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": null,
+            "reportHash": null
+          },
+          "after": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "submit_delivery",
+          "actor": "agent",
+          "now": "1700000000",
+          "before": {
+            "status": "accepted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "record_verdict",
+          "actor": "validator",
+          "now": "1700000000",
+          "before": {
+            "status": "submitted",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": null
+          },
+          "after": {
+            "status": "passed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "4bc5292a24c79b782edaaf7b6c35f4dbd5a8f4b07d7bee2c2eaf24265468cefd"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "0",
+            "vault": "0"
+          }
+        },
+        {
+          "instruction": "finalize",
+          "actor": "outsider",
+          "now": "1700000060",
+          "before": {
+            "status": "passed",
+            "balances": {
+              "client": "95000000",
+              "agent": "0",
+              "vault": "5000000"
+            },
+            "agent": "agent",
+            "reportHash": "4bc5292a24c79b782edaaf7b6c35f4dbd5a8f4b07d7bee2c2eaf24265468cefd"
+          },
+          "after": {
+            "status": "settled",
+            "balances": {
+              "client": "95000000",
+              "agent": "5000000",
+              "vault": "0"
+            },
+            "agent": "agent",
+            "reportHash": "4bc5292a24c79b782edaaf7b6c35f4dbd5a8f4b07d7bee2c2eaf24265468cefd"
+          },
+          "delta": {
+            "client": "0",
+            "agent": "5000000",
+            "vault": "-5000000"
+          }
+        }
+      ],
+      "final": {
+        "status": "settled",
+        "balances": {
+          "client": "95000000",
+          "agent": "5000000",
+          "vault": "0"
+        },
+        "agent": "agent",
+        "reportHash": "4bc5292a24c79b782edaaf7b6c35f4dbd5a8f4b07d7bee2c2eaf24265468cefd"
+      },
+      "steps": []
+    }
+  ]
+}

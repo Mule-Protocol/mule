@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "source": "GitHub Actions API",
+  "run": {
+    "id": 37700019985,
+    "url": "https://github.com/Mule-Protocol/mule/actions/runs/37700019985",
+    "headSha": "3f74304d9775abb157752bcd844a2be159ba2d05",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "consoleArtifact": {
+    "id": 11517002720,
+    "url": "https://github.com/Mule-Protocol/mule/actions/runs/37700019985/artifacts/11517002720"
+  },
+  "jobs": [
+    {
+      "name": "verify",
+      "id": 113061033458,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-07T23:03:52Z",
+      "completed_at": "2026-10-07T23:06:40Z"
+    },
+    {
+      "name": "audit",
+      "id": 113061033746,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-07T23:03:52Z",
+      "completed_at": "2026-10-07T23:04:06Z"
+    },
+    {
+      "name": "local-missions",
+      "id": 113061994419,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-07T23:06:42Z",
+      "completed_at": "2026-10-07T23:08:51Z"
+    },
+    {
+      "name": "fuzz",
+      "id": 113061994510,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-07T23:06:42Z",
+      "completed_at": "2026-10-07T23:08:29Z"
+    },
+    {
+      "name": "console-core",
+      "id": 113061994512,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-07T23:06:42Z",
+      "completed_at": "2026-10-07T23:07:31Z"
+    }
+  ]
+}

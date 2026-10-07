@@ -1,0 +1,530 @@
+{
+  "schema": 1,
+  "passed": true,
+  "engine": "LiteSVM 0.8.0; compiled SBF; isolated Linux Node 24 process",
+  "runtime": {
+    "node": "v24.21.0",
+    "platform": "linux"
+  },
+  "scenario": {
+    "id": "contract-dishonest",
+    "template": "contract",
+    "behavior": "dishonest",
+    "designatedAgent": false,
+    "message": "4/5 · MISSING: governing_law"
+  },
+  "sourceSha256": {
+    "sbf": "7c93e61315ea26fcb7092380ffe02a7efba7c938e9c66e197dbc7b3db4381ab8",
+    "idl": "0bf513e2d5138be9b4eeb44c3814aa04176ec3329444924213d528ce68275cba",
+    "bundle": "11fd73a2ee21035ff8fe07f696e0c13ef979bed055f8ce4bb33c58ffc368f47c"
+  },
+  "artifacts": {
+    "criteria": {
+      "hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+      "json": "{\"crossChecks\":[],\"model\":\"contract.v1\",\"schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"additionalProperties\":false,\"properties\":{\"effective_date\":{\"format\":\"date\",\"type\":\"string\"},\"governing_law\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"parties\":{\"items\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"maxItems\":10,\"minItems\":2,\"type\":\"array\",\"uniqueItems\":true},\"termination\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"},\"title\":{\"maxLength\":200,\"minLength\":1,\"type\":\"string\"}},\"required\":[\"title\",\"parties\",\"effective_date\",\"termination\",\"governing_law\"],\"type\":\"object\"}}\n",
+      "value": {
+        "model": "contract.v1",
+        "schema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "parties",
+            "effective_date",
+            "termination",
+            "governing_law"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "parties": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 10,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "effective_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "termination": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "governing_law": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          }
+        },
+        "crossChecks": []
+      },
+      "nodeConsoleValuesEqual": true,
+      "nodeConsoleUtf8Equal": true,
+      "nodeConsoleHashEqual": true
+    },
+    "delivery": {
+      "hash": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f",
+      "json": "{\"effective_date\":\"2026-01-01\",\"parties\":[\"Fixture Client\",\"Fixture Supplier\"],\"termination\":\"Either party may terminate with 30 days written notice.\",\"title\":\"Synthetic data-processing contract\"}\n",
+      "value": {
+        "effective_date": "2026-01-01",
+        "parties": [
+          "Fixture Client",
+          "Fixture Supplier"
+        ],
+        "termination": "Either party may terminate with 30 days written notice.",
+        "title": "Synthetic data-processing contract"
+      },
+      "nodeConsoleValuesEqual": true,
+      "nodeConsoleUtf8Equal": true,
+      "nodeConsoleHashEqual": true
+    },
+    "report": {
+      "hash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da",
+      "json": "{\"agent\":\"agent de référence scripté\",\"criteria_hash\":\"dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37\",\"delivery_hash\":\"7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f\",\"message\":\"4/5 · MISSING: governing_law\",\"mission\":\"SIM-MISSION-contract-dishonest\",\"pass\":false,\"results\":[{\"check\":\"json-schema.2020-12\",\"detail\":\"[{\\\"instancePath\\\":\\\"\\\",\\\"keyword\\\":\\\"required\\\",\\\"message\\\":\\\"must have required property 'governing_law'\\\",\\\"params\\\":{\\\"missingProperty\\\":\\\"governing_law\\\"},\\\"schemaPath\\\":\\\"#/required\\\"}]\",\"pass\":false},{\"check\":\"field.title\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.parties\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.effective_date\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.termination\",\"detail\":\"Field valid\",\"pass\":true},{\"check\":\"field.governing_law\",\"detail\":\"Missing required field\",\"pass\":false}],\"schema\":\"contract.v1\"}\n",
+      "value": {
+        "mission": "SIM-MISSION-contract-dishonest",
+        "schema": "contract.v1",
+        "results": [
+          {
+            "check": "json-schema.2020-12",
+            "pass": false,
+            "detail": "[{\"instancePath\":\"\",\"keyword\":\"required\",\"message\":\"must have required property 'governing_law'\",\"params\":{\"missingProperty\":\"governing_law\"},\"schemaPath\":\"#/required\"}]"
+          },
+          {
+            "check": "field.title",
+            "pass": true,
+            "detail": "Field valid"
+          },
+          {
+            "check": "field.parties",
+            "pass": true,
+            "detail": "Field valid"
+          },
+          {
+            "check": "field.effective_date",
+            "pass": true,
+            "detail": "Field valid"
+          },
+          {
+            "check": "field.termination",
+            "pass": true,
+            "detail": "Field valid"
+          },
+          {
+            "check": "field.governing_law",
+            "pass": false,
+            "detail": "Missing required field"
+          }
+        ],
+        "pass": false,
+        "message": "4/5 · MISSING: governing_law",
+        "agent": "agent de référence scripté",
+        "criteria_hash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+        "delivery_hash": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f"
+      },
+      "nodeConsoleValuesEqual": true,
+      "nodeConsoleUtf8Equal": true,
+      "nodeConsoleHashEqual": true
+    }
+  },
+  "reference": {
+    "value": "SIM-MISSION-contract-dishonest",
+    "scope": "Only the report reference is symbolic; validateMission normally passes its real mission PDA."
+  },
+  "validatorMessage": {
+    "node": "4/5 · MISSING: governing_law",
+    "console": "4/5 · MISSING: governing_law",
+    "equal": true
+  },
+  "trace": [
+    {
+      "instruction": "create_mission",
+      "actor": "client",
+      "now": "1700000000",
+      "console": {
+        "before": {
+          "status": "absent",
+          "balances": {
+            "client": "100000000",
+            "agent": "0",
+            "vault": "0"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "after": {
+          "status": "open",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "delta": {
+          "client": "-5000000",
+          "agent": "0",
+          "vault": "5000000"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "absent",
+          "balances": {
+            "client": "100000000",
+            "agent": "0",
+            "vault": "0"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "after": {
+          "status": "open",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "delta": {
+          "client": "-5000000",
+          "agent": "0",
+          "vault": "5000000"
+        },
+        "event": {
+          "name": "MissionCreated",
+          "status": "open",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    },
+    {
+      "instruction": "accept_mission",
+      "actor": "agent",
+      "now": "1700000000",
+      "console": {
+        "before": {
+          "status": "open",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "after": {
+          "status": "accepted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "open",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": null,
+          "reportHash": null
+        },
+        "after": {
+          "status": "accepted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        },
+        "event": {
+          "name": "MissionAccepted",
+          "status": "accepted",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    },
+    {
+      "instruction": "submit_delivery",
+      "actor": "agent",
+      "now": "1700000000",
+      "console": {
+        "before": {
+          "status": "accepted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "after": {
+          "status": "submitted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "accepted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "after": {
+          "status": "submitted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        },
+        "event": {
+          "name": "DeliverySubmitted",
+          "status": "submitted",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    },
+    {
+      "instruction": "record_verdict",
+      "actor": "validator",
+      "now": "1700000000",
+      "console": {
+        "before": {
+          "status": "submitted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "after": {
+          "status": "failed",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "submitted",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": null
+        },
+        "after": {
+          "status": "failed",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        },
+        "delta": {
+          "client": "0",
+          "agent": "0",
+          "vault": "0"
+        },
+        "event": {
+          "name": "VerdictRecorded",
+          "status": "failed",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    },
+    {
+      "instruction": "finalize",
+      "actor": "outsider",
+      "now": "1700000060",
+      "console": {
+        "before": {
+          "status": "failed",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        },
+        "after": {
+          "status": "refunded",
+          "balances": {
+            "client": "100000000",
+            "agent": "0",
+            "vault": "0"
+          },
+          "agent": "agent",
+          "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        },
+        "delta": {
+          "client": "5000000",
+          "agent": "0",
+          "vault": "-5000000"
+        }
+      },
+      "sbf": {
+        "before": {
+          "status": "failed",
+          "balances": {
+            "client": "95000000",
+            "agent": "0",
+            "vault": "5000000"
+          },
+          "agent": "agent",
+          "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        },
+        "after": {
+          "status": "refunded",
+          "balances": {
+            "client": "100000000",
+            "agent": "0",
+            "vault": "0"
+          },
+          "agent": "agent",
+          "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        },
+        "delta": {
+          "client": "5000000",
+          "agent": "0",
+          "vault": "-5000000"
+        },
+        "event": {
+          "name": "MissionRefunded",
+          "status": "refunded",
+          "amount": "5000000"
+        }
+      },
+      "stateEqual": true,
+      "balancesEqual": true,
+      "deltaEqual": true,
+      "conservation": true
+    }
+  ],
+  "reportHash": {
+    "node": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da",
+    "console": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da",
+    "onChain": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da",
+    "equal": true
+  },
+  "final": {
+    "console": {
+      "status": "refunded",
+      "balances": {
+        "client": "100000000",
+        "agent": "0",
+        "vault": "0"
+      },
+      "agent": "agent",
+      "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+    },
+    "sbf": {
+      "status": "refunded",
+      "balances": {
+        "client": "100000000",
+        "agent": "0",
+        "vault": "0"
+      },
+      "agent": "agent",
+      "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+    },
+    "equal": true,
+    "missionClosed": true,
+    "vaultClosed": true,
+    "terminalSource": "Successful SBF terminal event; pre-close on-chain agent/report hash retained for comparison.",
+    "clientRent": {
+      "deposited": "7579440",
+      "returned": "7579440",
+      "exact": true
+    }
+  }
+}

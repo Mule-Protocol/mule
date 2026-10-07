@@ -1,12 +1,34 @@
 import assert from 'node:assert/strict';
 import { PublicKey } from '@solana/web3.js';
 import { missionStatus } from '@mule/sdk';
-import { LocalContentStore, validateDelivery, type Criteria } from '@mule/validator';
+import { LocalContentStore, validateDelivery, type Criteria, type StoredJson, type ValidationReport } from '@mule/validator';
 import { RpcRunner, type TransactionRecord } from './rpc.js';
 import { testFault } from './faults.js';
 export { TestFault } from './faults.js';
 
 export interface ValidationResult { reportHash: string; reportUri: string; signature: string; message: string; passed: boolean; recovered: boolean }
+
+export interface ValidationInput {
+  mission: string;
+  criteriaHash: string;
+  deliveryHash: string;
+  criteriaUri: string;
+  deliveryUri: string;
+}
+
+/** The Node runner's content-verified, deterministic report pipeline. */
+export function prepareValidationReport(
+  store: LocalContentStore,
+  input: ValidationInput,
+): { report: ValidationReport; stored: StoredJson } {
+  const criteria = store.read<Criteria>(input.criteriaUri, input.criteriaHash);
+  const delivery = store.read(input.deliveryUri, input.deliveryHash);
+  const report = validateDelivery({
+    mission: input.mission, criteria, delivery,
+    criteriaHash: input.criteriaHash, deliveryHash: input.deliveryHash,
+  });
+  return { report, stored: store.put(report) };
+}
 
 /** Re-read chain state on EVERY invocation, including recovery after a confirmed verdict. */
 export async function validateMission(runner: RpcRunner, store: LocalContentStore, address: PublicKey): Promise<ValidationResult> {
@@ -17,10 +39,10 @@ export async function validateMission(runner: RpcRunner, store: LocalContentStor
   assert(mission.deliveryHash && mission.deliveryUri);
   const criteriaHash = Buffer.from(mission.criteriaHash).toString('hex');
   const deliveryHash = Buffer.from(mission.deliveryHash).toString('hex');
-  const criteria = store.read<Criteria>(mission.criteriaUri, criteriaHash);
-  const delivery = store.read(mission.deliveryUri, deliveryHash);
-  const report = validateDelivery({mission: address.toBase58(), criteria, delivery, criteriaHash, deliveryHash});
-  const stored = store.put(report);
+  const { report, stored } = prepareValidationReport(store, {
+    mission: address.toBase58(), criteriaHash, deliveryHash,
+    criteriaUri: mission.criteriaUri, deliveryUri: mission.deliveryUri,
+  });
   const key = 'validation:' + address.toBase58();
   const previous = runner.journal.read<Partial<ValidationResult>>(key);
   if (previous?.reportHash) assert.equal(stored.hash, previous.reportHash, 'Report changed across recovery');

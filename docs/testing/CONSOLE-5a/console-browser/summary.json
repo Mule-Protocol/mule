@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "engine": "real headless Chromium 153.0.8010.12",
+  "bundleSha256": "11fd73a2ee21035ff8fe07f696e0c13ef979bed055f8ce4bb33c58ffc368f47c",
+  "csp": "default-src 'none'; script-src 'self'; connect-src 'none'; img-src data:; base-uri 'none'; object-src 'none'",
+  "cspNegativeControlBlocked": true,
+  "controlViolations": [
+    {
+      "directive": "script-src",
+      "blocked": "eval"
+    }
+  ],
+  "cspViolationsDuringMissions": [],
+  "browserErrorsDuringMissions": [],
+  "networkRequestsDuringMissions": [],
+  "offlineDuringMissions": true,
+  "scenarios": [
+    {
+      "template": "invoice",
+      "behavior": "honest",
+      "designatedAgent": false,
+      "missionReference": "SIM-MISSION-invoice-honest",
+      "passed": true,
+      "validatorMessage": "6/6 FIELDS VALID",
+      "finalStatus": "settled",
+      "artifacts": {
+        "criteria": {
+          "byteIdentical": true,
+          "utf8Bytes": 863,
+          "sha256": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "byteIdentical": true,
+          "utf8Bytes": 237,
+          "sha256": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+        },
+        "report": {
+          "byteIdentical": true,
+          "utf8Bytes": 887,
+          "sha256": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7"
+        }
+      },
+      "stepInterfaceChecked": true
+    },
+    {
+      "template": "invoice",
+      "behavior": "dishonest",
+      "designatedAgent": false,
+      "missionReference": "SIM-MISSION-invoice-dishonest",
+      "passed": true,
+      "validatorMessage": "5/6 · MISSING: total_amount",
+      "finalStatus": "refunded",
+      "artifacts": {
+        "criteria": {
+          "byteIdentical": true,
+          "utf8Bytes": 863,
+          "sha256": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "byteIdentical": true,
+          "utf8Bytes": 213,
+          "sha256": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0"
+        },
+        "report": {
+          "byteIdentical": true,
+          "utf8Bytes": 1089,
+          "sha256": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710"
+        }
+      },
+      "stepInterfaceChecked": true
+    },
+    {
+      "template": "contract",
+      "behavior": "honest",
+      "designatedAgent": false,
+      "missionReference": "SIM-MISSION-contract-honest",
+      "passed": true,
+      "validatorMessage": "5/5 FIELDS VALID",
+      "finalStatus": "settled",
+      "artifacts": {
+        "criteria": {
+          "byteIdentical": true,
+          "utf8Bytes": 609,
+          "sha256": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37"
+        },
+        "delivery": {
+          "byteIdentical": true,
+          "utf8Bytes": 226,
+          "sha256": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1"
+        },
+        "report": {
+          "byteIdentical": true,
+          "utf8Bytes": 734,
+          "sha256": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886"
+        }
+      },
+      "stepInterfaceChecked": true
+    },
+    {
+      "template": "contract",
+      "behavior": "dishonest",
+      "designatedAgent": false,
+      "missionReference": "SIM-MISSION-contract-dishonest",
+      "passed": true,
+      "validatorMessage": "4/5 · MISSING: governing_law",
+      "finalStatus": "refunded",
+      "artifacts": {
+        "criteria": {
+          "byteIdentical": true,
+          "utf8Bytes": 609,
+          "sha256": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37"
+        },
+        "delivery": {
+          "byteIdentical": true,
+          "utf8Bytes": 197,
+          "sha256": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f"
+        },
+        "report": {
+          "byteIdentical": true,
+          "utf8Bytes": 921,
+          "sha256": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da"
+        }
+      },
+      "stepInterfaceChecked": true
+    },
+    {
+      "template": "address",
+      "behavior": "honest",
+      "designatedAgent": false,
+      "missionReference": "SIM-MISSION-address-honest",
+      "passed": true,
+      "validatorMessage": "12/12 ROWS VALID",
+      "finalStatus": "settled",
+      "artifacts": {
+        "criteria": {
+          "byteIdentical": true,
+          "utf8Bytes": 657,
+          "sha256": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4"
+        },
+        "delivery": {
+          "byteIdentical": true,
+          "utf8Bytes": 1373,
+          "sha256": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784"
+        },
+        "report": {
+          "byteIdentical": true,
+          "utf8Bytes": 1143,
+          "sha256": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf"
+        }
+      },
+      "stepInterfaceChecked": true
+    },
+    {
+      "template": "address",
+      "behavior": "dishonest",
+      "designatedAgent": false,
+      "missionReference": "SIM-MISSION-address-dishonest",
+      "passed": true,
+      "validatorMessage": "11/12 · INVALID POSTCODE, ROW 7",
+      "finalStatus": "refunded",
+      "artifacts": {
+        "criteria": {
+          "byteIdentical": true,
+          "utf8Bytes": 657,
+          "sha256": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4"
+        },
+        "delivery": {
+          "byteIdentical": true,
+          "utf8Bytes": 1375,
+          "sha256": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30"
+        },
+        "report": {
+          "byteIdentical": true,
+          "utf8Bytes": 1379,
+          "sha256": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe"
+        }
+      },
+      "stepInterfaceChecked": true
+    },
+    {
+      "template": "invoice",
+      "behavior": "honest",
+      "designatedAgent": true,
+      "missionReference": "SIM-MISSION-invoice-designated",
+      "passed": true,
+      "validatorMessage": "6/6 FIELDS VALID",
+      "finalStatus": "settled",
+      "artifacts": {
+        "criteria": {
+          "byteIdentical": true,
+          "utf8Bytes": 863,
+          "sha256": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc"
+        },
+        "delivery": {
+          "byteIdentical": true,
+          "utf8Bytes": 237,
+          "sha256": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335"
+        },
+        "report": {
+          "byteIdentical": true,
+          "utf8Bytes": 891,
+          "sha256": "4bc5292a24c79b782edaaf7b6c35f4dbd5a8f4b07d7bee2c2eaf24265468cefd"
+        }
+      },
+      "stepInterfaceChecked": false
+    }
+  ]
+}

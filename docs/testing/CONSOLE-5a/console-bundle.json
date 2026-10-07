@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "artifact": "packages/console-core/dist/console-core.mjs",
+  "bundler": "esbuild 0.25.12",
+  "sha256": "11fd73a2ee21035ff8fe07f696e0c13ef979bed055f8ce4bb33c58ffc368f47c",
+  "rawBytes": 72364,
+  "gzipBytes": 13134,
+  "gzipLevel": 9,
+  "gzipBudgetBytes": 40000,
+  "reconstruction": "byte-identical",
+  "policy": {
+    "parsedAs": "ECMAScript module",
+    "astNodes": 15790,
+    "imports": 0,
+    "eval": 0,
+    "functionConstructors": 0,
+    "nodeRuntimeReferences": 0,
+    "networkApiReferences": 0
+  },
+  "inputs": [
+    "node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.20.0/node_modules/ajv-formats/dist/formats.js",
+    "node_modules/.pnpm/ajv@8.20.0/node_modules/ajv/dist/runtime/ucs2length.js",
+    "packages/console-core/src/generated/fixtures.ts",
+    "packages/console-core/src/generated/standalone.mjs",
+    "packages/console-core/src/generated/validators.ts",
+    "packages/console-core/src/hash.ts",
+    "packages/console-core/src/index.ts",
+    "packages/console-core/src/model.ts",
+    "packages/mission-logic/dist/agent.js",
+    "packages/mission-logic/dist/canonical.js",
+    "packages/mission-logic/dist/index.js",
+    "packages/mission-logic/dist/types.js",
+    "packages/mission-logic/dist/validate.js"
+  ]
+}
