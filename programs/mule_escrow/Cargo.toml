@@ -21,7 +21,7 @@ custom-heap = []
 custom-panic = []
 
 [dependencies]
-anchor-lang = "=0.32.2"
+anchor-lang = "=1.2.0"
 anchor-spl = { version = "=0.32.2", default-features = false, features = ["token", "token_2022"] }
 
 [lints.rust]
