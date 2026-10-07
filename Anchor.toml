@@ -1,0 +1,17 @@
+[toolchain]
+anchor_version = "0.32.2"
+solana_version = "2.3.0"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+mule_escrow = "Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL"
+
+[provider]
+cluster = "Localnet"
+wallet = "/dev/null"
+
+[scripts]
+test = "pnpm test:program"

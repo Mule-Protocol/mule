@@ -1,0 +1,70 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [codex/m1-escrow-sdk]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pnpm
+        run: npm install --global pnpm@10.18.3
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cache/solana
+            ~/.local/share/solana/install
+            target
+          key: mule-anchor0322-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'programs/*/Cargo.toml') }}
+      - name: Install pinned Anchor and Solana build tools
+        run: |
+          curl -fLsS https://github.com/otter-sec/anchor/releases/download/v0.32.2/anchor-0.32.2-x86_64-unknown-linux-gnu -o /tmp/anchor
+          chmod +x /tmp/anchor
+          sudo mv /tmp/anchor /usr/local/bin/anchor
+          sh -c "$(curl -fLsS https://release.anza.xyz/v2.3.0/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+      - name: Build Anchor program and IDL (no deployment)
+        run: |
+          anchor --version
+          solana --version
+          anchor build
+      - name: Rust format and clippy
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --workspace --all-targets -- -D warnings
+      - name: SDK build, types, lint and tests
+        run: |
+          pnpm build
+          pnpm typecheck
+          pnpm lint
+          pnpm test
+      - name: Anchor tests on the compiled SBF in LiteSVM
+        run: anchor test --skip-build --skip-deploy --skip-local-validator
+      - name: Instruction coverage
+        if: always()
+        run: pnpm coverage:instructions
+      - name: Public evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-step1-evidence
+          path: |
+            coverage/
+            target/idl/mule_escrow.json
+            target/deploy/mule_escrow.so
+            Cargo.lock
+          if-no-files-found: warn
