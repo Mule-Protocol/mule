@@ -1,0 +1,13 @@
+node_modules/
+dist/
+target/
+.anchor/
+coverage/
+.env
+.env.*
+!.env.example
+*-keypair.json
+id.json
+*.pem
+*.key
+.DS_Store
