@@ -1,11 +1,11 @@
-# MULE escrow state machine · check-in 1b
+# MULE escrow state machine · M-1.1
 
 Authority: [v2 §2](spec/SPEC_M-1_devnet_v2.md), [v1 §2.1–2.5](spec/PROMPT_M-1_devnet.md), with the owner-approved [check-in 1b corrections](checkins/CHECKIN-1b.md).
 Scope: [local-only update](spec/M1_LOCAL_ONLY_UPDATE.md). The original specifications remain historical, unchanged sources.
 
 ## Accounts and terms
 
-Config PDA: UTF-8 "config". Its initializer must be the upgrade authority recorded in the canonical loader-owned ProgramData. Mint is immutable. Validator, cap, minimum window and pause can change through update_config. Admin changes only through the two-step propose_admin / accept_admin flow: the current admin records pending_admin, then that pending signer accepts and clears the proposal. The default public key is forbidden. A proposal alone does not grant admin rights; acceptance removes the previous admin's rights.
+Config PDA: UTF-8 "config". Its initializer must be the upgrade authority recorded in the canonical loader-owned ProgramData. Mint is immutable. Validator, cap, minimum window and pause can change through update_config. Admin changes only through the two-step propose_admin / accept_admin flow: the current admin records pending_admin, then that pending signer accepts and clears the proposal. The default public key is forbidden. A proposal alone does not grant admin rights; acceptance removes the previous admin's rights. Before acceptance, the current admin may call cancel_admin_proposal to clear pending_admin; no proposal returns NoPendingAdminProposal, and the cancelled signer can no longer accept.
 
 Mission PDA: "mission", client public key, unsigned 64-bit mission ID in little-endian. Vault PDA: "vault", mission public key. The vault's SPL authority is the mission PDA.
 
@@ -15,7 +15,7 @@ Defaults: 3,600-second minimum window, 100,000,000 base-unit cap (100 dUSDC, no 
 
 ## Transitions
 
-There are 14 distinct instructions; verdict and payout variants are listed separately below.
+There are 15 distinct instructions; verdict and payout variants are listed separately below.
 
 | Instruction | From | Signer / guard | Result |
 | --- | --- | --- | --- |
@@ -23,6 +23,7 @@ There are 14 distinct instructions; verdict and payout variants are listed separ
 | update_config | existing | current admin; positive cap/window | Config updated |
 | propose_admin | existing | current admin; non-default new admin | pending_admin recorded; current admin unchanged |
 | accept_admin | pending proposal | pending_admin signer | Admin replaced; pending_admin cleared |
+| cancel_admin_proposal | pending proposal | current admin; proposal must exist | pending_admin cleared; current admin unchanged |
 | create_mission | absent | client and designated agent differ from current validator; not paused; 0 < amount ≤ cap; future deadline; window ≥ minimum; designated_agent ≠ client | Open; client → vault |
 | cancel_mission | Open | client | Cancelled; vault → client |
 | accept_mission | Open | agent ≠ client and current validator; matches designated_agent if present; now < deadline | Accepted |
@@ -53,7 +54,7 @@ Pause affects creation only. Existing work, verdicts, disputes, admin transfer, 
 
 The admin can only choose client or agent in a dispute. If the admin does not act, anyone may apply the original validator verdict after the 14-day timeout. This fallback cannot correct a dishonest original verdict.
 
-Each successful instruction emits one event. ConfigInitialized/ConfigUpdated identify Config/settings; the transfer emits AdminProposed and then AdminAccepted. The eight mission event types include mission, amount and status. MissionCreated additionally includes designated_agent. Finalize/resolve emit MissionSettled or MissionRefunded.
+Each successful instruction emits one event. ConfigInitialized/ConfigUpdated identify Config/settings; the transfer emits AdminProposed and then AdminAccepted, or AdminProposalCancelled on cancellation (config, current admin and cancelled admin). The eight mission event types include mission, amount and status. MissionCreated additionally includes designated_agent. Finalize/resolve emit MissionSettled or MissionRefunded.
 
 Destination token accounts are constrained to the correct owner and mint; no instruction accepts an arbitrary payout-address argument. The complete vault balance is transferred to the legitimate recipient so unsolicited deposits cannot prevent closure. Event amount remains the agreed escrow amount; surplus is a gift to that recipient.
 

@@ -115,6 +115,48 @@
       "args": []
     },
     {
+      "name": "cancel_admin_proposal",
+      "discriminator": [
+        68,
+        6,
+        145,
+        131,
+        16,
+        73,
+        182,
+        229
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "cancel_mission",
       "discriminator": [
         165,
@@ -1311,6 +1353,19 @@
       ]
     },
     {
+      "name": "AdminProposalCancelled",
+      "discriminator": [
+        158,
+        7,
+        69,
+        243,
+        15,
+        126,
+        0,
+        184
+      ]
+    },
+    {
       "name": "AdminProposed",
       "discriminator": [
         129,
@@ -1569,6 +1624,11 @@
       "code": 6022,
       "name": "ValidatorCannotAccept",
       "msg": "The current validator cannot accept a mission"
+    },
+    {
+      "code": 6023,
+      "name": "NoPendingAdminProposal",
+      "msg": "No pending admin proposal to cancel"
     }
   ],
   "types": [
@@ -1587,6 +1647,26 @@
           },
           {
             "name": "admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdminProposalCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "cancelled_admin",
             "type": "pubkey"
           }
         ]

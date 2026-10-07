@@ -118,7 +118,7 @@ class Fixture {
     if (result instanceof FailedTransactionMetadata) assert.fail(name + '\n' + result.meta().logs().join('\n'));
     const events=sdk.events(result.logs(), null);
     assert.equal(events.length,1,'one MULE event per successful instruction');
-    if (!name.endsWith('_config') && !name.endsWith('_admin')) {
+    if (!name.endsWith('_config') && !name.endsWith('_admin') && name !== 'cancel_admin_proposal') {
       assert((events[0]?.data.mission as PublicKey).equals(this.mission));
       assert.equal(String(events[0]?.data.amount),'5000000');
       const expected:Record<string,[string,string]>={
@@ -134,9 +134,9 @@ class Fixture {
       const status=Object.keys(events[0]?.data.status as object)[0];
       assert.equal(status?.toLowerCase(),expectedEvent[1]);
     }
-    if (name === 'propose_admin' || name === 'accept_admin') {
+    if (name === 'propose_admin' || name === 'accept_admin' || name === 'cancel_admin_proposal') {
       const event = events[0]; assert(event);
-      assert.equal(event.name.replaceAll('_','').toLowerCase(),name==='propose_admin'?'adminproposed':'adminaccepted');
+      assert.equal(event.name.replaceAll('_','').toLowerCase(),name==='propose_admin'?'adminproposed':name==='accept_admin'?'adminaccepted':'adminproposalcancelled');
       assert((event.data.config as PublicKey).equals(configPda()[0]));
       if(name==='propose_admin') {
         assert((event.data.admin as PublicKey).equals(signer.publicKey));
@@ -535,6 +535,25 @@ for(const pass of [true,false]) check('sweep on LiteSVM: disputed '+(pass?'passe
   assert.equal(f.balance(f.clientToken),pass?before-5_000_000n:before);
   assert.equal(f.svm.getBalance(f.client.publicKey),sol+rent);f.closed();
   assert.deepEqual(await sweep(port,[f.mission]),[]);
+});
+
+check('admin cancellation: proposal cleared, event identifies cancelled admin and later acceptance refused',()=>{
+  const f=new Fixture();
+  f.call('propose_admin',f.deployer,{new_admin:f.stranger.publicKey});
+  const result=f.call('cancel_admin_proposal',f.deployer);assert(result);
+  assert.equal(f.config().pendingAdmin,null);assert(f.config().admin.equals(f.deployer.publicKey));
+  const event=sdk.events(result.logs(),null)[0];assert(event);
+  assert((event.data.cancelledAdmin as PublicKey).equals(f.stranger.publicKey));
+  f.call('accept_admin',f.stranger,{}, {},'Unauthorized');
+});
+check('admin cancellation: wrong signer and absent proposal are rejected without changing config',()=>{
+  const f=new Fixture();
+  f.call('cancel_admin_proposal',f.deployer,{}, {},'NoPendingAdminProposal');
+  f.call('propose_admin',f.deployer,{new_admin:f.stranger.publicKey});
+  f.call('cancel_admin_proposal',f.stranger,{}, {},'Unauthorized');
+  assert(f.config().pendingAdmin?.equals(f.stranger.publicKey));
+  f.call('cancel_admin_proposal',f.deployer);
+  f.call('cancel_admin_proposal',f.deployer,{}, {},'NoPendingAdminProposal');
 });
 
 if(process.env.MULE_LIST_TESTS==='1') {

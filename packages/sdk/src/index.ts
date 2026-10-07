@@ -11,7 +11,7 @@ export const DEFAULT_DISPUTE_WINDOW = 3600n;
 export const STALE_SECONDS = 604800n;
 export const DISPUTE_TIMEOUT = 1209600n;
 const MAX_U64 = (1n << 64n) - 1n;
-export type InstructionName = 'initialize_config' | 'update_config' | 'propose_admin' | 'accept_admin' | 'create_mission' | 'cancel_mission'
+export type InstructionName = 'initialize_config' | 'update_config' | 'propose_admin' | 'accept_admin' | 'cancel_admin_proposal' | 'create_mission' | 'cancel_mission'
   | 'accept_mission' | 'submit_delivery' | 'record_verdict' | 'open_dispute' | 'resolve_dispute'
   | 'finalize' | 'refund_expired' | 'refund_stale';
 export type MissionStatus = 'open' | 'accepted' | 'submitted' | 'passed' | 'failed' | 'disputed'

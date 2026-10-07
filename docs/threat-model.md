@@ -1,4 +1,4 @@
-# MULE threat model · check-in 3
+# MULE threat model · M-1.1
 
 Sources: [v1 §2.4–2.5](spec/PROMPT_M-1_devnet.md), [v2 §2](spec/SPEC_M-1_devnet_v2.md), [current scope](spec/M1_LOCAL_ONLY_UPDATE.md), and owner-approved [check-in 1b corrections](checkins/CHECKIN-1b.md).
 This is a design/test review, not an independent security audit.
@@ -22,6 +22,7 @@ The program enforces signers and the recorded verdict. It cannot read HTTP or ve
 | Unauthorized verdict/ruling | Config validator/current-admin signature | Wrong signers and rotation |
 | Lost or inactive dispute admin | Permissionless finalize after 14 days from disputed_at applies the preserved original verdict | Too early rejected; exact threshold pays agent for Passed and client for Failed |
 | Admin transfer hijack | Current admin proposes non-default key; only pending admin accepts; acceptance clears pending and revokes old admin | Wrong proposer/accepter, default key, old admin after transfer |
+| Pending admin proposal is no longer trusted | Current admin can cancel; absence of a proposal is an error; cancelled signer cannot accept | Cancellation, wrong signer, empty proposal and post-cancellation acceptance |
 | Double payout/verdict | State guards and account closure | Double verdict/finalize; finalize after resolution; forbidden-state matrix |
 | Early payout/late contest | Clock sysvar and exact boundaries | Before/at deadline/window/dispute timeout; admin ruling before timeout |
 | Validator outage | Permissionless stale refund after 7 days | Before/at stale threshold |
