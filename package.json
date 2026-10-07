@@ -1,0 +1,30 @@
+{
+  "name": "mule",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm --filter @mule/sdk build",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test packages/sdk/test/*.test.ts",
+    "test:program": "node scripts/test-program.mjs",
+    "coverage:instructions": "node scripts/instruction-coverage.mjs"
+  },
+  "devDependencies": {
+    "@coral-xyz/anchor": "0.32.1",
+    "@solana/web3.js": "1.98.4",
+    "@solana/spl-token": "0.4.14",
+    "@types/node": "22.18.10",
+    "@types/bn.js": "5.2.0",
+    "typescript": "5.9.3",
+    "tsx": "4.20.6",
+    "eslint": "9.37.0",
+    "typescript-eslint": "8.46.1",
+    "litesvm": "0.8.0"
+  }
+}

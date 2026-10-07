@@ -1,0 +1,2323 @@
+{
+  "engine": "LiteSVM 0.8.0, compiled SBF, one process per scenario",
+  "cases": [
+    {
+      "name": "initialize_config: defaults, authority and six-decimal mint",
+      "passed": true
+    },
+    {
+      "name": "initialize_config: forged ProgramData PDA rejected",
+      "passed": true
+    },
+    {
+      "name": "initialize_config: zero authority rejected",
+      "passed": true
+    },
+    {
+      "name": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "passed": true
+    },
+    {
+      "name": "create_mission: exact escrow, immutable criteria and initialized state",
+      "passed": true
+    },
+    {
+      "name": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "passed": true
+    },
+    {
+      "name": "create_mission: wrong mint, token authority and PDA substitutions",
+      "passed": true
+    },
+    {
+      "name": "create_mission: missing client signature rejected",
+      "passed": true
+    },
+    {
+      "name": "cancel_mission: client only, full refund, vault/mission rent returned to client",
+      "passed": true
+    },
+    {
+      "name": "accept_mission: client cannot accept and expiry is enforced",
+      "passed": true
+    },
+    {
+      "name": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "passed": true
+    },
+    {
+      "name": "record_verdict: restricted, exactly once, hashes and timestamp",
+      "passed": true
+    },
+    {
+      "name": "finalize passed: window boundary, payee, closure, replay",
+      "passed": true
+    },
+    {
+      "name": "finalize failed: window boundary, payee, closure, replay",
+      "passed": true
+    },
+    {
+      "name": "open_dispute from passed by client",
+      "passed": true
+    },
+    {
+      "name": "open_dispute from passed by agent",
+      "passed": true
+    },
+    {
+      "name": "open_dispute from failed by client",
+      "passed": true
+    },
+    {
+      "name": "open_dispute from failed by agent",
+      "passed": true
+    },
+    {
+      "name": "open_dispute: exact closed boundary rejected",
+      "passed": true
+    },
+    {
+      "name": "resolve_dispute pay: admin only, exact recipient, close",
+      "passed": true
+    },
+    {
+      "name": "resolve_dispute refund: admin only, exact recipient, close",
+      "passed": true
+    },
+    {
+      "name": "refund_expired from open: deadline and permissionless refund",
+      "passed": true
+    },
+    {
+      "name": "refund_expired from accepted: deadline and permissionless refund",
+      "passed": true
+    },
+    {
+      "name": "refund_stale: exactly deadline + 7 days, permissionless and no verdict",
+      "passed": true
+    },
+    {
+      "name": "refund_stale: cannot bypass recorded pass",
+      "passed": true
+    },
+    {
+      "name": "refund_stale: cannot bypass recorded fail",
+      "passed": true
+    },
+    {
+      "name": "paused: create blocked, every exit and in-flight step remains available",
+      "passed": true
+    },
+    {
+      "name": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "passed": true
+    },
+    {
+      "name": "unsolicited vault tokens cannot prevent closure",
+      "passed": true
+    },
+    {
+      "name": "state machine rejects every forbidden outgoing instruction from open",
+      "passed": true
+    },
+    {
+      "name": "state machine rejects every forbidden outgoing instruction from accepted",
+      "passed": true
+    },
+    {
+      "name": "state machine rejects every forbidden outgoing instruction from submitted",
+      "passed": true
+    },
+    {
+      "name": "state machine rejects every forbidden outgoing instruction from passed",
+      "passed": true
+    },
+    {
+      "name": "state machine rejects every forbidden outgoing instruction from failed",
+      "passed": true
+    },
+    {
+      "name": "state machine rejects every forbidden outgoing instruction from disputed",
+      "passed": true
+    }
+  ],
+  "evidence": [
+    {
+      "test": "initialize_config: defaults, authority and six-decimal mint",
+      "instruction": "initialize_config",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "initialize_config: defaults, authority and six-decimal mint",
+      "instruction": "initialize_config",
+      "outcome": "rejected: InvalidMint",
+      "events": []
+    },
+    {
+      "test": "initialize_config: defaults, authority and six-decimal mint",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "initialize_config: forged ProgramData PDA rejected",
+      "instruction": "initialize_config",
+      "outcome": "rejected: AccountOwnedByWrongProgram",
+      "events": []
+    },
+    {
+      "test": "initialize_config: zero authority rejected",
+      "instruction": "initialize_config",
+      "outcome": "rejected: InvalidAuthority",
+      "events": []
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "update_config",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "update_config",
+      "outcome": "rejected: InvalidConfig",
+      "events": []
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "update_config",
+      "outcome": "rejected: InvalidConfig",
+      "events": []
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "update_config",
+      "outcome": "rejected: InvalidAuthority",
+      "events": []
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "record_verdict",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "update_config: restricted, immutable mint/admin, bounds and validator rotation",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "create_mission: exact escrow, immutable criteria and initialized state",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "create_mission: exact escrow, immutable criteria and initialized state",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "rejected: InvalidAmount",
+      "events": []
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "rejected: InvalidAmount",
+      "events": []
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "rejected: InvalidDeadline",
+      "events": []
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "rejected: InvalidWindow",
+      "events": []
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "rejected: InvalidUri",
+      "events": []
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "rejected: InvalidUri",
+      "events": []
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "rejected: ArithmeticOverflow",
+      "events": []
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "rejected: ArithmeticOverflow",
+      "events": []
+    },
+    {
+      "test": "create_mission: invalid amount, deadline, window, URI and overflow",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "create_mission: wrong mint, token authority and PDA substitutions",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "create_mission: wrong mint, token authority and PDA substitutions",
+      "instruction": "create_mission",
+      "outcome": "rejected: InvalidMint",
+      "events": []
+    },
+    {
+      "test": "create_mission: wrong mint, token authority and PDA substitutions",
+      "instruction": "create_mission",
+      "outcome": "rejected: ConstraintTokenOwner",
+      "events": []
+    },
+    {
+      "test": "create_mission: wrong mint, token authority and PDA substitutions",
+      "instruction": "create_mission",
+      "outcome": "rejected: ConstraintTokenMint",
+      "events": []
+    },
+    {
+      "test": "create_mission: wrong mint, token authority and PDA substitutions",
+      "instruction": "create_mission",
+      "outcome": "rejected: ConstraintSeeds",
+      "events": []
+    },
+    {
+      "test": "create_mission: wrong mint, token authority and PDA substitutions",
+      "instruction": "create_mission",
+      "outcome": "rejected: ConstraintSeeds",
+      "events": []
+    },
+    {
+      "test": "create_mission: missing client signature rejected",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "cancel_mission: client only, full refund, vault/mission rent returned to client",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "cancel_mission: client only, full refund, vault/mission rent returned to client",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "cancel_mission: client only, full refund, vault/mission rent returned to client",
+      "instruction": "cancel_mission",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "cancel_mission: client only, full refund, vault/mission rent returned to client",
+      "instruction": "cancel_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCancelled"
+      ]
+    },
+    {
+      "test": "accept_mission: client cannot accept and expiry is enforced",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "accept_mission: client cannot accept and expiry is enforced",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "accept_mission: client cannot accept and expiry is enforced",
+      "instruction": "accept_mission",
+      "outcome": "rejected: ClientCannotAccept",
+      "events": []
+    },
+    {
+      "test": "accept_mission: client cannot accept and expiry is enforced",
+      "instruction": "accept_mission",
+      "outcome": "rejected: DeadlineElapsed",
+      "events": []
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: InvalidUri",
+      "events": []
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "accept/submit: correct agent, immutable delivery, byte limits and deadline boundary",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: DeadlineElapsed",
+      "events": []
+    },
+    {
+      "test": "record_verdict: restricted, exactly once, hashes and timestamp",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "record_verdict: restricted, exactly once, hashes and timestamp",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "record_verdict: restricted, exactly once, hashes and timestamp",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "record_verdict: restricted, exactly once, hashes and timestamp",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "record_verdict: restricted, exactly once, hashes and timestamp",
+      "instruction": "record_verdict",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "record_verdict: restricted, exactly once, hashes and timestamp",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "record_verdict: restricted, exactly once, hashes and timestamp",
+      "instruction": "record_verdict",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "finalize",
+      "outcome": "rejected: WindowStillOpen",
+      "events": []
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "finalize",
+      "outcome": "rejected: WindowStillOpen",
+      "events": []
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "finalize",
+      "outcome": "success",
+      "events": [
+        "MissionSettled"
+      ]
+    },
+    {
+      "test": "finalize passed: window boundary, payee, closure, replay",
+      "instruction": "finalize",
+      "outcome": "rejected: AccountNotInitialized",
+      "events": []
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "finalize",
+      "outcome": "rejected: WindowStillOpen",
+      "events": []
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "finalize",
+      "outcome": "rejected: WindowStillOpen",
+      "events": []
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "finalize",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "finalize failed: window boundary, payee, closure, replay",
+      "instruction": "finalize",
+      "outcome": "rejected: AccountNotInitialized",
+      "events": []
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "open_dispute",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "finalize",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "open_dispute from passed by client",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "open_dispute",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "finalize",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "open_dispute from passed by agent",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "open_dispute",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "finalize",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "open_dispute from failed by client",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "open_dispute",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "finalize",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "open_dispute from failed by agent",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "open_dispute: exact closed boundary rejected",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "open_dispute: exact closed boundary rejected",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "open_dispute: exact closed boundary rejected",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "open_dispute: exact closed boundary rejected",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "open_dispute: exact closed boundary rejected",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "open_dispute: exact closed boundary rejected",
+      "instruction": "open_dispute",
+      "outcome": "rejected: WindowClosed",
+      "events": []
+    },
+    {
+      "test": "resolve_dispute pay: admin only, exact recipient, close",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "resolve_dispute pay: admin only, exact recipient, close",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "resolve_dispute pay: admin only, exact recipient, close",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "resolve_dispute pay: admin only, exact recipient, close",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "resolve_dispute pay: admin only, exact recipient, close",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "resolve_dispute pay: admin only, exact recipient, close",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "resolve_dispute pay: admin only, exact recipient, close",
+      "instruction": "resolve_dispute",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "resolve_dispute pay: admin only, exact recipient, close",
+      "instruction": "resolve_dispute",
+      "outcome": "success",
+      "events": [
+        "MissionSettled"
+      ]
+    },
+    {
+      "test": "resolve_dispute refund: admin only, exact recipient, close",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "resolve_dispute refund: admin only, exact recipient, close",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "resolve_dispute refund: admin only, exact recipient, close",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "resolve_dispute refund: admin only, exact recipient, close",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "resolve_dispute refund: admin only, exact recipient, close",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "resolve_dispute refund: admin only, exact recipient, close",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "resolve_dispute refund: admin only, exact recipient, close",
+      "instruction": "resolve_dispute",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "resolve_dispute refund: admin only, exact recipient, close",
+      "instruction": "resolve_dispute",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "refund_expired from open: deadline and permissionless refund",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "refund_expired from open: deadline and permissionless refund",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "refund_expired from open: deadline and permissionless refund",
+      "instruction": "refund_expired",
+      "outcome": "rejected: NotExpired",
+      "events": []
+    },
+    {
+      "test": "refund_expired from open: deadline and permissionless refund",
+      "instruction": "refund_expired",
+      "outcome": "rejected: NotExpired",
+      "events": []
+    },
+    {
+      "test": "refund_expired from open: deadline and permissionless refund",
+      "instruction": "refund_expired",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "refund_expired from accepted: deadline and permissionless refund",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "refund_expired from accepted: deadline and permissionless refund",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "refund_expired from accepted: deadline and permissionless refund",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "refund_expired from accepted: deadline and permissionless refund",
+      "instruction": "refund_expired",
+      "outcome": "rejected: NotExpired",
+      "events": []
+    },
+    {
+      "test": "refund_expired from accepted: deadline and permissionless refund",
+      "instruction": "refund_expired",
+      "outcome": "rejected: NotExpired",
+      "events": []
+    },
+    {
+      "test": "refund_expired from accepted: deadline and permissionless refund",
+      "instruction": "refund_expired",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "refund_stale: exactly deadline + 7 days, permissionless and no verdict",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "refund_stale: exactly deadline + 7 days, permissionless and no verdict",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "refund_stale: exactly deadline + 7 days, permissionless and no verdict",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "refund_stale: exactly deadline + 7 days, permissionless and no verdict",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "refund_stale: exactly deadline + 7 days, permissionless and no verdict",
+      "instruction": "refund_stale",
+      "outcome": "rejected: NotStale",
+      "events": []
+    },
+    {
+      "test": "refund_stale: exactly deadline + 7 days, permissionless and no verdict",
+      "instruction": "refund_stale",
+      "outcome": "rejected: NotStale",
+      "events": []
+    },
+    {
+      "test": "refund_stale: exactly deadline + 7 days, permissionless and no verdict",
+      "instruction": "refund_stale",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded pass",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded pass",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded pass",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded pass",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded pass",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded pass",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded fail",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded fail",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded fail",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded fail",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded fail",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "refund_stale: cannot bypass recorded fail",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "create_mission",
+      "outcome": "rejected: Paused",
+      "events": []
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "cancel_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCancelled"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "finalize",
+      "outcome": "success",
+      "events": [
+        "MissionSettled"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "finalize",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "refund_expired",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "refund_stale",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "resolve_dispute",
+      "outcome": "success",
+      "events": [
+        "MissionSettled"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "update_config",
+      "outcome": "success",
+      "events": [
+        "ConfigUpdated"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "paused: create blocked, every exit and in-flight step remains available",
+      "instruction": "resolve_dispute",
+      "outcome": "success",
+      "events": [
+        "MissionRefunded"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "finalize",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "finalize",
+      "outcome": "rejected: ConstraintTokenOwner",
+      "events": []
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "finalize",
+      "outcome": "rejected: ConstraintHasOne",
+      "events": []
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "finalize",
+      "outcome": "rejected: ConstraintSeeds",
+      "events": []
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "finalize",
+      "outcome": "success",
+      "events": [
+        "MissionSettled"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "cancel_mission",
+      "outcome": "rejected: ConstraintTokenOwner",
+      "events": []
+    },
+    {
+      "test": "settlement/refund: destination substitution and wrong vault cannot steal funds",
+      "instruction": "cancel_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCancelled"
+      ]
+    },
+    {
+      "test": "unsolicited vault tokens cannot prevent closure",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "unsolicited vault tokens cannot prevent closure",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "unsolicited vault tokens cannot prevent closure",
+      "instruction": "cancel_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCancelled"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from open",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from open",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from open",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from open",
+      "instruction": "record_verdict",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from open",
+      "instruction": "open_dispute",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from open",
+      "instruction": "resolve_dispute",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from open",
+      "instruction": "finalize",
+      "outcome": "rejected: Unauthorized",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from open",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "cancel_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "accept_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "record_verdict",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "open_dispute",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "resolve_dispute",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "finalize",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from accepted",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "cancel_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "accept_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "open_dispute",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "resolve_dispute",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "finalize",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from submitted",
+      "instruction": "refund_expired",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "cancel_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "accept_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "record_verdict",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "resolve_dispute",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "refund_expired",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from passed",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "cancel_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "accept_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "record_verdict",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "resolve_dispute",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "refund_expired",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from failed",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "initialize_config",
+      "outcome": "success",
+      "events": [
+        "ConfigInitialized"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "create_mission",
+      "outcome": "success",
+      "events": [
+        "MissionCreated"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "accept_mission",
+      "outcome": "success",
+      "events": [
+        "MissionAccepted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "submit_delivery",
+      "outcome": "success",
+      "events": [
+        "DeliverySubmitted"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "record_verdict",
+      "outcome": "success",
+      "events": [
+        "VerdictRecorded"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "open_dispute",
+      "outcome": "success",
+      "events": [
+        "DisputeOpened"
+      ]
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "cancel_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "accept_mission",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "submit_delivery",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "record_verdict",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "open_dispute",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "finalize",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "refund_expired",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    },
+    {
+      "test": "state machine rejects every forbidden outgoing instruction from disputed",
+      "instruction": "refund_stale",
+      "outcome": "rejected: InvalidState",
+      "events": []
+    }
+  ]
+}

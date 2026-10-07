@@ -1,0 +1,110 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - name: Install pnpm
+        run: npm install --global pnpm@10.18.3
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - uses: actions/cache/restore@v4
+        id: rust-cache
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cache/solana
+            target/debug
+            target/release
+            target/sbf-solana-solana
+          key: mule-anchor0322-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'programs/*/Cargo.toml', 'programs/*/src/*.rs') }}
+          restore-keys: mule-anchor0322-
+      - name: Install pinned Anchor and Solana build tools
+        shell: bash
+        env:
+          # Official release assets; provenance and checksum update procedure:
+          # docs/testing/BUILD-TOOLS.md
+          ANCHOR_SHA256: b3cdc15f3db924c2b11a7c16ceff21ad3da239ddde4e53f33df18e52e0461645
+          SOLANA_SHA256: 56241fbe862495ff01b2b875195e44f94c22e9f2a504591a3ade1b9d82862730
+        run: |
+          set -euo pipefail
+          tools_dir="$RUNNER_TEMP/mule-build-tools"
+          mkdir -p "$tools_dir/bin"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 \
+            https://github.com/otter-sec/anchor/releases/download/v0.32.2/anchor-0.32.2-x86_64-unknown-linux-gnu \
+            --output "$tools_dir/anchor"
+          printf '%s  %s\n' "$ANCHOR_SHA256" "$tools_dir/anchor" | sha256sum --check --strict
+          install -m 755 "$tools_dir/anchor" "$tools_dir/bin/anchor"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 \
+            https://github.com/anza-xyz/agave/releases/download/v2.3.0/solana-release-x86_64-unknown-linux-gnu.tar.bz2 \
+            --output "$tools_dir/solana-release.tar.bz2"
+          printf '%s  %s\n' "$SOLANA_SHA256" "$tools_dir/solana-release.tar.bz2" | sha256sum --check --strict
+          tar --extract --bzip2 --file "$tools_dir/solana-release.tar.bz2" --directory "$tools_dir"
+          echo "$tools_dir/bin" >> "$GITHUB_PATH"
+          echo "$tools_dir/solana-release/bin" >> "$GITHUB_PATH"
+      - name: Build Anchor program and IDL (no deployment)
+        id: build
+        run: |
+          cargo fmt --all
+          anchor --version
+          solana --version
+          anchor build --no-idl -- --tools-version v1.56
+          mkdir -p target/idl
+          anchor idl build --out target/idl/mule_escrow.json
+          diff -u idl/mule_escrow.json target/idl/mule_escrow.json
+      - name: Rust format and clippy
+        run: |
+          cargo fmt --all
+          git diff --exit-code -- '*.rs'
+          cargo clippy --workspace --all-targets -- -D warnings
+      - name: SDK build, types, lint and tests
+        if: success() || steps.build.outcome == 'success'
+        run: |
+          pnpm build
+          pnpm typecheck
+          pnpm lint
+          pnpm test
+      - name: Anchor tests on the compiled SBF in LiteSVM
+        if: success() || steps.build.outcome == 'success'
+        run: anchor test --skip-build --skip-deploy --skip-local-validator
+      - name: Instruction coverage
+        if: success() || failure()
+        run: pnpm coverage:instructions
+      - name: Public evidence
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-step1-evidence
+          path: |
+            coverage/
+            target/idl/mule_escrow.json
+            target/deploy/mule_escrow.so
+            Cargo.lock
+            programs/mule_escrow/src/lib.rs
+          if-no-files-found: warn
+      - name: Cache compiler work without wallets
+        if: (success() || failure()) && steps.rust-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cache/solana
+            target/debug
+            target/release
+            target/sbf-solana-solana
+          key: ${{ steps.rust-cache.outputs.cache-primary-key }}
