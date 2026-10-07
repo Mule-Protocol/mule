@@ -1,25 +1,39 @@
-# MULE · devnet escrow
+# MULE · acceptance-gated escrow
 
-Acceptance-gated settlement on Solana **devnet only**. Apache-2.0.
+[![CI](https://github.com/Mule-Protocol/mule/actions/workflows/ci.yml/badge.svg?branch=codex%2Fm1-escrow-sdk)](https://github.com/Mule-Protocol/mule/actions/workflows/ci.yml)
 
-## Status
+**Development and local CI tests only. No deployed program.** Apache-2.0.
 
-M-1, step 1: program and SDK implementation is pending. No deployed program.
+MULE holds a client's tokens and pays the accepted agent after a signed passing verdict and dispute window, or an admin ruling. Failed, expired and stale missions refund the client.
 
-- Program ID (devnet): **not deployed**.
-- Latest public run: **none yet** (step 4).
-- CI: **not configured yet** (step 1 draft PR).
-- Settlement asset: **dUSDC (devnet, no value)**.
-- Reference agent: **agent de référence scripté ; le branchement d'un agent IA réel est prévu plus tard**.
+- Public-cluster program ID: **none**.
+- Test-only identity: Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL.
+- Settlement denomination: **dUSDC (devnet, no value)**; tests use a local six-decimal SPL mint.
+- [Step 1 draft PR](https://github.com/Mule-Protocol/mule/pull/6) · [Milestone](https://github.com/Mule-Protocol/mule/milestone/1).
+- [Latest CI runs/evidence](https://github.com/Mule-Protocol/mule/actions/workflows/ci.yml).
+- Step 3: **agent de référence scripté ; le branchement d'un agent IA réel est prévu plus tard**. Not implemented in step 1.
 
-## Authoritative specifications
+## Scope and sources
 
-Original specifications are copied without modification into `docs/spec/`:
+The [2026-10-07 owner update](docs/spec/M1_LOCAL_ONLY_UPDATE.md) supersedes deployment in the [free architecture request](docs/spec/M1_FREE_ARCHITECTURE.md).
+Original [v2](docs/spec/SPEC_M-1_devnet_v2.md) and [v1](docs/spec/PROMPT_M-1_devnet.md) are preserved byte-for-byte.
 
-- [v2](docs/spec/SPEC_M-1_devnet_v2.md), including v1 program details;
-- [v1](docs/spec/PROMPT_M-1_devnet.md), particularly sections 2.4 and 2.5;
-- [Current owner request](docs/spec/M1_FREE_ARCHITECTURE.md), which overrides hosting, console, agent implementation and delivery order with the free CLI/GitHub Actions architecture.
+No public deployment, devnet mint/faucet, devnet-run workflow, GitHub secrets, paid provider, mainnet, $MULE or site modification. Only the owner merges. Stop at CHECKIN-1; step 3 requires later authorization and stops at CHECKIN-3.
 
-Only free tools and the public devnet RPC are permitted. No mainnet, real funds, $MULE token operations, paid providers, or new owner accounts. The separate `mule-site` remains a simulation and is outside this milestone.
+## Build and test
 
-Each stage ends at a documented check-in and an independent review. All implementation goes through draft pull requests. Only the owner merges.
+Linux CI installs the exact tools in [architecture](docs/architecture.md). Then:
+
+    pnpm install --frozen-lockfile
+    anchor build -- --tools-version v1.56
+    cargo fmt --all -- --check
+    cargo clippy --workspace --all-targets -- -D warnings
+    pnpm build && pnpm typecheck && pnpm lint && pnpm test
+    anchor test --skip-build --skip-deploy --skip-local-validator
+    pnpm coverage:instructions
+
+Tests run compiled SBF in LiteSVM; no node deployment or RPC is required. Test keys live in memory. ProgramData/time are synthetic fixtures. Artifacts contain coverage, IDL, binary and lockfile, never wallet files.
+
+[State machine](docs/state-machine.md) · [Threat model](docs/threat-model.md) · [Architecture](docs/architecture.md)
+
+Schema checks prove encoded criteria, not truth. M-1 trusts its validator and dispute admin. No independent security audit has been performed.

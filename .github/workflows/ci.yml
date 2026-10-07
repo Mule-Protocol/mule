@@ -36,7 +36,9 @@ jobs:
           sh -c "$(curl -fLsS https://release.anza.xyz/v2.3.0/install)"
           echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
       - name: Build Anchor program and IDL (no deployment)
+        id: build
         run: |
+          cargo fmt --all
           anchor --version
           solana --version
           anchor build -- --tools-version v1.56
@@ -46,12 +48,14 @@ jobs:
           git diff --exit-code -- '*.rs'
           cargo clippy --workspace --all-targets -- -D warnings
       - name: SDK build, types, lint and tests
+        if: success() || steps.build.outcome == 'success'
         run: |
           pnpm build
           pnpm typecheck
           pnpm lint
           pnpm test
       - name: Anchor tests on the compiled SBF in LiteSVM
+        if: success() || steps.build.outcome == 'success'
         run: anchor test --skip-build --skip-deploy --skip-local-validator
       - name: Instruction coverage
         if: always()
