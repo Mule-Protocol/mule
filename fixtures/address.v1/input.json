@@ -1,0 +1,88 @@
+{
+  "rows": [
+    {
+      "name": "Fixture recipient 1",
+      "street": "1 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 01 000 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 2",
+      "street": "2 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 3",
+      "street": "3 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 4",
+      "street": "4 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 5",
+      "street": "5 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 6",
+      "street": "6 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 7",
+      "street": "7 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 8",
+      "street": "8 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 9",
+      "street": "9 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 10",
+      "street": "10 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 11",
+      "street": "11 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    },
+    {
+      "name": "Fixture recipient 12",
+      "street": "12 rue Exemple",
+      "city": "Ville Exemple",
+      "postcode": " 75 001 ",
+      "country": "FR"
+    }
+  ]
+}

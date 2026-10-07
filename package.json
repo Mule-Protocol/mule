@@ -8,12 +8,13 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "pnpm --filter @mule/sdk build",
+    "build": "pnpm --filter @mule/sdk build && pnpm --filter @mule/validator build && pnpm --filter @mule/agent build && pnpm --filter @mule/runner build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test packages/sdk/test/*.test.ts",
+    "test": "tsx --test packages/*/test/*.test.ts",
     "test:program": "node scripts/test-program.mjs",
-    "coverage:instructions": "node scripts/instruction-coverage.mjs"
+    "coverage:instructions": "node scripts/instruction-coverage.mjs",
+    "local:missions": "node scripts/run-local-missions.mjs"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "0.32.1",

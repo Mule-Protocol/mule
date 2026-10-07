@@ -113,6 +113,15 @@ pub mod mule_escrow {
     ) -> Result<()> {
         let config = &ctx.accounts.config;
         require!(!config.paused, EscrowError::Paused);
+        require_keys_neq!(
+            ctx.accounts.client.key(),
+            config.validator,
+            EscrowError::ValidatorCannotBeClient
+        );
+        require!(
+            designated_agent != Some(config.validator),
+            EscrowError::ValidatorCannotBeDesignatedAgent
+        );
         require!(
             amount > 0 && amount <= config.max_amount,
             EscrowError::InvalidAmount
@@ -201,12 +210,17 @@ pub mod mule_escrow {
         Ok(())
     }
 
-    pub fn accept_mission(ctx: Context<ActOnMission>) -> Result<()> {
+    pub fn accept_mission(ctx: Context<AcceptMission>) -> Result<()> {
         let mission = &mut ctx.accounts.mission;
         require!(mission.status == Status::Open, EscrowError::InvalidState);
         require!(
             ctx.accounts.actor.key() != mission.client,
             EscrowError::ClientCannotAccept
+        );
+        require_keys_neq!(
+            ctx.accounts.actor.key(),
+            ctx.accounts.config.validator,
+            EscrowError::ValidatorCannotAccept
         );
         if let Some(designated_agent) = mission.designated_agent {
             require_keys_eq!(
@@ -539,6 +553,15 @@ pub struct CreateMission<'info> {
 }
 
 #[derive(Accounts)]
+pub struct AcceptMission<'info> {
+    pub actor: Signer<'info>,
+    #[account(seeds = [b"config"], bump = config.bump)]
+    pub config: Account<'info, Config>,
+    #[account(mut, seeds = [b"mission", mission.client.as_ref(), &mission.mission_id.to_le_bytes()], bump = mission.bump)]
+    pub mission: Account<'info, Mission>,
+}
+
+#[derive(Accounts)]
 pub struct ActOnMission<'info> {
     pub actor: Signer<'info>,
     #[account(mut, seeds = [b"mission", mission.client.as_ref(), &mission.mission_id.to_le_bytes()], bump = mission.bump)]
@@ -792,4 +815,10 @@ pub enum EscrowError {
     ClientCannotDesignateSelf,
     #[msg("Dispute timeout has not elapsed")]
     DisputeTimeoutNotReached,
+    #[msg("The current validator cannot create a mission as client")]
+    ValidatorCannotBeClient,
+    #[msg("The current validator cannot be designated as agent")]
+    ValidatorCannotBeDesignatedAgent,
+    #[msg("The current validator cannot accept a mission")]
+    ValidatorCannotAccept,
 }

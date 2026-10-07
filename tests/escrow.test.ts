@@ -1,3 +1,4 @@
+import { sweep, type SweepPort } from '../packages/runner/src/sweep.js';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { test, after } from 'node:test';
@@ -20,8 +21,8 @@ const hash = Array<number>(32).fill(7);
 const evidence: Array<{ test: string; instruction: InstructionName; outcome: string; events: string[] }> = [];
 const cases: Array<{ name: string; passed: boolean }> = [];
 let activeTest = '';
-const definitions: Array<{name:string;body:()=>void}> = [];
-function check(name:string,body:()=>void):void { definitions.push({name,body}); }
+const definitions: Array<{name:string;body:()=>void|Promise<void>}> = [];
+function check(name:string,body:()=>void|Promise<void>):void { definitions.push({name,body}); }
 class Fixture {
   svm = new LiteSVM();
   payer = Keypair.generate();
@@ -463,16 +464,89 @@ check('admin transfer: no proposal, replacement, default rejection and replay',(
   f.call('accept_admin',f.agent);assert(f.config().admin.equals(f.agent.publicKey));
 });
 
+
+check('validator conflict: current validator cannot create as client; rotation releases the old key',()=>{
+  const f=new Fixture();
+  f.client=f.validator;f.clientToken=f.newToken(f.client.publicKey);
+  f.mission=missionPda(f.client.publicKey,f.id)[0];f.vault=vaultPda(f.mission)[0];
+  f.send([createMintToInstruction(f.mint,f.clientToken,f.deployer.publicKey,1_000_000_000n)],[f.deployer]);
+  f.create({},'ValidatorCannotBeClient');assert.equal(f.balance(f.clientToken),1_000_000_000n);f.closed();
+  f.update(false,undefined,f.deployer,{validator:f.stranger.publicKey});f.create();
+  assert(f.state().client.equals(f.validator.publicKey));f.refund('cancel_mission');
+  f.client=f.stranger;f.clientToken=f.newToken(f.client.publicKey);
+  f.mission=missionPda(f.client.publicKey,f.id)[0];f.vault=vaultPda(f.mission)[0];
+  f.create({},'ValidatorCannotBeClient');f.closed();
+});
+check('validator conflict: designated validator rejected before and after rotation',()=>{
+  const f=new Fixture();f.create({designated_agent:f.validator.publicKey},'ValidatorCannotBeDesignatedAgent');f.closed();
+  f.update(false,undefined,f.deployer,{validator:f.stranger.publicKey});
+  f.create({designated_agent:f.stranger.publicKey},'ValidatorCannotBeDesignatedAgent');
+  f.create({designated_agent:f.validator.publicKey});f.accept(undefined,f.validator);
+  assert(f.state().agent?.equals(f.validator.publicKey));
+});
+check('validator conflict: acceptance reads current Config and releases old validator after rotation',()=>{
+  const f=new Fixture();f.create();f.accept('ValidatorCannotAccept',f.validator);
+  f.update(false,undefined,f.deployer,{validator:f.stranger.publicKey});
+  f.accept('ValidatorCannotAccept',f.stranger);f.accept(undefined,f.validator);
+  assert(f.state().agent?.equals(f.validator.publicKey));
+});
+check('validator conflict: a previously designated agent cannot accept after becoming validator',()=>{
+  const f=new Fixture();f.create({designated_agent:f.agent.publicKey});
+  f.update(false,undefined,f.deployer,{validator:f.agent.publicKey});
+  f.accept('ValidatorCannotAccept');assert.equal(missionStatus(f.state()),'open');
+});
+
+
+function sweepPort(f: Fixture): SweepPort {
+  return {
+    now:async()=>f.svm.getClock().unixTimestamp,
+    mission:async(address)=>{
+      const account=f.svm.getAccount(address);
+      return account && account.data.length>0?sdk.decodeMission(Buffer.from(account.data)):null;
+    },
+    execute:async(address,instruction)=>{
+      assert(address.equals(f.mission));
+      const receipt=f.call(instruction,f.stranger);assert(receipt);
+      return {signature:Buffer.from(receipt.signature()).toString('hex'),events:sdk.events(receipt.logs(),null)};
+    },
+  };
+}
+check('sweep on LiteSVM: stale submission refunded exactly at seven days and never sent twice',async()=>{
+  const f=new Fixture();const before=f.balance(f.clientToken);f.prepared();
+  const port=sweepPort(f);f.time(f.deadline+STALE_SECONDS-1n);
+  assert.deepEqual(await sweep(port,[f.mission]),[]);
+  assert.equal(f.balance(f.vault),5_000_000n);
+  f.time(f.deadline+STALE_SECONDS);
+  const result=await sweep(port,[f.mission]);
+  assert.equal(result.length,1);assert.equal(result[0]?.instruction,'refund_stale');
+  assert.equal(f.balance(f.clientToken),before);f.closed();
+  assert.deepEqual(await sweep(port,[f.mission]),[]);
+});
+for(const pass of [true,false]) check('sweep on LiteSVM: disputed '+(pass?'passed':'failed')+' settles at fourteen days',async()=>{
+  const f=new Fixture();const before=f.balance(f.clientToken);f.prepared();f.verdict(pass);
+  const opening=1_700_000_077n;f.time(opening);f.dispute();
+  const port=sweepPort(f);f.time(opening+DISPUTE_TIMEOUT-1n);
+  assert.deepEqual(await sweep(port,[f.mission]),[]);
+  const rent=(f.svm.getBalance(f.mission)??0n)+(f.svm.getBalance(f.vault)??0n);
+  const sol=f.svm.getBalance(f.client.publicKey)??0n;
+  f.time(opening+DISPUTE_TIMEOUT);const result=await sweep(port,[f.mission]);
+  assert.equal(result.length,1);assert.equal(result[0]?.instruction,'finalize');
+  assert.equal(f.balance(f.agentToken),pass?5_000_000n:0n);
+  assert.equal(f.balance(f.clientToken),pass?before-5_000_000n:before);
+  assert.equal(f.svm.getBalance(f.client.publicKey),sol+rent);f.closed();
+  assert.deepEqual(await sweep(port,[f.mission]),[]);
+});
+
 if(process.env.MULE_LIST_TESTS==='1') {
   console.log(JSON.stringify(definitions.map(d=>d.name)));
 } else {
   const selected=process.env.MULE_CASE_INDEX;
   for(const [index,definition] of definitions.entries()) {
     if(selected!==undefined && Number(selected)!==index)continue;
-    test(definition.name,()=>{
+    test(definition.name,async()=>{
       activeTest=definition.name;
       const item={name:definition.name,passed:false};cases.push(item);
-      definition.body();item.passed=true;
+      await definition.body();item.passed=true;
     });
   }
   after(()=>{

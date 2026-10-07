@@ -1,0 +1,48 @@
+{
+  "model": "contract.v1",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "title",
+      "parties",
+      "effective_date",
+      "termination",
+      "governing_law"
+    ],
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "parties": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 10,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "effective_date": {
+        "type": "string",
+        "format": "date"
+      },
+      "termination": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "governing_law": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      }
+    }
+  },
+  "crossChecks": []
+}

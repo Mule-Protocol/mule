@@ -9,7 +9,7 @@ Config PDA: UTF-8 "config". Its initializer must be the upgrade authority record
 
 Mission PDA: "mission", client public key, unsigned 64-bit mission ID in little-endian. Vault PDA: "vault", mission public key. The vault's SPL authority is the mission PDA.
 
-Mission amount, criteria hash/URI, deadline, window and designated_agent are immutable. create_mission takes designated_agent: Option<Pubkey> as its last argument. None permits any agent other than the client to accept. Some(key) permits only that signer (NotDesignatedAgent otherwise); a client cannot designate itself (ClientCannotDesignateSelf at creation). Acceptance permanently binds the agent. One submission binds the delivery; one verdict binds the report hash/time/result. original_verdict: Option<bool> preserves that verdict through a dispute, while disputed_at: Option<i64> records when the dispute opens. Classic SPL Token only, six decimals. URI limits are 1–200 UTF-8 bytes.
+Mission amount, criteria hash/URI, deadline, window and designated_agent are immutable. create_mission takes designated_agent: Option<Pubkey> as its last argument. None permits any agent other than the client to accept. Some(key) permits only that signer (NotDesignatedAgent otherwise); a client cannot designate itself (ClientCannotDesignateSelf at creation). Acceptance permanently binds the agent. At creation, the current Config validator cannot be the client (ValidatorCannotBeClient) or designated agent (ValidatorCannotBeDesignatedAgent). accept_mission reads the canonical Config account and rejects that current validator (ValidatorCannotAccept). Rotation immediately releases the old validator from these entry guards and restricts the new one. The SDK acceptMissionInstruction helper supplies Config automatically. One submission binds the delivery; one verdict binds the report hash/time/result. original_verdict: Option<bool> preserves that verdict through a dispute, while disputed_at: Option<i64> records when the dispute opens. Classic SPL Token only, six decimals. URI limits are 1–200 UTF-8 bytes.
 
 Defaults: 3,600-second minimum window, 100,000,000 base-unit cap (100 dUSDC, no value). Step-3 local tests may configure 60 seconds. DISPUTE_TIMEOUT is a protocol constant: 1,209,600 seconds (14 days), measured from disputed_at, independently of the mission's dispute window.
 
@@ -23,9 +23,9 @@ There are 14 distinct instructions; verdict and payout variants are listed separ
 | update_config | existing | current admin; positive cap/window | Config updated |
 | propose_admin | existing | current admin; non-default new admin | pending_admin recorded; current admin unchanged |
 | accept_admin | pending proposal | pending_admin signer | Admin replaced; pending_admin cleared |
-| create_mission | absent | client; not paused; 0 < amount ≤ cap; future deadline; window ≥ minimum; designated_agent ≠ client | Open; client → vault |
+| create_mission | absent | client and designated agent differ from current validator; not paused; 0 < amount ≤ cap; future deadline; window ≥ minimum; designated_agent ≠ client | Open; client → vault |
 | cancel_mission | Open | client | Cancelled; vault → client |
-| accept_mission | Open | agent ≠ client; matches designated_agent if present; now < deadline | Accepted |
+| accept_mission | Open | agent ≠ client and current validator; matches designated_agent if present; now < deadline | Accepted |
 | submit_delivery | Accepted | accepted agent; now < deadline | Submitted |
 | record_verdict(true) | Submitted | current validator | Passed; verdict_at = now; original_verdict = true |
 | record_verdict(false) | Submitted | current validator | Failed; verdict_at = now; original_verdict = false |

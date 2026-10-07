@@ -139,3 +139,13 @@ test('64-bit endpoint values preserve their exact wire bytes for bigint and BN c
     assert.throws(()=>builder.instruction('create_mission',accounts,{...args,deadline:integer(-(1n<<63n)-1n)}),/out of range/);
   }
 });
+
+test('acceptance includes the canonical read-only Config and rejects the legacy account list',()=>{
+  const mission=missionPda(client,1n)[0];
+  assert.throws(()=>sdk.instruction('accept_mission',{actor:other,mission}),/Missing account: config/);
+  const ix=sdk.acceptMissionInstruction(other,mission);
+  assert.equal(ix.keys.length,3);
+  assert(ix.keys[1]?.pubkey.equals(configPda()[0]));
+  assert.equal(ix.keys[1]?.isWritable,false);assert.equal(ix.keys[1]?.isSigner,false);
+  assert(ix.keys[0]?.pubkey.equals(other));assert.equal(ix.keys[0]?.isSigner,true);
+});
