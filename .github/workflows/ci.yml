@@ -1,8 +1,6 @@
 name: CI
 on:
   pull_request:
-  push:
-    branches: [codex/m1-escrow-sdk]
 permissions:
   contents: read
 concurrency:
@@ -41,10 +39,11 @@ jobs:
         run: |
           anchor --version
           solana --version
-          anchor build
+          anchor build -- --tools-version v1.56
       - name: Rust format and clippy
         run: |
-          cargo fmt --all -- --check
+          cargo fmt --all
+          git diff --exit-code -- '*.rs'
           cargo clippy --workspace --all-targets -- -D warnings
       - name: SDK build, types, lint and tests
         run: |
@@ -67,4 +66,5 @@ jobs:
             target/idl/mule_escrow.json
             target/deploy/mule_escrow.so
             Cargo.lock
+            programs/mule_escrow/src/lib.rs
           if-no-files-found: warn
