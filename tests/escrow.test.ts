@@ -97,6 +97,9 @@ class Fixture {
   }
   call(name: InstructionName, signer: Keypair, args: Record<string,unknown> = {},
     changes: Record<string,PublicKey> = {}, error?: string): TransactionMetadata | undefined {
+    const previous = this.svm.getAccount(this.mission);
+    const priorStatus = previous && previous.data.length > 0
+      ? missionStatus(sdk.decodeMission(Buffer.from(previous.data))) : undefined;
     const ix = sdk.instruction(name, {...this.accounts(signer),...changes}, args);
     const result = this.raw([ix],[signer]);
     if (error !== undefined) {
@@ -107,11 +110,23 @@ class Fixture {
       return undefined;
     }
     if (result instanceof FailedTransactionMetadata) assert.fail(name + '\n' + result.meta().logs().join('\n'));
-    const events=sdk.events(result.logs());
+    const events=sdk.events(result.logs(), null);
     assert.equal(events.length,1,'one MULE event per successful instruction');
     if (!name.endsWith('_config')) {
       assert((events[0]?.data.mission as PublicKey).equals(this.mission));
       assert.equal(String(events[0]?.data.amount),'5000000');
+      const expected:Record<string,[string,string]>={
+        create_mission:['MissionCreated','open'],accept_mission:['MissionAccepted','accepted'],
+        submit_delivery:['DeliverySubmitted','submitted'],record_verdict:['VerdictRecorded',args.pass?'passed':'failed'],
+        open_dispute:['DisputeOpened','disputed'],cancel_mission:['MissionCancelled','cancelled'],
+        refund_expired:['MissionRefunded','refunded'],refund_stale:['MissionRefunded','refunded'],
+        finalize:priorStatus==='passed'?['MissionSettled','settled']:['MissionRefunded','refunded'],
+        resolve_dispute:args.pay_agent?['MissionSettled','settled']:['MissionRefunded','refunded'],
+      };
+      const expectedEvent=expected[name];assert(expectedEvent);
+      assert.equal(events[0]?.name.replaceAll('_','').toLowerCase(),expectedEvent[0].toLowerCase());
+      const status=Object.keys(events[0]?.data.status as object)[0];
+      assert.equal(status?.toLowerCase(),expectedEvent[1]);
     }
     evidence.push({test:activeTest,instruction:name,outcome:'success',events:events.map(e=>e.name)});
     return result;

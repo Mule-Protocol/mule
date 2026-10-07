@@ -87,7 +87,8 @@ export class MuleClient {
     if (!name) throw new Error('Config account missing from IDL');
     return camelFields(this.coder.accounts.decode<Record<string, unknown>>(name, data)) as unknown as Config;
   }
-  events(logs: string[]): Array<{ name: string; data: Record<string, unknown> }> {
+  events(logs: string[], transactionError: unknown): Array<{ name: string; data: Record<string, unknown> }> {
+    if (transactionError !== null) return [];
     return Array.from(new EventParser(this.programId, this.coder).parseLogs(logs))
       .map(event => ({ name: event.name, data: camelFields(event.data) }));
   }

@@ -64,5 +64,15 @@ test('account decoder checks discriminator and preserves all 64-bit values',asyn
 });
 test('event decoder ignores lookalike data emitted outside this program',()=>{
   const foreign=SystemProgram.programId.toBase58();
-  assert.deepEqual(sdk.events(['Program '+foreign+' invoke [1]','Program data: AAAAAAAAAAA=','Program '+foreign+' success']),[]);
+  assert.deepEqual(sdk.events(['Program '+foreign+' invoke [1]','Program data: AAAAAAAAAAA=','Program '+foreign+' success'], null),[]);
+});
+
+test('event decoding requires a successful transaction result',()=>{
+  const def=idl.events?.find(e=>e.name.replaceAll('_','').toLowerCase()==='missioncancelled');assert(def);
+  const bytes=Buffer.concat([Buffer.from(def.discriminator),client.toBuffer(),u64le(5n),Buffer.from([8])]);
+  const logs=['Program '+PROGRAM_ID.toBase58()+' invoke [1]','Program data: '+bytes.toString('base64'),
+    'Program '+PROGRAM_ID.toBase58()+' success'];
+  assert.equal(sdk.events(logs,null).length,1);
+  assert.deepEqual(sdk.events(logs,{InstructionError:[1,'Custom']}),[]);
+  assert.deepEqual(sdk.events(logs,undefined),[]);
 });

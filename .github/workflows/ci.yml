@@ -19,15 +19,19 @@ jobs:
         run: npm install --global pnpm@10.18.3
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4
+        id: rust-cache
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cache/solana
             ~/.local/share/solana/install
-            target
+            target/debug
+            target/release
+            target/sbf-solana-solana
           key: mule-anchor0322-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'programs/*/Cargo.toml') }}
+          restore-keys: mule-anchor0322-
       - name: Install pinned Anchor and Solana build tools
         run: |
           curl -fLsS https://github.com/otter-sec/anchor/releases/download/v0.32.2/anchor-0.32.2-x86_64-unknown-linux-gnu -o /tmp/anchor
@@ -41,7 +45,9 @@ jobs:
           cargo fmt --all
           anchor --version
           solana --version
-          anchor build -- --tools-version v1.56
+          anchor build --no-idl -- --tools-version v1.56
+          mkdir -p target/idl
+          anchor idl build --out target/idl/mule_escrow.json
       - name: Rust format and clippy
         run: |
           cargo fmt --all
@@ -67,8 +73,25 @@ jobs:
           name: m1-step1-evidence
           path: |
             coverage/
-            target/idl/mule_escrow.json
-            target/deploy/mule_escrow.so
+            target/debug
+            target/release
+            target/sbf-solana-solana/idl/mule_escrow.json
+            target/debug
+            target/release
+            target/sbf-solana-solana/deploy/mule_escrow.so
             Cargo.lock
             programs/mule_escrow/src/lib.rs
           if-no-files-found: warn
+      - name: Cache compiler work without wallets
+        if: always() && steps.rust-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cache/solana
+            ~/.local/share/solana/install
+            target/debug
+            target/release
+            target/sbf-solana-solana
+          key: ${{ steps.rust-cache.outputs.cache-primary-key }}

@@ -25,7 +25,8 @@ No public deployment, devnet mint/faucet, devnet-run workflow, GitHub secrets, p
 Linux CI installs the exact tools in [architecture](docs/architecture.md). Then:
 
     pnpm install --frozen-lockfile
-    anchor build -- --tools-version v1.56
+    anchor build --no-idl -- --tools-version v1.56
+    anchor idl build --out target/idl/mule_escrow.json
     cargo fmt --all -- --check
     cargo clippy --workspace --all-targets -- -D warnings
     pnpm build && pnpm typecheck && pnpm lint && pnpm test
