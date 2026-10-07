@@ -45,12 +45,14 @@ class Fixture {
     }
     // Loader-owned canonical ProgramData fixture: only setup is injected.
     // Every MULE/SPL state transition below executes the compiled program.
-    const data = Buffer.alloc(45);
+    const loaded = this.svm.getAccount(programDataPda()[0]);
+    assert(loaded && loaded.data.length > 45 && loaded.owner.equals(UPGRADEABLE_LOADER_ID));
+    const data = Buffer.from(loaded.data);
     data.writeUInt32LE(3); data.writeBigUInt64LE(0n, 4); data[12] = 1;
     this.deployer.publicKey.toBuffer().copy(data, 13);
     this.svm.setAccount(programDataPda()[0], {
       data, executable: false, owner: UPGRADEABLE_LOADER_ID,
-      lamports: Number(this.svm.minimumBalanceForRentExemption(45n)),
+      lamports: loaded.lamports,
     });
     this.mint = this.newMint();
     this.clientToken = this.newToken(this.client.publicKey);

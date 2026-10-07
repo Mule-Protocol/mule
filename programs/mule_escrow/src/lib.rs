@@ -151,7 +151,7 @@ pub mod mule_escrow {
             EscrowError::InvalidState
         );
         ctx.accounts.mission.status = Status::Cancelled;
-        return_funds(&ctx.accounts)?;
+        return_funds(ctx.accounts)?;
         emit!(MissionCancelled {
             mission: ctx.accounts.mission.key(),
             amount: ctx.accounts.mission.amount,
@@ -302,7 +302,7 @@ pub mod mule_escrow {
             EscrowError::NotExpired
         );
         mission.status = Status::Refunded;
-        return_funds(&ctx.accounts)?;
+        return_funds(ctx.accounts)?;
         emit!(MissionRefunded {
             mission: ctx.accounts.mission.key(),
             amount: ctx.accounts.mission.amount,
@@ -326,7 +326,7 @@ pub mod mule_escrow {
             EscrowError::NotStale
         );
         mission.status = Status::Refunded;
-        return_funds(&ctx.accounts)?;
+        return_funds(ctx.accounts)?;
         emit!(MissionRefunded {
             mission: ctx.accounts.mission.key(),
             amount: ctx.accounts.mission.amount,
