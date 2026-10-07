@@ -9,6 +9,8 @@ import { MuleClient, PROGRAM_ID, TOKEN_PROGRAM_ID, UPGRADEABLE_LOADER_ID, config
   vaultPda, programDataPda, missionStatus, InMemoryMissionIdHistory, type Idl, type InstructionName } from '../../packages/sdk/src/index.js';
 import { apply, decide, I64_MAX, live, planClock, type Attempt, type Command, type MissionModel, type Model, type Operation } from './model.js';
 
+import { decodedI64, decodedU64 } from './numeric.js';
+
 const inputPath = process.argv[2]!, outputPath = process.argv[3]!;
 const commands = JSON.parse(readFileSync(inputPath, 'utf8')) as Command[];
 const stats = { instructions: 0, successful: 0, rejected: 0, clockJumps: 0, invariantChecks: 0,
@@ -106,16 +108,16 @@ class World {
       const decoded=this.sdk.decodeMission(Buffer.from(account.data));
       const balance=AccountLayout.decode(Buffer.from(token.data)).amount; total+=balance;
       assert.equal(balance,m.amount,'Invariant 2: exact vault amount (no donation alphabet)');
-      assert.equal(BigInt(decoded.amount.toString()),m.amount);
+      assert.equal(decodedU64(decoded.amount),m.amount);
       assert.equal(missionStatus(decoded),m.state,'Invariant 5: state matches independent model');
       assert(decoded.client.equals(this.actors[m.client]!.publicKey));
       assert.equal(decoded.agent?.toBase58()??null,m.agent===null?null:this.actors[m.agent]!.publicKey.toBase58());
       assert.equal(decoded.designatedAgent?.toBase58()??null,m.designated===null?null:this.actors[m.designated]!.publicKey.toBase58());
-      assert.equal(BigInt(decoded.missionId.toString()),m.id);
-      assert.equal(BigInt(decoded.deadline.toString()),m.deadline);
-      assert.equal(BigInt(decoded.disputeWindow.toString()),m.window);
-      assert.equal(decoded.verdictAt===null?null:BigInt(decoded.verdictAt.toString()),m.verdictAt);
-      assert.equal(decoded.disputedAt===null?null:BigInt(decoded.disputedAt.toString()),m.disputedAt);
+      assert.equal(decodedU64(decoded.missionId),m.id);
+      assert.equal(decodedI64(decoded.deadline),m.deadline);
+      assert.equal(decodedI64(decoded.disputeWindow),m.window);
+      assert.equal(decoded.verdictAt===null?null:decodedI64(decoded.verdictAt),m.verdictAt);
+      assert.equal(decoded.disputedAt===null?null:decodedI64(decoded.disputedAt),m.disputedAt);
       assert.equal(decoded.originalVerdict,m.verdict);
       assert.deepEqual(decoded.criteriaHash,hash);
     }
@@ -124,7 +126,7 @@ class World {
     const c=this.sdk.decodeConfig(Buffer.from(account.data)),model=this.model.config;
     assert(c.admin.equals(this.actors[model.admin]!.publicKey));assert(c.validator.equals(this.actors[model.validator]!.publicKey));
     assert.equal(c.pendingAdmin?.toBase58()??null,model.pending===null?null:this.actors[model.pending]!.publicKey.toBase58());
-    assert.equal(c.paused,model.paused);assert.equal(BigInt(c.minDisputeWindow.toString()),model.minWindow);assert.equal(BigInt(c.maxAmount.toString()),model.cap);
+    assert.equal(c.paused,model.paused);assert.equal(decodedI64(c.minDisputeWindow),model.minWindow);assert.equal(decodedU64(c.maxAmount),model.cap);
     stats.invariantChecks++;
   }
   run(command: Command): void {

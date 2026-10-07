@@ -43,3 +43,19 @@ test('sweep chooses disputed finalize at fourteen-day boundary for either origin
     assert.equal((await sweep(exact.port,[address]))[0]?.instruction,'finalize');
   }
 });
+
+test('sweep reads all chain-time BN values without decimal rendering',async()=>{
+  const cases:Array<[string,bigint,'finalize'|'refund_expired'|'refund_stale']>=[
+    ['open',100n,'refund_expired'],['submitted',100n+STALE_SECONDS,'refund_stale'],
+    ['passed',170n,'finalize'],['disputed',120n+DISPUTE_TIMEOUT,'finalize'],
+  ];
+  const original=BN.prototype.toString;
+  BN.prototype.toString=():string=>{throw new Error('BN.toString must not decide an escrow deadline');};
+  try {
+    for(const [state,time,instruction] of cases) {
+      const example=fixture(state,time);
+      if(state==='submitted')example.mission.verdictAt=null;
+      assert.equal((await sweep(example.port,[address]))[0]?.instruction,instruction);
+    }
+  } finally {BN.prototype.toString=original;}
+});

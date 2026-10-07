@@ -25,13 +25,13 @@ Il faut conserver la même version du générateur, le même corpus et le même 
 - PR et push main : 64 séquences demandées, au maximum 80 commandes aléatoires par séquence, graine fixe affichée `20261007`. La durée réelle et les nombres exécutés figurent dans le rapport ; la cible CI est moins de dix minutes.
 - Hebdomadaire : 512 séquences demandées, au maximum 160 commandes, graine aléatoire obtenue par `crypto.randomBytes` puis affichée. Aucune source aléatoire réseau.
 - Variables équivalentes : `MULE_FUZZ_SEED`, `MULE_FUZZ_RUNS`, `MULE_FUZZ_STEPS`, `MULE_FUZZ_PATH`. Omettre la graine demande une nouvelle graine, jamais une graine cachée.
-- Dix exemples de frontières et d'administration précèdent les séquences aléatoires. Avec fast-check 4.10.2, ils sont **inclus** dans `numRuns` : 64 = 10 exemples + 54 séquences aléatoires ; 512 = 10 + 502, en l'absence de régressions supplémentaires. Cette sémantique a été vérifiée avec un compteur indépendant. Les régressions persistantes sont lues dans `tests/fuzz/regressions/*.json` et augmentent la part déterministe. Les exemples ne constituent pas à eux seuls le fuzzing.
+- Dix exemples de frontières et d'administration précèdent les séquences aléatoires. Avec fast-check 4.10.2, ils sont **inclus** dans `numRuns`. Avec le corpus actuel, 64 = 10 exemples fixes + 1 régression conservée + 53 séquences aléatoires ; 512 = 10 + 1 + 501. Sans régression, ces répartitions seraient 10 + 54 et 10 + 502. Cette sémantique a été vérifiée avec un compteur indépendant. Les régressions persistantes sont lues dans `tests/fuzz/regressions/*.json` et augmentent la part déterministe. Les exemples ne constituent pas à eux seuls le fuzzing.
 - Le nombre de commandes peut être réduit jusqu'à zéro par fast-check. Une commande `progress` choisit une seule instruction selon l'état du modèle indépendant pour atteindre aussi des chemins profonds ; elle ne court-circuite aucune vérification SBF.
 - Le worker est borné à 30 secondes. Un dépassement, une panne native ou une assertion est un échec, sans relance silencieuse.
 
 ## Modèle indépendant et sept invariants
 
-`tests/fuzz/model.ts` décrit les transitions publiées dans [state-machine.md](../state-machine.md), avec des valeurs ordinaires et sans décodage d'IDL, d'appel au SDK ou de lecture du Rust. Le worker prédit succès/refus **avant** d'envoyer l'instruction, puis compare les comptes réels au modèle. Les signataires, destinataires de token, montants, échéances, fenêtres, pause, rotation et transfert d'admin varient.
+`tests/fuzz/model.ts` décrit les transitions publiées dans [state-machine.md](../state-machine.md), avec des valeurs ordinaires et sans décodage d'IDL, d'appel au SDK ou de lecture du Rust. Le worker prédit succès/refus **avant** d'envoyer l'instruction, puis compare les comptes réels au modèle. Les champs BN du décodeur sont lus par leurs huit octets avec `readBigUInt64LE` / `readBigInt64LE`, jamais via une chaîne décimale. Les [tests numériques](../../tests/fuzz/numeric.test.ts) vérifient aussi les limites de signe et de largeur contre les octets du codec. Les signataires, destinataires de token, montants, échéances, fenêtres, pause, rotation et transfert d'admin varient.
 
 Après chaque instruction MULE, réussie **ou refusée**, et chaque saut d'horloge :
 
@@ -49,7 +49,7 @@ Le générateur vise les instants juste avant, exactement à et juste après dea
 
 ## Artefacts et régressions
 
-`coverage/fuzz/summary.json` contient graine, moteur, SHA-256 SBF/IDL, durée, séquences réellement évaluées, instructions, réussites/refus, vérifications et compteurs par instruction. En cas d'échec, les évaluations de réduction sont incluses et `numShrinks` les distingue du nombre de runs demandé. Les instructions SPL de préparation ne sont pas comptées ; `initialize_config` et son contrôle d'invariants le sont.
+`coverage/fuzz/summary.json` contient graine, moteur, SHA-256 SBF/IDL, durée, séquences réellement évaluées, instructions, réussites/refus, vérifications et compteurs par instruction. Le champ `corpus` donne les nombres d'exemples fixes et de régressions ; `requestedSequenceCounts` donne leur répartition attendue avec les séquences générées. `sequenceCounts` conserve, pour chaque catégorie, les nombres commencés, réussis et échoués. Les réductions et les relectures explicites ont leur catégorie distincte ; un worker interrompu reste commencé sans résultat. En cas d'échec, `sequences` inclut les évaluations de réduction et `numShrinks` est ajouté lorsque fast-check termine. Une relecture par `--path` est comptée comme telle, sans inventer sa catégorie d'origine. Les instructions SPL de préparation ne sont pas comptées ; `initialize_config` et son contrôle d'invariants le sont.
 
 `summary.json` et `progress.json` sont écrits avant chaque worker et actualisés après son résultat. Dès le premier échec, puis immédiatement à chaque réduction échouée, les fichiers ci-dessous sont mis à jour par écriture atomique avec synchronisation disque. Chaque échec possède aussi un instantané `failure-<évaluation>.json` ; les candidats de réduction réussis ont un instantané `reduction-<évaluation>.json`. Une interruption conserve donc les dernières preuves complètes, leur graine et leur statut provisoire. Un `SIGKILL` ne peut pas fournir une trace d'une instruction native restée en cours ; il laisse le candidat courant dans `progress.json` et les échecs précédents intacts.
 
@@ -59,7 +59,7 @@ Un échec produit aussi :
 - `minimal-sequence.json` : dernier contre-exemple réduit connu ; la réduction n'est déclarée terminée que lorsque `status` vaut `complete` ;
 - `failure-trace.json` : décisions du modèle et traces du dernier contre-exemple échoué.
 
-Une erreur du modèle ou du harness n'est pas présentée comme une faille du programme. Si un vrai défaut SBF est découvert, sa séquence réduite est conservée dans `tests/fuzz/regressions/`, puis sa correction est faite dans un commit séparé. Aucun échec n'est supprimé ou ignoré pour faire passer la CI.
+Le premier run de durcissement a conservé une [régression du harnais](../../tests/fuzz/regressions/README.md) : conversion décimale BN incorrecte observée, alors que le vault exact passait. La cause interne de cette conversion n'est pas établie. La séquence de 66 commandes est conservée sans la présenter comme minimale ; la réduction avait été interrompue par le délai CI. Une erreur du modèle ou du harness n'est pas présentée comme une faille du programme. Si un vrai défaut SBF est découvert, sa séquence réduite est conservée dans `tests/fuzz/regressions/`, puis sa correction est faite dans un commit séparé. Aucun échec n'est supprimé ou ignoré pour faire passer la CI.
 
 ## Portée et limites explicites
 

@@ -1,5 +1,6 @@
 import fc from 'fast-check';
 import { atomicJson } from './fuzz-evidence.mjs';
+import { requestedSequenceCounts, sequenceCategory } from './fuzz-counts.mjs';
 import { spawnSync } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
@@ -70,13 +71,19 @@ const examples=[
     c('update_config',{actor:4,other:5}),c('update_config',{other:5,window:60,flag:true}),
     create,c('update_config',{other:3,window:60,flag:false}),c('create_mission',{target:1}),c('accept_mission',{target:1})],
 ];
+const fixedExamples=examples.length;
 for(const name of readdirSync('tests/fuzz/regressions').filter(name=>name.endsWith('.json')).sort()) examples.push(JSON.parse(readFileSync(join('tests/fuzz/regressions',name),'utf8')));
-const totals={sequences:0,instructions:0,successful:0,rejected:0,clockJumps:0,invariantChecks:0,
+const regressionExamples=examples.length-fixedExamples;
+const sequenceCounts=Object.fromEntries(['fixed','regression','generated','replay','pathReplay','shrink']
+  .map(category=>[category,{attempted:0,passed:0,failed:0}]));
+const totals={sequenceCounts,sequences:0,instructions:0,successful:0,rejected:0,clockJumps:0,invariantChecks:0,
   byInstruction:{},boundariesRequested:{},boundariesReached:{},boundariesClamped:{},boundariesUnavailable:{}};
 let lastFailure;
 const started=Date.now();
 const input=join(work,'sequence.json'),resultPath=join(work,'result.json');
-const common={seed,requestedRuns:runs,maxCommands:steps,requestedPath:options.path??null,path:null,pathPending:true,
+const common={seed,requestedRuns:runs,
+  corpus:{fixed:fixedExamples,regression:regressionExamples},
+  requestedSequenceCounts:replaySequence!==undefined||options.path!==undefined?null:requestedSequenceCounts(runs,fixedExamples,regressionExamples),maxCommands:steps,requestedPath:options.path??null,path:null,pathPending:true,
   reproductionFromSequence:'pnpm fuzz:program --sequence coverage/fuzz/minimal-sequence.json'};
 atomicJson(join(output,'summary.json'),{...common,status:'running',passed:null,...totals});
 function checkpoint(sequence,status,result) {
@@ -97,6 +104,9 @@ function checkpoint(sequence,status,result) {
 }
 function evaluate(sequence) {
   totals.sequences++;
+  const category=sequenceCategory(totals.sequences,{fixed:fixedExamples,regression:regressionExamples,
+    shrinking:lastFailure!==undefined,sequenceReplay:replaySequence!==undefined,pathReplay:options.path!==undefined});
+  sequenceCounts[category].attempted++;
   checkpoint(sequence,'running');
   writeFileSync(input,JSON.stringify(sequence)+'\n');
   rmSync(resultPath,{force:true});
@@ -117,9 +127,11 @@ function evaluate(sequence) {
   }
   if(child.status!==0||!result.passed) {
     lastFailure={sequence,...result};
+    sequenceCounts[category].failed++;
     checkpoint(sequence,'failed',result);
     return false;
   }
+  sequenceCounts[category].passed++;
   checkpoint(sequence,'passed',result);
   return true;
 }
@@ -128,7 +140,7 @@ const details=fc.check(fc.property(arbitrary,evaluate),{
   seed,numRuns:runs,path:options.path,examples:replaySequence===undefined?examples.map(sequence=>[sequence]):undefined,
   endOnFailure:false,verbose:2,
 });
-const summary={engine:'fast-check 4.10.2 / LiteSVM 0.8.0 / compiled SBF, fresh process per sequence',
+const summary={...common,engine:'fast-check 4.10.2 / LiteSVM 0.8.0 / compiled SBF, fresh process per sequence',
   seed,requestedRuns:runs,maxCommands:steps,path:details.counterexamplePath??options.path??null,pathPending:false,status:'complete',passed:!details.failed,
   numRuns:details.numRuns,numShrinks:details.numShrinks,interrupted:details.interrupted,
   elapsedMs:Date.now()-started,

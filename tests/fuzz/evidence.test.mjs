@@ -18,3 +18,16 @@ test('provisional failure persists before a later reduction/timeout and can be a
   atomicJson(path,{...provisional,path:'1:0',pathPending:false,status:'complete'});
   assert.deepEqual(JSON.parse(readFileSync(path,'utf8')),{...provisional,path:'1:0',pathPending:false,status:'complete'});
 });
+
+test('evidence preserves the observed integer mismatch independently of BN decimal formatting', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'mule-fuzz-numeric-evidence-'));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  for (const value of [67_108_864n, 97_816_772n, (1n << 64n) - 1n, -(1n << 63n), (1n << 63n) - 1n]) {
+    const bytes = Buffer.alloc(8);
+    if (value < 0n) bytes.writeBigInt64LE(value); else bytes.writeBigUInt64LE(value);
+    const exact = value < 0n ? bytes.readBigInt64LE() : bytes.readBigUInt64LE();
+    const path = join(directory, 'failure.json');
+    atomicJson(path, { seed: 20261007, pathPending: true, status: 'shrinking', exact: exact.toString() });
+    assert.equal(BigInt(JSON.parse(readFileSync(path, 'utf8')).exact), value);
+  }
+});

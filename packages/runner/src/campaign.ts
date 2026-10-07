@@ -5,7 +5,7 @@ import { spawn } from 'node:child_process';
 import { Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
 import { MINT_SIZE, createInitializeMint2Instruction, createAssociatedTokenAccountIdempotentInstruction,
   createMintToInstruction, getAssociatedTokenAddressSync } from '@solana/spl-token';
-import { TOKEN_PROGRAM_ID, configPda, missionPda, missionStatus, vaultPda } from '@mule/sdk';
+import { TOKEN_PROGRAM_ID, bnToBigInt, configPda, missionPda, missionStatus, vaultPda } from '@mule/sdk';
 import { LocalContentStore, loadFixture } from '@mule/validator';
 import { createDelivery } from '@mule/agent';
 import { RpcRunner, pause, CreationExpiredWithoutExecution, type TransactionRecord } from './rpc.js';
@@ -390,7 +390,7 @@ export async function campaign(runner: RpcRunner, store: LocalContentStore, runD
   let due=0n;
   for(const row of report.missions.filter(row=>!row.finalStatus)) {
     const mission=await runner.mission(new PublicKey(row.address));assert(mission);
-    const timestamp=mission.verdictAt===null?BigInt(mission.deadline.toString()):BigInt(mission.verdictAt.toString())+BigInt(mission.disputeWindow.toString());
+    const timestamp=mission.verdictAt===null?bnToBigInt(mission.deadline):bnToBigInt(mission.verdictAt)+bnToBigInt(mission.disputeWindow);
     if(timestamp>due)due=timestamp;
   }
   const waitStarted=Date.now();

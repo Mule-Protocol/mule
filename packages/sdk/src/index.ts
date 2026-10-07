@@ -31,6 +31,17 @@ export function u64le(value: bigint): Buffer {
   if (value < 0n || value > MAX_U64) throw new RangeError('u64 out of range');
   const result = Buffer.alloc(8); result.writeBigUInt64LE(value); return result;
 }
+/** Exact signed conversion from BN magnitude bytes; never uses BN's decimal rendering. */
+export function bnToBigInt(value: BN): bigint {
+  if (!BN.isBN(value)) throw new TypeError('Expected a BN integer');
+  const negative = value.isNeg();
+  const bytes = value.abs().toArrayLike(Buffer, 'le');
+  let result = 0n;
+  for (let index = bytes.length - 1; index >= 0; index--) {
+    result = (result << 8n) | BigInt(bytes[index]!);
+  }
+  return negative ? -result : result;
+}
 /** Canonical durable reservation identity, shared by SDK and recovery code. */
 export function missionIdHistoryKey(programId: PublicKey, client: PublicKey, missionId: bigint): string {
   if (missionId < 0n || missionId > MAX_U64) throw new RangeError('u64 out of range');

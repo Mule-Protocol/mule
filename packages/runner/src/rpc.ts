@@ -5,7 +5,7 @@ import bs58 from 'bs58';
 import { Connection, Keypair, PublicKey, SendTransactionError, SystemProgram, SYSVAR_CLOCK_PUBKEY, Transaction,
   type TransactionInstruction } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddressSync } from '@solana/spl-token';
-import { MuleClient, PROGRAM_ID, TOKEN_PROGRAM_ID, BN, configPda, programDataPda, vaultPda,
+import { MuleClient, PROGRAM_ID, TOKEN_PROGRAM_ID, BN, bnToBigInt, configPda, programDataPda, vaultPda,
   missionIdHistoryKey, type Idl, type InstructionName, type Mission } from '@mule/sdk';
 import { FileMissionIdHistory } from '@mule/sdk/file-history';
 import { Journal } from './journal.js';
@@ -26,7 +26,7 @@ export class CreationExpiredWithoutExecution extends Error {
 }
 function jsonEvent(value: unknown): unknown {
   if (value instanceof PublicKey) return value.toBase58();
-  if (BN.isBN(value)) return value.toString(10);
+  if (BN.isBN(value)) return bnToBigInt(value).toString();
   if (typeof value === 'bigint') return value.toString();
   if (Array.isArray(value)) return value.map(jsonEvent);
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, jsonEvent(entry)]));
