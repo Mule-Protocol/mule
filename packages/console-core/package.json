@@ -1,0 +1,12 @@
+{
+  "name": "@mule/console-core",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/console-core.mjs",
+  "types": "dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/console-core.mjs" } },
+  "scripts": { "build": "tsc -p tsconfig.json && node ../../scripts/build-console-core.mjs", "build:types": "tsc -p tsconfig.json", "test": "tsx --test test/*.test.ts" },
+  "dependencies": { "@mule/mission-logic": "workspace:*", "ajv": "8.20.0", "ajv-formats": "3.0.1" }
+}

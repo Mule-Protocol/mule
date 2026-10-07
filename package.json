@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "pnpm --filter @mule/sdk build && pnpm --filter @mule/validator build && pnpm --filter @mule/agent build && pnpm --filter @mule/runner build",
+    "build": "pnpm --filter @mule/mission-logic build && pnpm --filter @mule/sdk build && pnpm --filter @mule/validator build && pnpm --filter @mule/agent build && pnpm --filter @mule/runner build && node scripts/generate-console-data.mjs && pnpm --filter @mule/console-core build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test packages/*/test/*.test.ts",
@@ -16,7 +16,11 @@
     "coverage:instructions": "node scripts/instruction-coverage.mjs",
     "local:missions": "node scripts/run-local-missions.mjs",
     "fuzz:program": "node scripts/fuzz-program.mjs",
-    "audit:dependencies": "node scripts/audit-dependencies.mjs"
+    "audit:dependencies": "node scripts/audit-dependencies.mjs",
+    "build:console": "pnpm --filter @mule/mission-logic build && node scripts/generate-console-data.mjs && pnpm --filter @mule/console-core build",
+    "check:console-bundle": "node scripts/build-console-core.mjs --check",
+    "test:console-browser": "node scripts/test-console-browser.mjs",
+    "test:console-differential": "node scripts/test-console-differential.mjs"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "0.32.1",
@@ -29,6 +33,9 @@
     "litesvm": "0.8.0",
     "tsx": "4.20.6",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.46.1"
+    "typescript-eslint": "8.46.1",
+    "esbuild": "0.25.12",
+    "acorn": "8.18.0",
+    "playwright": "1.63.0"
   }
 }

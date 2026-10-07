@@ -11,3 +11,9 @@ id.json
 *.pem
 *.key
 .DS_Store
+
+# The single browser deliverable and checksum are intentionally versioned.
+!packages/console-core/dist/
+packages/console-core/dist/*
+!packages/console-core/dist/console-core.mjs
+!packages/console-core/dist/console-core.mjs.sha256
