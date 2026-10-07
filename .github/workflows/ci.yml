@@ -81,6 +81,9 @@ jobs:
         if: success() || steps.build.outcome == 'success'
         run: |
           pnpm build
+          pnpm check:console-bundle
+          git diff --exit-code -- packages/console-core/dist/console-core.mjs packages/console-core/dist/console-core.mjs.sha256
+          node --test scripts/console-bundle-policy.test.mjs
           pnpm typecheck
           pnpm lint
           pnpm test
@@ -245,4 +248,45 @@ jobs:
         with:
           name: m11-fuzz-evidence
           path: coverage/fuzz/
+          if-no-files-found: warn
+
+  console-core:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24.21.0'
+      - name: Install locked dependencies and reconstruct console bundle
+        run: |
+          npm install --global pnpm@10.18.3
+          pnpm install --frozen-lockfile
+          pnpm build
+          pnpm check:console-bundle
+          git diff --exit-code -- packages/console-core/dist/console-core.mjs packages/console-core/dist/console-core.mjs.sha256
+      - name: Reuse the verified SBF and IDL
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: m1-step1-evidence
+          path: .
+      - name: Differential escrow and Node artifact parity against the real SBF
+        run: |
+          node --import tsx --test tests/console-differential/node-parity.test.ts
+          pnpm test:console-differential
+      - name: Install Chromium for the real browser parity test
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Exact Node and browser bytes under strict CSP with no mission network
+        run: pnpm test:console-browser
+      - name: Publish console-core parity, size and browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: m12-console-core-evidence
+          path: |
+            coverage/console-bundle.json
+            coverage/console-browser/summary.json
+            coverage/console-browser/parity.json
+            coverage/console-differential/
           if-no-files-found: warn

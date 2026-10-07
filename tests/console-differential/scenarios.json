@@ -1,0 +1,51 @@
+[
+  {
+    "id": "invoice-honest",
+    "template": "invoice",
+    "behavior": "honest",
+    "designatedAgent": false,
+    "message": "6/6 FIELDS VALID"
+  },
+  {
+    "id": "invoice-dishonest",
+    "template": "invoice",
+    "behavior": "dishonest",
+    "designatedAgent": false,
+    "message": "5/6 · MISSING: total_amount"
+  },
+  {
+    "id": "contract-honest",
+    "template": "contract",
+    "behavior": "honest",
+    "designatedAgent": false,
+    "message": "5/5 FIELDS VALID"
+  },
+  {
+    "id": "contract-dishonest",
+    "template": "contract",
+    "behavior": "dishonest",
+    "designatedAgent": false,
+    "message": "4/5 · MISSING: governing_law"
+  },
+  {
+    "id": "address-honest",
+    "template": "address",
+    "behavior": "honest",
+    "designatedAgent": false,
+    "message": "12/12 ROWS VALID"
+  },
+  {
+    "id": "address-dishonest",
+    "template": "address",
+    "behavior": "dishonest",
+    "designatedAgent": false,
+    "message": "11/12 · INVALID POSTCODE, ROW 7"
+  },
+  {
+    "id": "invoice-designated",
+    "template": "invoice",
+    "behavior": "honest",
+    "designatedAgent": true,
+    "message": "6/6 FIELDS VALID"
+  }
+]
