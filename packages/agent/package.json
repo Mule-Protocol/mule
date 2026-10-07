@@ -16,6 +16,7 @@
     "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
-    "@mule/validator": "workspace:*"
+    "@mule/validator": "workspace:*",
+    "@mule/mission-logic": "workspace:*"
   }
 }

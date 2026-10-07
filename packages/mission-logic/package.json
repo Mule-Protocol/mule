@@ -1,5 +1,5 @@
 {
-  "name": "@mule/validator",
+  "name": "@mule/mission-logic",
   "version": "0.1.0",
   "private": true,
   "license": "Apache-2.0",
@@ -12,12 +12,6 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "tsx --test test/*.test.ts"
-  },
-  "dependencies": {
-    "ajv": "8.20.0",
-    "ajv-formats": "3.0.1",
-    "@mule/mission-logic": "workspace:*"
+    "build": "tsc -p tsconfig.json"
   }
 }
