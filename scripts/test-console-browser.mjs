@@ -10,10 +10,11 @@ import { prepareValidationReport } from '../packages/runner/dist/validate.js';
 const directory = 'coverage/console-browser';
 mkdirSync(directory, { recursive: true });
 const store = new LocalContentStore(directory + '/node-data');
-const cases = ['invoice', 'contract', 'address'].flatMap(template =>
-  ['honest', 'dishonest'].map(behavior => ({ template, behavior, designated: false })));
-cases.push({ template: 'invoice', behavior: 'honest', designated: true });
-const reference = row => 'SIM-MISSION-' + row.template + '-' + row.behavior + (row.designated ? '-designated' : '');
+const cases = JSON.parse(readFileSync('tests/console-differential/scenarios.json', 'utf8'))
+  .map(({ id, template, behavior, designatedAgent, message }) =>
+    ({ id, template, behavior, designated: designatedAgent, expectedMessage: message }));
+assert.equal(cases.length, 7);
+const reference = row => 'SIM-MISSION-' + row.id;
 const expected = [];
 for (const row of cases) {
   const fixture = loadFixture(row.template + '.v1');
@@ -43,7 +44,7 @@ document.getElementById('run').addEventListener('click', async () => {
   try {
     const results = [];
     for (const row of cases) {
-      const missionReference = 'SIM-MISSION-' + row.template + '-' + row.behavior + (row.designated ? '-designated' : '');
+      const missionReference = 'SIM-MISSION-' + row.id;
       const prepared = await prepareMission(row.template, row.behavior, {
         missionReference, designatedAgent: row.designated ? 'agent' : null,
       });
@@ -111,6 +112,7 @@ try {
       assert.equal(browserResult.artifacts[kind].hash, node.artifacts[kind].hash, kind + ' SHA-256');
       artifactProof[kind] = { byteIdentical: true, utf8Bytes: nodeBytes.length, sha256: node.artifacts[kind].hash };
     }
+    assert.equal(node.message, node.expectedMessage);
     assert.equal(browserResult.artifacts.report.value.message, node.message);
     assert.equal(browserResult.artifacts.report.value.pass, node.pass);
     assert.equal(browserResult.final.status, node.pass ? 'settled' : 'refunded');
