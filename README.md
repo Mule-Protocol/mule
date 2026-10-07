@@ -10,6 +10,7 @@ MULE holds a client's tokens and pays the accepted agent after a signed passing 
 - Test-only identity: Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL.
 - Settlement denomination: **dUSDC (devnet, no value)**; tests use a local six-decimal SPL mint.
 - [Step 1 draft PR](https://github.com/Mule-Protocol/mule/pull/6) · [Milestone](https://github.com/Mule-Protocol/mule/milestone/1).
+- [Check-in 1: results and limits](docs/checkins/CHECKIN-1.md).
 - [Latest CI runs/evidence](https://github.com/Mule-Protocol/mule/actions/workflows/ci.yml).
 - Step 3: **agent de référence scripté ; le branchement d'un agent IA réel est prévu plus tard**. Not implemented in step 1.
 
