@@ -1,5 +1,7 @@
 import { BorshAccountsCoder, BorshCoder, BN, EventParser, type Idl } from '@coral-xyz/anchor';
 import { PublicKey, TransactionInstruction, type AccountMeta } from '@solana/web3.js';
+import { MissionIdAlreadyUsedError, type MissionIdHistory } from './history.js';
+export { InMemoryMissionIdHistory, MissionIdAlreadyUsedError, type MissionIdHistory } from './history.js';
 
 /** Test-only identity. There is no deployed MULE program. */
 export const PROGRAM_ID = new PublicKey('Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL');
@@ -7,21 +9,22 @@ export const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9
 export const UPGRADEABLE_LOADER_ID = new PublicKey('BPFLoaderUpgradeab1e11111111111111111111111');
 export const DEFAULT_DISPUTE_WINDOW = 3600n;
 export const STALE_SECONDS = 604800n;
+export const DISPUTE_TIMEOUT = 1209600n;
 const MAX_U64 = (1n << 64n) - 1n;
-export type InstructionName = 'initialize_config' | 'update_config' | 'create_mission' | 'cancel_mission'
+export type InstructionName = 'initialize_config' | 'update_config' | 'propose_admin' | 'accept_admin' | 'create_mission' | 'cancel_mission'
   | 'accept_mission' | 'submit_delivery' | 'record_verdict' | 'open_dispute' | 'resolve_dispute'
   | 'finalize' | 'refund_expired' | 'refund_stale';
 export type MissionStatus = 'open' | 'accepted' | 'submitted' | 'passed' | 'failed' | 'disputed'
   | 'settled' | 'refunded' | 'cancelled';
 export interface Mission {
-  client: PublicKey; agent: PublicKey | null; missionId: BN; amount: BN;
+  client: PublicKey; agent: PublicKey | null; designatedAgent: PublicKey | null; missionId: BN; amount: BN;
   criteriaHash: number[]; criteriaUri: string; deliveryHash: number[] | null;
   deliveryUri: string | null; reportHash: number[] | null; deadline: BN;
-  disputeWindow: BN; verdictAt: BN | null; status: Record<string, object>;
+  disputeWindow: BN; verdictAt: BN | null; disputedAt: BN | null; originalVerdict: boolean | null; status: Record<string, object>;
   bump: number; vaultBump: number;
 }
 export interface Config {
-  admin: PublicKey; validator: PublicKey; mint: PublicKey; minDisputeWindow: BN;
+  admin: PublicKey; pendingAdmin: PublicKey | null; validator: PublicKey; mint: PublicKey; minDisputeWindow: BN;
   maxAmount: BN; paused: boolean; bump: number;
 }
 export function u64le(value: bigint): Buffer {
@@ -48,7 +51,7 @@ function field(record: Record<string, unknown>, name: string): unknown {
 /** Uses the generated IDL instead of a hand-maintained contract copy. */
 export class MuleClient {
   readonly coder: BorshCoder;
-  constructor(readonly idl: Idl, readonly programId = PROGRAM_ID) {
+  constructor(readonly idl: Idl, readonly programId = PROGRAM_ID, private readonly history?: MissionIdHistory) {
     if (idl.address !== programId.toBase58()) throw new Error('IDL program address mismatch');
     this.coder = new BorshCoder(idl);
   }
@@ -81,7 +84,18 @@ export class MuleClient {
       }
       encodedArgs[arg.name] = value;
     }
-    return new TransactionInstruction({ programId: this.programId, keys, data: this.coder.instruction.encode(definition.name, encodedArgs) });
+    const instruction = new TransactionInstruction({ programId: this.programId, keys,
+      data: this.coder.instruction.encode(definition.name, encodedArgs) });
+    if (name === 'create_mission') {
+      if (!this.history) throw new Error('create_mission requires a shared durable MissionIdHistory');
+      const client = field(accounts, 'client');
+      const id = field(encodedArgs, 'mission_id');
+      if (!(client instanceof PublicKey) || !BN.isBN(id)) throw new Error('Invalid mission identity');
+      // Hex avoids any decimal conversion or JavaScript number truncation.
+      const key = JSON.stringify([this.programId.toBase58(), client.toBase58(), id.toString(16).padStart(16, '0')]);
+      if (!this.history.reserve(key)) throw new MissionIdAlreadyUsedError();
+    }
+    return instruction;
   }
   decodeMission(data: Buffer): Mission {
     const name = this.idl.accounts?.find(a => normalized(a.name) === 'mission')?.name;
