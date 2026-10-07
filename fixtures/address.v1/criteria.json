@@ -1,0 +1,57 @@
+{
+  "model": "address.v1",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "rows"
+    ],
+    "properties": {
+      "rows": {
+        "type": "array",
+        "minItems": 12,
+        "maxItems": 12,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "street",
+            "city",
+            "postcode",
+            "country"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "street": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "city": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "postcode": {
+              "type": "string",
+              "pattern": "^[0-9]{5}$"
+            },
+            "country": {
+              "type": "string",
+              "const": "FR"
+            }
+          }
+        }
+      }
+    }
+  },
+  "crossChecks": [
+    "address.normalized_postcodes"
+  ]
+}

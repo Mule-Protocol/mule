@@ -1,0 +1,17 @@
+{
+  "supplier": "MULE Fixture Supplier",
+  "date": "2026-01-01",
+  "number": "FIXTURE-001",
+  "currency": "EUR",
+  "total_amount": "123.45",
+  "line_items": [
+    {
+      "description": "Fixture item A",
+      "amount": "100.10"
+    },
+    {
+      "description": "Fixture item B",
+      "amount": "23.35"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "title": "Synthetic data-processing contract",
+  "parties": [
+    "Fixture Client",
+    "Fixture Supplier"
+  ],
+  "effective_date": "2026-01-01",
+  "termination": "Either party may terminate with 30 days written notice.",
+  "governing_law": "French law"
+}
