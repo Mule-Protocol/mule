@@ -70,3 +70,5 @@ Le premier run de durcissement a conservé une [régression du harnais](../../te
 - Le nombre fini de séquences n'est ni une preuve formelle ni une couverture de lignes/branches Rust. Les résultats sont ceux des graines et du binaire indiqués, sans revendication d'audit indépendant.
 
 Sources : [fast-check : générateurs et réduction](https://fast-check.dev/docs/core-blocks/arbitraries/), [configuration et reproduction](https://fast-check.dev/docs/configuration/), [machine d'états MULE](../state-machine.md).
+
+La campagne de référence et ses limites sont consignées dans [CHECKIN-4](../checkins/CHECKIN-4-hardening.md), avec les [compteurs bruts](FUZZ-4.json).

@@ -58,7 +58,7 @@ The program enforces signers and the recorded verdict. It cannot read HTTP or ve
 - The 15-instruction assertion matrix measures instruction/scenario coverage. Property tests add generated sequences and shrinking; neither is Rust line/branch coverage, formal verification or an independent audit.
 - SDK builds instructions/decodes data and requires mission-ID history. FileMissionIdHistory provides durable Node storage; InMemoryMissionIdHistory is only for ephemeral tests. It holds no keys and sends no transactions.
 
-The historical [CHECKIN-3](checkins/CHECKIN-3.md) records validator/schema correctness, rehashed local storage, the scripted agent, two injected recovery points and ten local CI missions. M-1.1 adds two recovery points, property testing, supply-chain enforcement and admin-proposal cancellation. Current execution evidence belongs in CHECKIN-4; the configured weekly campaign and future managed Dependabot run must not be represented as already executed. No public deployment, paid service, $MULE, staking, bonds, marketplace or site changes.
+The historical [CHECKIN-3](checkins/CHECKIN-3.md) records validator/schema correctness, rehashed local storage, the scripted agent, two injected recovery points and ten local CI missions. M-1.1 adds two recovery points, property testing, supply-chain enforcement and admin-proposal cancellation. Current execution evidence is recorded in [CHECKIN-4](checkins/CHECKIN-4-hardening.md); the configured weekly campaign and future managed Dependabot run must not be represented as already executed. No public deployment, paid service, $MULE, staking, bonds, marketplace or site changes.
 
 ## Property-testing boundaries
 

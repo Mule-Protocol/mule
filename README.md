@@ -10,6 +10,8 @@ MULE holds a client's tokens and pays the accepted agent after a signed passing 
 - Test-only identity: Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL.
 - Settlement fixture: **local dUSDC, six decimals, no value**.
 - [Merged step 1 PR](https://github.com/Mule-Protocol/mule/pull/6) · [Milestone](https://github.com/Mule-Protocol/mule/milestone/1).
+- [M-1.1 draft PR](https://github.com/Mule-Protocol/mule/pull/21) · [Hardening milestone](https://github.com/Mule-Protocol/mule/milestone/2).
+- [Check-in 4 — hardening](docs/checkins/CHECKIN-4-hardening.md) · [15-instruction coverage](docs/testing/INSTRUCTION-COVERAGE-4.md).
 - [Check-in 3](docs/checkins/CHECKIN-3.md) · [Check-in 1b](docs/checkins/CHECKIN-1b.md) · [Historical check-in 1](docs/checkins/CHECKIN-1.md).
 - [CI runs and evidence](https://github.com/Mule-Protocol/mule/actions/workflows/ci.yml).
 - Step 3 uses an **agent de référence scripté**, with honest/dishonest modes and a deterministic validator. No AI API is called.
