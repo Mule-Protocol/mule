@@ -65,6 +65,7 @@ jobs:
           anchor build --no-idl -- --tools-version v1.56
           mkdir -p target/idl
           anchor idl build --out target/idl/mule_escrow.json
+          diff -u idl/mule_escrow.json target/idl/mule_escrow.json
       - name: Rust format and clippy
         run: |
           cargo fmt --all

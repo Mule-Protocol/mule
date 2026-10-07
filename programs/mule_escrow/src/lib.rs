@@ -72,7 +72,10 @@ pub mod mule_escrow {
     }
 
     pub fn propose_admin(ctx: Context<UpdateConfig>, new_admin: Pubkey) -> Result<()> {
-        require!(new_admin != Pubkey::default(), EscrowError::InvalidAuthority);
+        require!(
+            new_admin != Pubkey::default(),
+            EscrowError::InvalidAuthority
+        );
         let config = &mut ctx.accounts.config;
         config.pending_admin = Some(new_admin);
         emit!(AdminProposed {

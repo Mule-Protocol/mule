@@ -1,0 +1,2063 @@
+{
+  "address": "Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL",
+  "metadata": {
+    "name": "mule_escrow",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "MULE devnet acceptance-gated escrow"
+  },
+  "instructions": [
+    {
+      "name": "accept_admin",
+      "discriminator": [
+        112,
+        42,
+        45,
+        90,
+        116,
+        181,
+        13,
+        170
+      ],
+      "accounts": [
+        {
+          "name": "pending_admin",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "accept_mission",
+      "discriminator": [
+        8,
+        170,
+        82,
+        238,
+        37,
+        32,
+        184,
+        23
+      ],
+      "accounts": [
+        {
+          "name": "actor",
+          "signer": true
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel_mission",
+      "discriminator": [
+        165,
+        6,
+        104,
+        88,
+        233,
+        238,
+        76,
+        107
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "relations": [
+            "mission"
+          ]
+        },
+        {
+          "name": "client_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_mission",
+      "discriminator": [
+        15,
+        28,
+        105,
+        135,
+        65,
+        62,
+        188,
+        255
+      ],
+      "accounts": [
+        {
+          "name": "client",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "client"
+              },
+              {
+                "kind": "arg",
+                "path": "mission_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "mission_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "criteria_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "criteria_uri",
+          "type": "string"
+        },
+        {
+          "name": "deadline",
+          "type": "i64"
+        },
+        {
+          "name": "dispute_window",
+          "type": "i64"
+        },
+        {
+          "name": "designated_agent",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "finalize",
+      "discriminator": [
+        171,
+        61,
+        218,
+        56,
+        127,
+        115,
+        12,
+        217
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "relations": [
+            "mission"
+          ]
+        },
+        {
+          "name": "client_token",
+          "writable": true
+        },
+        {
+          "name": "agent_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_config",
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "deployer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "program_data",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  218,
+                  7,
+                  92,
+                  178,
+                  255,
+                  94,
+                  198,
+                  129,
+                  118,
+                  19,
+                  222,
+                  83,
+                  12,
+                  8,
+                  94,
+                  25,
+                  22,
+                  117,
+                  6,
+                  42,
+                  28,
+                  228,
+                  161,
+                  1,
+                  137,
+                  234,
+                  78,
+                  116,
+                  48,
+                  25,
+                  238,
+                  1
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                2,
+                168,
+                246,
+                145,
+                78,
+                136,
+                161,
+                176,
+                226,
+                16,
+                21,
+                62,
+                247,
+                99,
+                174,
+                43,
+                0,
+                194,
+                185,
+                61,
+                22,
+                193,
+                36,
+                210,
+                192,
+                83,
+                122,
+                16,
+                4,
+                128,
+                0,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "admin",
+          "type": "pubkey"
+        },
+        {
+          "name": "validator",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "open_dispute",
+      "discriminator": [
+        137,
+        25,
+        99,
+        119,
+        23,
+        223,
+        161,
+        42
+      ],
+      "accounts": [
+        {
+          "name": "actor",
+          "signer": true
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "propose_admin",
+      "discriminator": [
+        121,
+        214,
+        199,
+        212,
+        87,
+        39,
+        117,
+        234
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_admin",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "record_verdict",
+      "discriminator": [
+        251,
+        187,
+        180,
+        218,
+        5,
+        165,
+        217,
+        150
+      ],
+      "accounts": [
+        {
+          "name": "validator",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "pass",
+          "type": "bool"
+        },
+        {
+          "name": "report_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "refund_expired",
+      "discriminator": [
+        118,
+        153,
+        164,
+        244,
+        40,
+        128,
+        242,
+        250
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "relations": [
+            "mission"
+          ]
+        },
+        {
+          "name": "client_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "refund_stale",
+      "discriminator": [
+        7,
+        154,
+        200,
+        33,
+        10,
+        183,
+        0,
+        95
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "relations": [
+            "mission"
+          ]
+        },
+        {
+          "name": "client_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "resolve_dispute",
+      "discriminator": [
+        231,
+        6,
+        202,
+        6,
+        96,
+        103,
+        12,
+        230
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "relations": [
+            "mission"
+          ]
+        },
+        {
+          "name": "client_token",
+          "writable": true
+        },
+        {
+          "name": "agent_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "pay_agent",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "submit_delivery",
+      "discriminator": [
+        217,
+        177,
+        33,
+        54,
+        136,
+        185,
+        123,
+        96
+      ],
+      "accounts": [
+        {
+          "name": "actor",
+          "signer": true
+        },
+        {
+          "name": "mission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mission.client",
+                "account": "Mission"
+              },
+              {
+                "kind": "account",
+                "path": "mission.mission_id",
+                "account": "Mission"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "delivery_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "delivery_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "update_config",
+      "discriminator": [
+        29,
+        158,
+        252,
+        191,
+        10,
+        83,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "validator",
+          "type": "pubkey"
+        },
+        {
+          "name": "min_dispute_window",
+          "type": "i64"
+        },
+        {
+          "name": "max_amount",
+          "type": "u64"
+        },
+        {
+          "name": "paused",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "Mission",
+      "discriminator": [
+        170,
+        56,
+        116,
+        75,
+        24,
+        11,
+        109,
+        12
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AdminAccepted",
+      "discriminator": [
+        174,
+        12,
+        76,
+        139,
+        158,
+        99,
+        110,
+        254
+      ]
+    },
+    {
+      "name": "AdminProposed",
+      "discriminator": [
+        129,
+        249,
+        226,
+        227,
+        199,
+        82,
+        110,
+        243
+      ]
+    },
+    {
+      "name": "ConfigInitialized",
+      "discriminator": [
+        181,
+        49,
+        200,
+        156,
+        19,
+        167,
+        178,
+        91
+      ]
+    },
+    {
+      "name": "ConfigUpdated",
+      "discriminator": [
+        40,
+        241,
+        230,
+        122,
+        11,
+        19,
+        198,
+        194
+      ]
+    },
+    {
+      "name": "DeliverySubmitted",
+      "discriminator": [
+        104,
+        47,
+        131,
+        41,
+        20,
+        153,
+        87,
+        75
+      ]
+    },
+    {
+      "name": "DisputeOpened",
+      "discriminator": [
+        239,
+        222,
+        102,
+        235,
+        193,
+        85,
+        1,
+        214
+      ]
+    },
+    {
+      "name": "MissionAccepted",
+      "discriminator": [
+        55,
+        42,
+        41,
+        227,
+        87,
+        212,
+        99,
+        164
+      ]
+    },
+    {
+      "name": "MissionCancelled",
+      "discriminator": [
+        17,
+        43,
+        224,
+        206,
+        16,
+        204,
+        100,
+        125
+      ]
+    },
+    {
+      "name": "MissionCreated",
+      "discriminator": [
+        59,
+        254,
+        165,
+        204,
+        100,
+        228,
+        94,
+        141
+      ]
+    },
+    {
+      "name": "MissionRefunded",
+      "discriminator": [
+        20,
+        42,
+        182,
+        89,
+        159,
+        31,
+        123,
+        71
+      ]
+    },
+    {
+      "name": "MissionSettled",
+      "discriminator": [
+        124,
+        223,
+        165,
+        163,
+        114,
+        187,
+        251,
+        239
+      ]
+    },
+    {
+      "name": "VerdictRecorded",
+      "discriminator": [
+        144,
+        96,
+        183,
+        176,
+        102,
+        238,
+        139,
+        155
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Unauthorized signer or token recipient"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidState",
+      "msg": "Invalid mission state"
+    },
+    {
+      "code": 6002,
+      "name": "Paused",
+      "msg": "New missions are paused"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidAmount",
+      "msg": "Amount must be positive and within the configured cap"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidDeadline",
+      "msg": "Deadline must be in the future"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidWindow",
+      "msg": "Dispute window is below the configured minimum"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidUri",
+      "msg": "URI must contain 1 to 200 UTF-8 bytes"
+    },
+    {
+      "code": 6007,
+      "name": "DeadlineElapsed",
+      "msg": "Delivery deadline has elapsed"
+    },
+    {
+      "code": 6008,
+      "name": "ClientCannotAccept",
+      "msg": "Client cannot accept their own mission"
+    },
+    {
+      "code": 6009,
+      "name": "WindowStillOpen",
+      "msg": "Dispute window is still open"
+    },
+    {
+      "code": 6010,
+      "name": "WindowClosed",
+      "msg": "Dispute window is closed"
+    },
+    {
+      "code": 6011,
+      "name": "NotExpired",
+      "msg": "Mission is not expired"
+    },
+    {
+      "code": 6012,
+      "name": "NotStale",
+      "msg": "Mission is not stale"
+    },
+    {
+      "code": 6013,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidMint",
+      "msg": "Invalid settlement mint"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidConfig",
+      "msg": "Invalid configuration"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidAuthority",
+      "msg": "Authority cannot be the default public key"
+    },
+    {
+      "code": 6017,
+      "name": "NotDesignatedAgent",
+      "msg": "Only the designated agent may accept this mission"
+    },
+    {
+      "code": 6018,
+      "name": "ClientCannotDesignateSelf",
+      "msg": "Client cannot designate themselves as agent"
+    },
+    {
+      "code": 6019,
+      "name": "DisputeTimeoutNotReached",
+      "msg": "Dispute timeout has not elapsed"
+    }
+  ],
+  "types": [
+    {
+      "name": "AdminAccepted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "previous_admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdminProposed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_admin",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "validator",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "min_dispute_window",
+            "type": "i64"
+          },
+          {
+            "name": "max_amount",
+            "type": "u64"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "validator",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "config",
+            "type": "pubkey"
+          },
+          {
+            "name": "validator",
+            "type": "pubkey"
+          },
+          {
+            "name": "min_dispute_window",
+            "type": "i64"
+          },
+          {
+            "name": "max_amount",
+            "type": "u64"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DeliverySubmitted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mission",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          },
+          {
+            "name": "delivery_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DisputeOpened",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mission",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Mission",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "client",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "designated_agent",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "mission_id",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "criteria_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "criteria_uri",
+            "type": "string"
+          },
+          {
+            "name": "delivery_hash",
+            "type": {
+              "option": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "delivery_uri",
+            "type": {
+              "option": "string"
+            }
+          },
+          {
+            "name": "report_hash",
+            "type": {
+              "option": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "deadline",
+            "type": "i64"
+          },
+          {
+            "name": "dispute_window",
+            "type": "i64"
+          },
+          {
+            "name": "verdict_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "original_verdict",
+            "type": {
+              "option": "bool"
+            }
+          },
+          {
+            "name": "disputed_at",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MissionAccepted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mission",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MissionCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mission",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MissionCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mission",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          },
+          {
+            "name": "client",
+            "type": "pubkey"
+          },
+          {
+            "name": "mission_id",
+            "type": "u64"
+          },
+          {
+            "name": "designated_agent",
+            "type": {
+              "option": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MissionRefunded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mission",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MissionSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mission",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Status",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Open"
+          },
+          {
+            "name": "Accepted"
+          },
+          {
+            "name": "Submitted"
+          },
+          {
+            "name": "Passed"
+          },
+          {
+            "name": "Failed"
+          },
+          {
+            "name": "Disputed"
+          },
+          {
+            "name": "Settled"
+          },
+          {
+            "name": "Refunded"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerdictRecorded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mission",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "Status"
+              }
+            }
+          },
+          {
+            "name": "pass",
+            "type": "bool"
+          },
+          {
+            "name": "report_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verdict_at",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
