@@ -27,7 +27,7 @@
     "@solana/spl-token": "0.4.14",
     "@solana/web3.js": "1.98.4",
     "@types/bn.js": "5.2.0",
-    "@types/node": "22.18.10",
+    "@types/node": "26.6.4",
     "eslint": "9.37.0",
     "fast-check": "4.10.2",
     "litesvm": "0.8.0",
