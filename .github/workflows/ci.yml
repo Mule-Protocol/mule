@@ -86,7 +86,7 @@ jobs:
         run: pnpm coverage:instructions
       - name: Public evidence
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: m1-step1-evidence
           path: |
@@ -149,7 +149,7 @@ jobs:
         run: pnpm local:missions
       - name: Public local-network evidence only
         if: success() || failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: m1-local-missions-evidence
           path: |
