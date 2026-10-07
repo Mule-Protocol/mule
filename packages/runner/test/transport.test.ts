@@ -3,28 +3,37 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { Keypair, SendTransactionError, SystemProgram, type Connection } from '@solana/web3.js';
+import bs58 from 'bs58';
+import { Keypair, SendTransactionError, SystemProgram, Transaction, type Connection } from '@solana/web3.js';
 import { Journal } from '../src/journal.js';
-import { RpcRunner, type LocalKeys, type TransactionRecord } from '../src/rpc.js';
+import { RpcRunner, CreationExpiredWithoutExecution, type LocalKeys, type TransactionRecord } from '../src/rpc.js';
 import { TestFault } from '../src/faults.js';
 
-function fixture() {
+function fixture(instruction='record_verdict') {
   const directory=mkdtempSync(join(tmpdir(),'mule-transport-'));
   const admin=Keypair.generate(),recipient=Keypair.generate().publicKey;
-  let submitted=false, sends=0, builds=0, lostResponse=false;
-  let rejectPreflight=false;
+  const operation=recipient.toBase58()+':'+instruction;
+  let sends=0,builds=0,lostResponse=false,rejectPreflight=false,dropFirst=false,advance=false,height=0,lookups=0;
+  const landed=new Set<string>();
   const sent:Buffer[]=[];
   const connection={
-    getLatestBlockhash:async()=>({blockhash:Keypair.generate().publicKey.toBase58(),lastValidBlockHeight:100}),
-    getSignatureStatuses:async()=>({value:[submitted?{err:null,confirmationStatus:'confirmed'}:null]}),
-    getBlockHeight:async()=>1,
+    getLatestBlockhash:async()=>({blockhash:Keypair.generate().publicKey.toBase58(),lastValidBlockHeight:height+(advance?2:100)}),
+    getSlot:async()=>0,
+    getFirstAvailableBlock:async()=>0,
+    getTransaction:async()=>{lookups++;return null;},
+    getAccountInfo:async()=>null,
+    getSignaturesForAddress:async()=>[],
+    getSignatureStatuses:async(signatures:string[])=>({value:signatures.map(signature=>landed.has(signature)?{err:null,confirmationStatus:'confirmed'}:null)}),
+    getBlockHeight:async()=>{if(advance)height++;return height;},
     sendRawTransaction:async(bytes:Buffer)=>{
       sends++;sent.push(bytes);
       if(rejectPreflight)throw new SendTransactionError({action:'simulate',signature:'',transactionMessage:'named program rejection',logs:['Program log: named program rejection']});
-      submitted=true;
+      const transaction=Transaction.from(bytes);assert(transaction.signature);
+      const signature=bs58.encode(transaction.signature);
+      if(dropFirst&&sends===1)throw new Error('Request lost before acceptance');
+      landed.add(signature);
       if(lostResponse)throw new Error('Connection lost after acceptance');
-      const record=new Journal(directory).read<TransactionRecord>('tx:mission:record_verdict');
-      assert(record);return record.signature;
+      return signature;
     },
   } as unknown as Connection;
   const reopen=():RpcRunner=>{
@@ -33,39 +42,37 @@ function fixture() {
     runner.receipt=async(signature:string)=>({signature,events:[]});
     return runner;
   };
-  return {
-    directory,reopen,
+  return {directory,operation,reopen,
     build:()=>{builds++;return[SystemProgram.transfer({fromPubkey:admin.publicKey,toPubkey:recipient,lamports:1})];},
-    counts:()=>({sends,builds}),sent,
-    loseResponse:()=>{lostResponse=true;},
-    rejectPreflight:()=>{rejectPreflight=true;},
+    counts:()=>({sends,builds}),sent,lookups:()=>lookups,
+    loseResponse:()=>{lostResponse=true;},rejectPreflight:()=>{rejectPreflight=true;},
+    dropUntilExpiry:()=>{dropFirst=true;advance=true;},
   };
 }
 test('ambiguous RPC response reconciles original signature without rebuilding or a second broadcast',async()=>{
   const f=fixture();
   try{
     f.loseResponse();
-    const first=await f.reopen().transact('mission:record_verdict',f.build,[]);
-    const second=await f.reopen().transact('mission:record_verdict',()=>{throw new Error('must not build twice');},[]);
+    const first=await f.reopen().transact(f.operation,f.build,[]);
+    const second=await f.reopen().transact(f.operation,()=>{throw new Error('must not build twice');},[]);
     assert.equal(first.signature,second.signature);
     assert.deepEqual(f.counts(),{sends:1,builds:1});
-    const saved=new Journal(f.directory).read<TransactionRecord>('tx:mission:record_verdict');
-    assert.equal(saved?.state,'confirmed');
+    const saved=new Journal(f.directory).read<TransactionRecord>('tx:'+f.operation);
+    assert.equal(saved?.state,'confirmed');assert.equal(saved?.broadcastAttempted,true);
     assert.equal(saved?.bytes,f.sent[0]?.toString('base64'));
   } finally{rmSync(f.directory,{recursive:true,force:true});}
 });
-test('post-confirmation fault leaves signed journal; fresh process adapter confirms same signature without broadcast',async()=>{
-  const f=fixture();
-  const oldMode=process.env.MULE_TEST_MODE,oldFault=process.env.MULE_TEST_FAULT;
+test('post-confirmation fault leaves signed journal; restart confirms same signature without broadcast',async()=>{
+  const f=fixture();const oldMode=process.env.MULE_TEST_MODE,oldFault=process.env.MULE_TEST_FAULT;
   try{
     process.env.MULE_TEST_MODE='1';process.env.MULE_TEST_FAULT='after-verdict';
-    await assert.rejects(f.reopen().transact('mission:record_verdict',f.build,[]),TestFault);
-    const crashed=new Journal(f.directory).read<TransactionRecord>('tx:mission:record_verdict');
+    await assert.rejects(f.reopen().transact(f.operation,f.build,[]),TestFault);
+    const crashed=new Journal(f.directory).read<TransactionRecord>('tx:'+f.operation);
     assert.equal(crashed?.state,'signed');assert.equal(crashed?.receipt,undefined);
     delete process.env.MULE_TEST_FAULT;
-    const recovered=await f.reopen().transact('mission:record_verdict',()=>{throw new Error('must not rebuild');},[]);
+    const recovered=await f.reopen().transact(f.operation,()=>{throw new Error('must not rebuild');},[]);
     assert.equal(recovered.signature,crashed?.signature);
-    assert.equal(new Journal(f.directory).read<TransactionRecord>('tx:mission:record_verdict')?.state,'confirmed');
+    assert.equal(new Journal(f.directory).read<TransactionRecord>('tx:'+f.operation)?.state,'confirmed');
     assert.deepEqual(f.counts(),{sends:1,builds:1});
   } finally{
     if(oldMode===undefined)delete process.env.MULE_TEST_MODE;else process.env.MULE_TEST_MODE=oldMode;
@@ -73,12 +80,55 @@ test('post-confirmation fault leaves signed journal; fresh process adapter confi
     rmSync(f.directory,{recursive:true,force:true});
   }
 });
-test('deterministic simulation rejection fails immediately and retains original signed bytes for inspection',async()=>{
+test('deterministic simulation rejection fails immediately and retains signed bytes',async()=>{
   const f=fixture();
   try{
     f.rejectPreflight();
-    await assert.rejects(f.reopen().transact('mission:record_verdict',f.build,[]),/named program rejection/);
+    await assert.rejects(f.reopen().transact(f.operation,f.build,[]),/named program rejection/);
     assert.deepEqual(f.counts(),{sends:1,builds:1});
-    assert.equal(new Journal(f.directory).read<TransactionRecord>('tx:mission:record_verdict')?.state,'signed');
+    assert.equal(new Journal(f.directory).read<TransactionRecord>('tx:'+f.operation)?.state,'signed');
   } finally{rmSync(f.directory,{recursive:true,force:true});}
+});
+test('unknown non-execution waits for finalized expiry, reconciles history, then signs retained instructions once',async()=>{
+  const f=fixture();
+  try{
+    f.dropUntilExpiry();
+    const receipt=await f.reopen().transact(f.operation,f.build,[]);
+    assert.deepEqual(f.counts(),{sends:2,builds:1});
+    assert.equal(f.lookups(),1);
+    const record=new Journal(f.directory).read<TransactionRecord>('tx:'+f.operation);assert(record);
+    assert.equal(record.expiredAttempts?.length,1);
+    const expired=record.expiredAttempts[0]!;
+    assert(expired.finalizedHeight>expired.lastValidBlockHeight);
+    assert.equal(expired.outcome,'expired-not-landed');
+    assert.notEqual(expired.signature,receipt.signature);
+    assert.notDeepEqual(f.sent[0],f.sent[1],'New blockhash requires a distinct signature');
+    const first=Transaction.from(f.sent[0]!),second=Transaction.from(f.sent[1]!);
+    assert.deepEqual(first.instructions[0]?.data,second.instructions[0]?.data,'Reservation/instruction is not rebuilt');
+  } finally{rmSync(f.directory,{recursive:true,force:true});}
+});
+test('pruned RPC history never authorizes replacement of an uncertain transaction',async()=>{
+  const f=fixture();
+  try{
+    f.dropUntilExpiry();
+    const runner=f.reopen();runner.connection.getFirstAvailableBlock=async()=>100;
+    await assert.rejects(runner.transact(f.operation,f.build,[]),/pruned required history/);
+    assert.deepEqual(f.counts(),{sends:1,builds:1});
+  } finally{rmSync(f.directory,{recursive:true,force:true});}
+});
+
+test('expired creation is never re-signed and keeps a durable non-execution proof for a new identity',async()=>{
+  const f=fixture('create_mission');
+  try {
+    f.dropUntilExpiry();
+    await assert.rejects(f.reopen().transact(f.operation,f.build,[]),CreationExpiredWithoutExecution);
+    const record=new Journal(f.directory).read<TransactionRecord>('tx:'+f.operation);assert(record);
+    assert.equal(record.state,'expired-not-landed');
+    const proof=record.expiredAttempts?.at(-1);assert(proof);
+    assert(proof.finalizedHeight>proof.lastValidBlockHeight);
+    assert.equal(proof.signature,record.signature);
+    assert.deepEqual(f.counts(),{sends:1,builds:1},'No replacement bytes or blind retry of stale creation');
+    await assert.rejects(f.reopen().transact(f.operation,()=>{throw new Error('Consumed creation cannot be rebuilt');},[]),CreationExpiredWithoutExecution);
+    assert.deepEqual(f.counts(),{sends:1,builds:1});
+  } finally {rmSync(f.directory,{recursive:true,force:true});}
 });

@@ -1,0 +1,12 @@
+name: Weekly fuzz
+on:
+  schedule:
+    # Mondays, 03:23 UTC; free standard Linux runner in this public repository.
+    - cron: '23 3 * * 1'
+permissions:
+  contents: read
+jobs:
+  fuzz:
+    uses: ./.github/workflows/ci.yml
+    with:
+      extended-fuzz: true

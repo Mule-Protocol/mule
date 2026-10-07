@@ -1,0 +1,762 @@
+{
+  "execution": "solana-test-validator",
+  "agent": "agent de référence scripté",
+  "runId": "37690611994-1",
+  "date": "2026-10-07",
+  "genesis": "NPSXPfhVAp6Pzmm9xUyUs6AN5snwmQim27gAKc4KkzW",
+  "mint": "327GCzEppeWxvZqS7JKfPq2urDWsSvgmZi3bXKTKL7dG",
+  "program": "Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL",
+  "minDisputeWindow": 60,
+  "setup": [
+    {
+      "instruction": "local_dUSDC_mint_and_accounts",
+      "signature": "9BqLX65dCWRpfWs18d5Z54pWNVfm73XtW6eTAPLyUcMbjDu3GxbeNvEMVsxbBX9aFk7UJpiEvzNDBQQ3rDrvskh"
+    },
+    {
+      "instruction": "initialize_config",
+      "signature": "yTpcNJ5YHcNNBwW7kU39VzXLBfkUcrKRvxoAnmPVghGz9DEkzqzwT1rwLzr8oyYuhTeRh9Vr4zbtz3dAjzsvi1v"
+    },
+    {
+      "instruction": "update_config",
+      "signature": "2c7Xpr3aeXrrpJx3Kbv3N8yoHCa3miJ75HadGDiacjACV2i4bPzzAKqqcVzVhjDmKBLeJ5KnGSJhkB5sdyYbBi22"
+    }
+  ],
+  "roles": {
+    "admin": "CqGTEvFDDUYrDYbW1rcWaaVLAycvGg9Gzdd4jYpZayyB",
+    "validator": "79Wih5aVaedfKBpr5fjETgAsbkRBz99cM6Hx5v7v5yyS",
+    "client": "5syheoVEwpWysGbCfTsryfXGAXxtWPrcGNGsLxHwXakT",
+    "agent": "CiceuqLo21MxqLaw9SDCKFfdonZT97gUiYsqujNNGzTy",
+    "mintAuthority": "5677MpWfLxopy4gDSotWsRpdMgKK3p4YYtaR1wccd7oj",
+    "upgradeAuthority": "2FxXf26bKxsahNzWrkQ5UqVnFX8z3ioLkYy8mQdXm1Ym"
+  },
+  "missions": [
+    {
+      "number": 1,
+      "missionId": "1",
+      "model": "invoice.v1",
+      "mode": "honest",
+      "designated": false,
+      "dispute": false,
+      "address": "C12yUeCk8dCmwH1zYrrowKDEcpXXa4WJsTAEQKvjNVW",
+      "amount": "5000000",
+      "criteriaHash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc.json",
+      "deadline": "1791409870",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "nh31voZ1ksxqnANhFwkKgicCGYAawYZcfbocAJaBKxr76J3wV3BMbTg79oL9aihmgEcfiVfwdW8Pm71cU27eE65"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "5fhdpcVDjvseHHGFkdWQdj22qRnqsDVS1CPRqhcP8B2xK4aHoNtH98TBAF2beWG6RyA1A2w4uRwcQkoFxWdmp1jg"
+        },
+        {
+          "instruction": "submit_delivery",
+          "signature": "3xXaXVkJUvp41axgF3xf7jCCsxsGBK9kw2A9sTkg5rPZmvGy33SnsERgyL1pH1T2QjA4GFpRqLzYYeaZL1mj38K2"
+        },
+        {
+          "instruction": "record_verdict",
+          "signature": "nMe72tVYEEXzVVCanvEfYWfMzN9fDg6qjuB5dLYYQ4JEYDbSKjtd8irTu3Z5zZCwinTWXyqN69zYoFS5KP1vH6S"
+        },
+        {
+          "instruction": "finalize",
+          "signature": "29pTELqsMEBZu9BEcHqtxNseJefdwRaweXvwcSxvwfjzeitx9o7VNofbZHWeRcCrgcTUSApSEYKUNFsQCmsRWys8"
+        }
+      ],
+      "beforeCreate": {
+        "client": "100000000",
+        "agent": "0",
+        "clientLamports": "100000000000"
+      },
+      "afterCreate": {
+        "client": "95000000",
+        "agent": "0",
+        "clientLamports": "99992420560"
+      },
+      "rentExpected": "7579440",
+      "deliveryHash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335",
+      "deliveryUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335.json",
+      "idempotence": {
+        "fault": "after-report",
+        "firstExitCode": 42,
+        "verdictsBeforeRestart": 0,
+        "verdictsAfterRestart": 1,
+        "originalReportHash": "bd815fa5886e008f17d55dd326a4c7cabb4ec2ee377799be3a1f32a13482ab1c",
+        "recoveredReportHash": "bd815fa5886e008f17d55dd326a4c7cabb4ec2ee377799be3a1f32a13482ab1c",
+        "sameReportHash": true,
+        "chainTransactionCount": 4,
+        "uniqueSignatures": 4,
+        "transactionJournalAtCrash": "absent",
+        "transactionJournalAfterRestart": "confirmed"
+      },
+      "reportHash": "bd815fa5886e008f17d55dd326a4c7cabb4ec2ee377799be3a1f32a13482ab1c",
+      "reportUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/bd815fa5886e008f17d55dd326a4c7cabb4ec2ee377799be3a1f32a13482ab1c.json",
+      "validatorMessage": "6/6 FIELDS VALID",
+      "pass": true,
+      "beforeSettlement": {
+        "client": "55000000",
+        "agent": "0",
+        "clientLamports": "99931785040"
+      },
+      "terminalInstruction": "finalize",
+      "afterSettlement": {
+        "client": "55000000",
+        "agent": "5000000",
+        "clientLamports": "99939364480"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "settled",
+      "finalEvent": "MissionSettled",
+      "recipient": "CiceuqLo21MxqLaw9SDCKFfdonZT97gUiYsqujNNGzTy",
+      "rentReturned": "7579440"
+    },
+    {
+      "number": 2,
+      "missionId": "2",
+      "model": "invoice.v1",
+      "mode": "dishonest",
+      "designated": false,
+      "dispute": false,
+      "address": "CEHUm6StqEHaEG6zKZisdUp8pXAYpVbHoMtrUS75cVab",
+      "amount": "5000000",
+      "criteriaHash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc.json",
+      "deadline": "1791409873",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "5TaNPicn9qd72KwfjX5NSFbKu1fs42PiL8xB84GjSJWjpRBATMhn1s3watUAToP5z72pqhAwfm9ELpG2KNnryW2"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "ZDquAtowEWJioTbAR4kont7u52wwGDwBLKtUnjS2dazqnY3SiyHvLjffbeybDoJ28CUTM7DrNxpHJcMnp3UrTea"
+        },
+        {
+          "instruction": "submit_delivery",
+          "signature": "5z8grH7pjQdRxRcY7Kdxw5WJ9kxsdizc4r7Lso9MnC65TSnjgTXNbz3t4i7AJse3nBDkJx9QBwPB5TgijhrjfDU7"
+        },
+        {
+          "instruction": "record_verdict",
+          "signature": "4AFjaNw2dfrYFBSuYo7FKZZ8MBhYtbeLZjuQFDiJ2Py9WNFF6vH2dxL4jAEYMMquhgeU5a2D7YamKdq3eYrws3Wb"
+        },
+        {
+          "instruction": "finalize",
+          "signature": "sGAHwmhD6ocpfEvp7972WW7TyWmN7F13Hfzji2uUa3L7bVx1ry7442U2jCUJQv9WLB3iUPhJZoFL9VwoJMpccut"
+        }
+      ],
+      "beforeCreate": {
+        "client": "95000000",
+        "agent": "0",
+        "clientLamports": "99992420560"
+      },
+      "afterCreate": {
+        "client": "90000000",
+        "agent": "0",
+        "clientLamports": "99984841120"
+      },
+      "rentExpected": "7579440",
+      "deliveryHash": "eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0",
+      "deliveryUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/eb9d8f14c70ccb8ade733c5f31e99cc5fe455f7fcba1944128718918fc3d95a0.json",
+      "idempotence": {
+        "fault": "after-verdict",
+        "firstExitCode": 42,
+        "verdictsBeforeRestart": 1,
+        "verdictsAfterRestart": 1,
+        "originalReportHash": "44059df25964d0b6599160f54a2d7d7ebfe741762cfb82cd728fd93c4794a766",
+        "recoveredReportHash": "44059df25964d0b6599160f54a2d7d7ebfe741762cfb82cd728fd93c4794a766",
+        "sameReportHash": true,
+        "chainTransactionCount": 4,
+        "uniqueSignatures": 4,
+        "transactionJournalAtCrash": "signed",
+        "transactionJournalAfterRestart": "confirmed"
+      },
+      "reportHash": "44059df25964d0b6599160f54a2d7d7ebfe741762cfb82cd728fd93c4794a766",
+      "reportUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/44059df25964d0b6599160f54a2d7d7ebfe741762cfb82cd728fd93c4794a766.json",
+      "validatorMessage": "5/6 · MISSING: total_amount",
+      "pass": false,
+      "beforeSettlement": {
+        "client": "55000000",
+        "agent": "5000000",
+        "clientLamports": "99939364480"
+      },
+      "terminalInstruction": "finalize",
+      "afterSettlement": {
+        "client": "60000000",
+        "agent": "5000000",
+        "clientLamports": "99946943920"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "refunded",
+      "finalEvent": "MissionRefunded",
+      "recipient": "5syheoVEwpWysGbCfTsryfXGAXxtWPrcGNGsLxHwXakT",
+      "rentReturned": "7579440"
+    },
+    {
+      "number": 3,
+      "missionId": "11",
+      "model": "contract.v1",
+      "mode": "honest",
+      "designated": false,
+      "dispute": false,
+      "address": "DygVQW4jZjsrFMK8hWDRCPRNShr2YwxW6g1X9qyRDnrr",
+      "amount": "5000000",
+      "criteriaHash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37.json",
+      "deadline": "1791409877",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "5UKkhXrXMo3Uqs4XjAvh8Wf4BepGuvY3XqjReZ6w1i9d6mE9GGsTZgKRppWorGFuBnRWtHPZHyhEZWPLqkpw3iir"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "5RZmwtJU6ZndZ5S3xXSL3k3hZDnDxrnmhoMuzackCkhLgxaBqxjYt8GrqdTkFitYniZx3ST5FiXTkKFshEAhxxLB"
+        },
+        {
+          "instruction": "submit_delivery",
+          "signature": "4AozGEgGaBdBuSAiVkBypFCbrtV5E8eKRwcEBozJ4cAqgzqcu4MKeDXB5SWjedN4DHBJZakZ2yVisuZ3xVR56Z16"
+        },
+        {
+          "instruction": "record_verdict",
+          "signature": "5jwpCMSs8sdiHy8ZqtL4gqp6mnL4kadTQrdW7cJje41zipDR2rith5tLnr5GTwro5DTSYQ7TZFqfed1qJfE4uU8x"
+        },
+        {
+          "instruction": "finalize",
+          "signature": "5A2kgaHuPTba5JsXJ8Qf1SRAzUgS9h44fd4XaEfxNa3tw1uiFWKajpnkFyWwPbc3gy3LRgyUygW7e982WurtWffy"
+        }
+      ],
+      "consumedIds": [
+        {
+          "id": "3",
+          "address": "Fr6M2MLZmP8TgaenNV7PFLMoEr9aAb7kFr5z7v3dBkoy",
+          "status": "consumed-never-created",
+          "signatureCount": 0
+        }
+      ],
+      "beforeCreate": {
+        "client": "90000000",
+        "agent": "0",
+        "clientLamports": "99984841120"
+      },
+      "afterCreate": {
+        "client": "85000000",
+        "agent": "0",
+        "clientLamports": "99977261680"
+      },
+      "rentExpected": "7579440",
+      "reserveRecovery": {
+        "fault": "after-reserve",
+        "firstExitCode": 42,
+        "consumedId": "3",
+        "consumedAddress": "Fr6M2MLZmP8TgaenNV7PFLMoEr9aAb7kFr5z7v3dBkoy",
+        "replacementId": "11",
+        "chainSignaturesBefore": 0,
+        "chainSignaturesAfter": 0,
+        "neverReused": true
+      },
+      "deliveryHash": "449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1",
+      "deliveryUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/449d2e0926be3f39a91cf65b91f9644ed7a502f082d2026cb9d450bc0990ceb1.json",
+      "reportHash": "a2a071567a2c2a6afffc920a1697272f684b754b76d1fe54abb92f6a810f3e15",
+      "reportUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/a2a071567a2c2a6afffc920a1697272f684b754b76d1fe54abb92f6a810f3e15.json",
+      "validatorMessage": "5/5 FIELDS VALID",
+      "pass": true,
+      "beforeSettlement": {
+        "client": "60000000",
+        "agent": "5000000",
+        "clientLamports": "99946943920"
+      },
+      "terminalInstruction": "finalize",
+      "afterSettlement": {
+        "client": "60000000",
+        "agent": "10000000",
+        "clientLamports": "99954523360"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "settled",
+      "finalEvent": "MissionSettled",
+      "recipient": "CiceuqLo21MxqLaw9SDCKFfdonZT97gUiYsqujNNGzTy",
+      "rentReturned": "7579440"
+    },
+    {
+      "number": 4,
+      "missionId": "4",
+      "model": "contract.v1",
+      "mode": "dishonest",
+      "designated": false,
+      "dispute": false,
+      "address": "FsURm5Jqe4xd9r4fxSnLNLqUtb8hdgE6auHzyz36K6PS",
+      "amount": "5000000",
+      "criteriaHash": "dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/dc19ca94f8a0d925f52ed97fac7708e46a6c305c00e74ea719630c328b254e37.json",
+      "deadline": "1791409879",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "65rgUyDXZ33xp7T1i75xkguoQfTPDf4dYWJCc2bdC4ewd7J8ABTcYjZXTciurUZWiJLb9W5WJ6WjoNJ14JBLaHwz"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "4GhigCNbUW8pqicSZpKT4z92ivYcaDKdd1ssUpaRPMXtiT8GAvmurZxPV294Vkd3VEjSt1VWkH7MouwmGRm3kkKG"
+        },
+        {
+          "instruction": "submit_delivery",
+          "signature": "36vtXUL8dHja9F8Uojyyoq2weeW2rVoR5i85gR7CNKht2vWk4R66BgggLpbJSsfJSGrDgCyi9pvJAM1wNLcbvZmB"
+        },
+        {
+          "instruction": "record_verdict",
+          "signature": "1r352nyn9AJQPeALQ5TFjxXQC6bTfS3LMJcVjzz4FGJKAHYhXKVwCyFciZeqN3UNfxB35UYydfh1s4ZPeeBUHRY"
+        },
+        {
+          "instruction": "finalize",
+          "signature": "2V6hSHjdy1g3eH59HwNMoeiZHy3rLV2CekNhR6otxAjYsavHkYf5NeBZa6es1HDvwkxoRTkDsiCARtuwtrRhgtGS"
+        }
+      ],
+      "beforeCreate": {
+        "client": "85000000",
+        "agent": "0",
+        "clientLamports": "99977261680"
+      },
+      "afterCreate": {
+        "client": "80000000",
+        "agent": "0",
+        "clientLamports": "99969682240"
+      },
+      "rentExpected": "7579440",
+      "deliveryHash": "7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f",
+      "deliveryUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/7f7121ad9377dd1837ae30512e8803196928dd80c71de47f7da8292f7ce0c90f.json",
+      "reportHash": "eb54bf3c80f66239af953c309806ce316cf67151e62fecc348c8923b87febd18",
+      "reportUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/eb54bf3c80f66239af953c309806ce316cf67151e62fecc348c8923b87febd18.json",
+      "validatorMessage": "4/5 · MISSING: governing_law",
+      "pass": false,
+      "beforeSettlement": {
+        "client": "60000000",
+        "agent": "10000000",
+        "clientLamports": "99954523360"
+      },
+      "terminalInstruction": "finalize",
+      "afterSettlement": {
+        "client": "65000000",
+        "agent": "10000000",
+        "clientLamports": "99962102800"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "refunded",
+      "finalEvent": "MissionRefunded",
+      "recipient": "5syheoVEwpWysGbCfTsryfXGAXxtWPrcGNGsLxHwXakT",
+      "rentReturned": "7579440",
+      "closeRecovery": {
+        "fault": "after-close",
+        "firstExitCode": 42,
+        "manifestStateAtCrash": "pending",
+        "terminalSignature": "2V6hSHjdy1g3eH59HwNMoeiZHy3rLV2CekNhR6otxAjYsavHkYf5NeBZa6es1HDvwkxoRTkDsiCARtuwtrRhgtGS",
+        "chainSignaturesBefore": 5,
+        "chainSignaturesAfter": 5,
+        "missionClosed": true,
+        "vaultClosed": true
+      }
+    },
+    {
+      "number": 5,
+      "missionId": "5",
+      "model": "address.v1",
+      "mode": "honest",
+      "designated": false,
+      "dispute": false,
+      "address": "DnGPY5hgpAinDbbeiYuMceMiJidC5G1V3TJsCmp2Zs2n",
+      "amount": "5000000",
+      "criteriaHash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4.json",
+      "deadline": "1791409881",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "5Y5DEWhzrBfxMmL9wwbV6X3Y9gxkdLTBmnHw9ZcSX5EiLmKH8oy1C9SEGGQ4ZSVyshddUecVbMc6diEjFJ6RFvRH"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "3h78bULbFY2Yp9du3ndSGfRBbS4esZX8x7J7Gchopgpp5x3ZydvKDGMNdJCkYn3e3xVwgqfNGkTF1CFXF46eoY6o"
+        },
+        {
+          "instruction": "submit_delivery",
+          "signature": "4yFAtdk54WB5jb2bv9je5NNg3PoUzyGsZSHx7kr9ybf2ZJYF8H6s96tcx3CV4nLBTtTCZhghWDmeThdyBH5MLATd"
+        },
+        {
+          "instruction": "record_verdict",
+          "signature": "DsM8N8UF5z2kUZqCP6L5qcMRmFkmQTPxyDArdiZYhVegncgpJ6ge9bPHyYFcU5KRP53bkWHgW4NN55UtFGFJVYj"
+        },
+        {
+          "instruction": "finalize",
+          "signature": "3nUc3eBe1PhePa9Q6Vw3AV2TpuiiuSuW6BFb5RTykM31yXxer3ukhw4FFYNA82utZkrPdGMQzJyyVTCw3ZeLyKLY"
+        }
+      ],
+      "beforeCreate": {
+        "client": "80000000",
+        "agent": "0",
+        "clientLamports": "99969682240"
+      },
+      "afterCreate": {
+        "client": "75000000",
+        "agent": "0",
+        "clientLamports": "99962102800"
+      },
+      "rentExpected": "7579440",
+      "deliveryHash": "7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784",
+      "deliveryUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/7fccb5ee6bda7ee3344c57b9739c04991a62532c09cc3f5400683a7e2e0ce784.json",
+      "reportHash": "ab9deb21aab5480529ab08571d272627c571b15da3858c79123983df0b369af5",
+      "reportUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/ab9deb21aab5480529ab08571d272627c571b15da3858c79123983df0b369af5.json",
+      "validatorMessage": "12/12 ROWS VALID",
+      "pass": true,
+      "beforeSettlement": {
+        "client": "65000000",
+        "agent": "10000000",
+        "clientLamports": "99962102800"
+      },
+      "terminalInstruction": "finalize",
+      "afterSettlement": {
+        "client": "65000000",
+        "agent": "15000000",
+        "clientLamports": "99969682240"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "settled",
+      "finalEvent": "MissionSettled",
+      "recipient": "CiceuqLo21MxqLaw9SDCKFfdonZT97gUiYsqujNNGzTy",
+      "rentReturned": "7579440"
+    },
+    {
+      "number": 6,
+      "missionId": "6",
+      "model": "address.v1",
+      "mode": "dishonest",
+      "designated": false,
+      "dispute": false,
+      "address": "f3aWeE3hdgCbiYXMjuMzShSyy69FDw4diTiuM3M3EY8",
+      "amount": "5000000",
+      "criteriaHash": "6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/6a1653a0cc6939f8eac886ba4e23c9e0b4a746c6f5167d48888bdaef21b1a2f4.json",
+      "deadline": "1791409882",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "25fpXsDs4yyuzEGJTDmHYfpyj3cskusMmKdPpPPGtQoJjfzzcp1BvU56yMEWq2Y1VmKc9FgMKkiWdxqReAhNdYcJ"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "3sppVZNwwG1tSm4AHwvVt2vU3im48Bp1MQeDvH2gYiMXcnTLSAXHyWbSRVjGqSkpdKSaM6SmvVVgEcMpx1XRerWA"
+        },
+        {
+          "instruction": "submit_delivery",
+          "signature": "3DHdZgedRoR1aj7V21L3Vdkik1iii9mGd5ycZDcivmSxwEtF2JK1U9gt8ipoKcmq9PjGgV1Ydg9c15B6jCfohtrb"
+        },
+        {
+          "instruction": "record_verdict",
+          "signature": "2Vgncfc3v8is2r4qDqvZ87riNtsSM8WnnPuiGNvFfmsGx4jVpVJsGQqArKfBDrJ8XRKVUjhMqoV1joH43S3nH6ef"
+        },
+        {
+          "instruction": "finalize",
+          "signature": "5kS44UR7G18QR9MhQ5Gaj5rZaSeGAdnT4rvLWzJjp6tAZs644fvzreLUxw6xH9NjrZX6obwfcobnqa8jqZbbJXX3"
+        }
+      ],
+      "beforeCreate": {
+        "client": "75000000",
+        "agent": "0",
+        "clientLamports": "99962102800"
+      },
+      "afterCreate": {
+        "client": "70000000",
+        "agent": "0",
+        "clientLamports": "99954523360"
+      },
+      "rentExpected": "7579440",
+      "deliveryHash": "c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30",
+      "deliveryUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/c9f32b9c1d5a105afd20373a7db6c94caa6944300915eb2379193f6376393f30.json",
+      "reportHash": "01bde08200789afc6d0841c2347dce0fadabf2a64bdd01af50db22524e745620",
+      "reportUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/01bde08200789afc6d0841c2347dce0fadabf2a64bdd01af50db22524e745620.json",
+      "validatorMessage": "11/12 · INVALID POSTCODE, ROW 7",
+      "pass": false,
+      "beforeSettlement": {
+        "client": "65000000",
+        "agent": "15000000",
+        "clientLamports": "99969682240"
+      },
+      "terminalInstruction": "finalize",
+      "afterSettlement": {
+        "client": "70000000",
+        "agent": "15000000",
+        "clientLamports": "99977261680"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "refunded",
+      "finalEvent": "MissionRefunded",
+      "recipient": "5syheoVEwpWysGbCfTsryfXGAXxtWPrcGNGsLxHwXakT",
+      "rentReturned": "7579440"
+    },
+    {
+      "number": 7,
+      "missionId": "7",
+      "model": "invoice.v1",
+      "mode": "honest",
+      "designated": true,
+      "dispute": false,
+      "address": "8gJBD3P646rvQhrpoFd37qohRa1H15An5XwFVAZ72ht8",
+      "amount": "5000000",
+      "criteriaHash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc.json",
+      "deadline": "1791409884",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "wxuN11278g7DoLPrUS2t16jF1JJmU6PwzUZJjWTkbmiky94Tcaue3kgXTRUmkxmCoyfZzfyTuts1zduSy1pfAdz"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "46LDFLvsodGAsZ2yGJ6L6iHhuMA2f5cSaobgGiBspVqeQT5ypBUm9JRyzRRQo3GZATd4MDXnu3Ex1kLRL3PK6iRr"
+        },
+        {
+          "instruction": "submit_delivery",
+          "signature": "2xKLQzEink65okGuT7xXvm39f5XNY2drSnmAhsnFPkdpJvB7HLu4M1xPvioioSF5hix4q4FaArpXvxfF3UzT2pFQ"
+        },
+        {
+          "instruction": "record_verdict",
+          "signature": "3J5u5QzMUhjZBS92obwQQpuofjytwzwFtYtFV2NzDF6C8ZqpVpp5b4Qdv6YDkcebTthaRojPgSGXRJ9thECxrdD7"
+        },
+        {
+          "instruction": "finalize",
+          "signature": "yUoEPjLX4Fk6y8fqDR8LbZVZi5DAurHBGPjcGX7F4efCj2wUTa1eqLT4ae14ZU6JiTP9TCSeb8sP79wRZxzTWTA"
+        }
+      ],
+      "beforeCreate": {
+        "client": "70000000",
+        "agent": "0",
+        "clientLamports": "99954523360"
+      },
+      "afterCreate": {
+        "client": "65000000",
+        "agent": "0",
+        "clientLamports": "99946943920"
+      },
+      "rentExpected": "7579440",
+      "deliveryHash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335",
+      "deliveryUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335.json",
+      "reportHash": "7abe841f91f19f6fcf830974dd07ff5f967cc0d2581278b01d78e0385f827e3c",
+      "reportUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/7abe841f91f19f6fcf830974dd07ff5f967cc0d2581278b01d78e0385f827e3c.json",
+      "validatorMessage": "6/6 FIELDS VALID",
+      "pass": true,
+      "beforeSettlement": {
+        "client": "70000000",
+        "agent": "15000000",
+        "clientLamports": "99977261680"
+      },
+      "terminalInstruction": "finalize",
+      "afterSettlement": {
+        "client": "70000000",
+        "agent": "20000000",
+        "clientLamports": "99984841120"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "settled",
+      "finalEvent": "MissionSettled",
+      "recipient": "CiceuqLo21MxqLaw9SDCKFfdonZT97gUiYsqujNNGzTy",
+      "rentReturned": "7579440"
+    },
+    {
+      "number": 8,
+      "missionId": "8",
+      "model": "invoice.v1",
+      "mode": "honest",
+      "designated": false,
+      "dispute": true,
+      "address": "BEiHjV2KMmpEvakYR5kv84kYAS2Ckq1VNSmwsZE8Bud6",
+      "amount": "5000000",
+      "criteriaHash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc.json",
+      "deadline": "1791409886",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "4wRXqzVoBePjw23nYbyiAnNDKUEVxM9zHiaMrJJSs8sJoViDFdKvrFUKgrgsPofC5oTLSh8NXkuvApqwKaYiXaVq"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "5VAtvWdTjVSaVSE9CS4aMzGw3Z6ykcaeNtdwxUk7A6MprGqoBuiTcqHHG21ijBni4VZWLXoA9hfrYueGiPvCxA2h"
+        },
+        {
+          "instruction": "submit_delivery",
+          "signature": "2FqjwQevJj1npiyBSNg6dDbAVovsX7ck1jTCMQfJxh8QVVoMZFirumJFcC7Q9WnBfoW8bANtDdL6pkef8gujDEqT"
+        },
+        {
+          "instruction": "record_verdict",
+          "signature": "5xKjCLuj2TqBqfNmfrL5nFFvuk6EfeeoAFKF6LxJWzYJCyccC68QLRGSbJm2rUdV2UjY9gD5oXj35o77VHonRARB"
+        },
+        {
+          "instruction": "open_dispute",
+          "signature": "nKD8yMBBkJfszCLf54DgXwqdCa7WSctCmAkkHthjFdB7tbSFKS512K2ambb1tiXRfRYAXtpGiXDZofo5LWiPEFo"
+        },
+        {
+          "instruction": "resolve_dispute",
+          "signature": "4dGFH34MxBcYvuEtD9cecv1cs8K4wiZbfuR3YhYFS3mNVRDcVMnHPU4v2wUsCZo9G7QhoE5udicHEHj6YKDoAmqw"
+        }
+      ],
+      "beforeCreate": {
+        "client": "65000000",
+        "agent": "0",
+        "clientLamports": "99946943920"
+      },
+      "afterCreate": {
+        "client": "60000000",
+        "agent": "0",
+        "clientLamports": "99939364480"
+      },
+      "rentExpected": "7579440",
+      "deliveryHash": "4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335",
+      "deliveryUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/4b8d8320b71af526db9cb17730d14d9275cd7d975df3819b45d42bae7be73335.json",
+      "reportHash": "faa6a0980b6247737133285c7a6aae44245653d487f27b382f1cae0e454b1b33",
+      "reportUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/faa6a0980b6247737133285c7a6aae44245653d487f27b382f1cae0e454b1b33.json",
+      "validatorMessage": "6/6 FIELDS VALID",
+      "pass": true,
+      "beforeSettlement": {
+        "client": "60000000",
+        "agent": "0",
+        "clientLamports": "99939364480"
+      },
+      "terminalInstruction": "resolve_dispute",
+      "afterSettlement": {
+        "client": "65000000",
+        "agent": "0",
+        "clientLamports": "99946943920"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "refunded",
+      "finalEvent": "MissionRefunded",
+      "recipient": "5syheoVEwpWysGbCfTsryfXGAXxtWPrcGNGsLxHwXakT",
+      "rentReturned": "7579440"
+    },
+    {
+      "number": 9,
+      "missionId": "9",
+      "model": "invoice.v1",
+      "mode": "never-accepted",
+      "designated": false,
+      "dispute": false,
+      "address": "9kfyvWUr7TKFeghadVYpNHD6DEiLd8njxHqv4Hnt5d46",
+      "amount": "5000000",
+      "criteriaHash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc.json",
+      "deadline": "1791409298",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "5sWtLbUaoRd7Py8AgTUvWd8uNa8r65gwvqKVrZ1D7HWiJaaNXoq4Y5xCEYD8FBLbc3fUF4sfRYiU9uF5DFcUt9JC"
+        },
+        {
+          "instruction": "refund_expired",
+          "signature": "4xxVzjobGVCP99mgvmmbnn4eb1CFgCxryFbdz7ErgDoBrGRQFFJiV2wU54z4ji52vrgBynoTNNPS2NiTTijjqrVr"
+        }
+      ],
+      "beforeCreate": {
+        "client": "65000000",
+        "agent": "0",
+        "clientLamports": "99946943920"
+      },
+      "afterCreate": {
+        "client": "60000000",
+        "agent": "0",
+        "clientLamports": "99939364480"
+      },
+      "rentExpected": "7579440",
+      "validatorMessage": "Not accepted; expiry refund",
+      "beforeSettlement": {
+        "client": "70000000",
+        "agent": "20000000",
+        "clientLamports": "99984841120"
+      },
+      "terminalInstruction": "refund_expired",
+      "afterSettlement": {
+        "client": "75000000",
+        "agent": "20000000",
+        "clientLamports": "99992420560"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "refunded",
+      "finalEvent": "MissionRefunded",
+      "recipient": "5syheoVEwpWysGbCfTsryfXGAXxtWPrcGNGsLxHwXakT",
+      "rentReturned": "7579440"
+    },
+    {
+      "number": 10,
+      "missionId": "10",
+      "model": "invoice.v1",
+      "mode": "never-delivered",
+      "designated": false,
+      "dispute": false,
+      "address": "FvvjmwEe9x88ZSvsaMXvSDnMRdwx5soynj6cnF9LK1QK",
+      "amount": "5000000",
+      "criteriaHash": "6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc",
+      "criteriaUri": "https://raw.githubusercontent.com/Mule-Protocol/mule/main/data/6cd24534940273abb71902f23eef17e7dd4fd7a4ed632641e951200935d082dc.json",
+      "deadline": "1791409299",
+      "transactions": [
+        {
+          "instruction": "create_mission",
+          "signature": "3fyNHertYxWhuKibWdJroAE2BGmPFW5dDZycwkhQybuGB8o3zqEKenZvVZJxpGmgtpfYdiShk3BGY4d8gayNT8z2"
+        },
+        {
+          "instruction": "accept_mission",
+          "signature": "2Q2mQXwvLk5jAPSzP8Rud9fLprikiUWRRbguwXc9Vbzqva6Mt1frC2RKF3EjVXsdYAk1EYd5cYM9wGBxkHmyFYTV"
+        },
+        {
+          "instruction": "refund_expired",
+          "signature": "weiHGKhZjcYbWWWPAB8X5D9LUqZNcNTqAswzS5vBRER1pZHA3ZLWmmaEThLvJYSLjwKvGqAHJSQoRr9yUPEqn9T"
+        }
+      ],
+      "beforeCreate": {
+        "client": "60000000",
+        "agent": "0",
+        "clientLamports": "99939364480"
+      },
+      "afterCreate": {
+        "client": "55000000",
+        "agent": "0",
+        "clientLamports": "99931785040"
+      },
+      "rentExpected": "7579440",
+      "validatorMessage": "Accepted, no delivery; expiry refund",
+      "beforeSettlement": {
+        "client": "75000000",
+        "agent": "20000000",
+        "clientLamports": "99992420560"
+      },
+      "terminalInstruction": "refund_expired",
+      "afterSettlement": {
+        "client": "80000000",
+        "agent": "20000000",
+        "clientLamports": "100000000000"
+      },
+      "missionClosed": true,
+      "vaultClosed": true,
+      "finalStatus": "refunded",
+      "finalEvent": "MissionRefunded",
+      "recipient": "5syheoVEwpWysGbCfTsryfXGAXxtWPrcGNGsLxHwXakT",
+      "rentReturned": "7579440"
+    }
+  ],
+  "simulatedOnly": [
+    "refund_stale: deadline + 7 days (LiteSVM advanced Clock)",
+    "Disputed finalize: disputed_at + 14 days (LiteSVM advanced Clock)"
+  ],
+  "checks": {
+    "total": 10,
+    "paid": 4,
+    "refunded": 6,
+    "dishonestRefunded": 3
+  }
+}

@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 const report=JSON.parse(readFileSync('coverage/instructions.json','utf8'));
-const instructions=['initialize_config','update_config','propose_admin','accept_admin','create_mission','cancel_mission','accept_mission',
+const instructions=['initialize_config','update_config','propose_admin','accept_admin','cancel_admin_proposal','create_mission','cancel_mission','accept_mission',
   'submit_delivery','record_verdict','open_dispute','resolve_dispute','finalize','refund_expired','refund_stale'];
 const rows=instructions.map(name=>{
   const hits=report.evidence.filter(e=>e.instruction===name);

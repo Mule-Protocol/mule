@@ -41,8 +41,8 @@ test('PDA seeds use the full u64 little-endian domain without JavaScript roundin
   assert(!missionPda(SystemProgram.programId,1n)[0].equals(missionPda(client,1n)[0]));
   assert.throws(()=>u64le(-1n),RangeError);assert.throws(()=>u64le(1n<<64n),RangeError);
 });
-test('all 14 instructions encode the generated discriminator and exact signer/write metadata',()=>{
-  assert.equal(idl.instructions.length,14);
+test('all 15 instructions encode the generated discriminator and exact signer/write metadata',()=>{
+  assert.equal(idl.instructions.length,15);
   const builder=testSdk();
   for(const def of idl.instructions){
     const accounts:Record<string,PublicKey>={};

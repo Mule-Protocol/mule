@@ -86,6 +86,20 @@ pub mod mule_escrow {
         Ok(())
     }
 
+    pub fn cancel_admin_proposal(ctx: Context<UpdateConfig>) -> Result<()> {
+        let config = &mut ctx.accounts.config;
+        let cancelled_admin = config
+            .pending_admin
+            .ok_or(EscrowError::NoPendingAdminProposal)?;
+        config.pending_admin = None;
+        emit!(AdminProposalCancelled {
+            config: config.key(),
+            admin: config.admin,
+            cancelled_admin
+        });
+        Ok(())
+    }
+
     pub fn accept_admin(ctx: Context<AcceptAdmin>) -> Result<()> {
         let config = &mut ctx.accounts.config;
         let previous_admin = config.admin;
@@ -711,6 +725,12 @@ pub struct AdminProposed {
     pub pending_admin: Pubkey,
 }
 #[event]
+pub struct AdminProposalCancelled {
+    pub config: Pubkey,
+    pub admin: Pubkey,
+    pub cancelled_admin: Pubkey,
+}
+#[event]
 pub struct AdminAccepted {
     pub config: Pubkey,
     pub previous_admin: Pubkey,
@@ -821,4 +841,6 @@ pub enum EscrowError {
     ValidatorCannotBeDesignatedAgent,
     #[msg("The current validator cannot accept a mission")]
     ValidatorCannotAccept,
+    #[msg("No pending admin proposal to cancel")]
+    NoPendingAdminProposal,
 }

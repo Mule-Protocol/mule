@@ -1,6 +1,6 @@
-# MULE threat model · check-in 3
+# MULE threat model · M-1.1
 
-Sources: [v1 §2.4–2.5](spec/PROMPT_M-1_devnet.md), [v2 §2](spec/SPEC_M-1_devnet_v2.md), [current scope](spec/M1_LOCAL_ONLY_UPDATE.md), and owner-approved [check-in 1b corrections](checkins/CHECKIN-1b.md).
+Sources: [v1 §2.4–2.5](spec/PROMPT_M-1_devnet.md), [v2 §2](spec/SPEC_M-1_devnet_v2.md), [current scope](spec/M1_LOCAL_ONLY_UPDATE.md), owner-approved [check-in 1b corrections](checkins/CHECKIN-1b.md), and [M-1.1 hardening](spec/M1_1_HARDENING.md).
 This is a design/test review, not an independent security audit.
 
 ## Assets and trust
@@ -22,6 +22,7 @@ The program enforces signers and the recorded verdict. It cannot read HTTP or ve
 | Unauthorized verdict/ruling | Config validator/current-admin signature | Wrong signers and rotation |
 | Lost or inactive dispute admin | Permissionless finalize after 14 days from disputed_at applies the preserved original verdict | Too early rejected; exact threshold pays agent for Passed and client for Failed |
 | Admin transfer hijack | Current admin proposes non-default key; only pending admin accepts; acceptance clears pending and revokes old admin | Wrong proposer/accepter, default key, old admin after transfer |
+| Pending admin proposal is no longer trusted | Current admin can cancel; absence of a proposal is an error; cancelled signer cannot accept | Cancellation, wrong signer, empty proposal and post-cancellation acceptance |
 | Double payout/verdict | State guards and account closure | Double verdict/finalize; finalize after resolution; forbidden-state matrix |
 | Early payout/late contest | Clock sysvar and exact boundaries | Before/at deadline/window/dispute timeout; admin ruling before timeout |
 | Validator outage | Permissionless stale refund after 7 days | Before/at stale threshold |
@@ -29,10 +30,14 @@ The program enforces signers and the recorded verdict. It cannot read HTTP or ve
 | Overflow/serialization | Checked arithmetic; cap; bounded UTF-8; fixed allocation | Zero, overcap, overflow, 200-byte/multibyte URI |
 | Donation prevents closure | Sweep full balance to legitimate recipient | Extra deposit then closure |
 | Rent theft | Both account rents return to stored client | Exact balance/rent assertions |
-| ID reuse confuses history | SDK requires history and reserves each program/client/ID tuple; durable file adapter retains reservations forever | Duplicate create attempt rejected, including across restored history |
+| ID reuse confuses history | SDK requires history and reserves each program/client/ID tuple; durable file adapter retains reservations forever | Duplicate create attempt rejected, including across restored history; after-reserve recovery keeps the consumed ID reserved |
+| Crash after on-chain closure | Recover the original terminal event, signature and transaction balance metadata before updating the manifest | after-close injection; no additional settlement signature; original rent/payment evidence |
+| Unknown transaction outcome | Persist signed bytes and broadcast intent; wait for finalized expiry, then reconcile signature, PDA and retained history before any replacement | Transport/expiry policy tests; conflicting or pruned history prevents replacement |
+| Unexpected instruction sequences | Independent model predicts acceptance/rejection; seven invariants checked against real SBF | Generated actor/config/clock sequences and reduced counterexamples; see [fuzz scope](testing/FUZZING.md) |
 | Credential leakage | No real keys; ephemeral tests; secret scanning/push protection | Repository settings and limited artifacts |
 | CI privilege abuse | PR and main-push workflow, contents:read, no secrets | No pull_request_target or deployment job |
-| Altered downloaded tool binary | Versioned Anchor/Solana downloads checked against pinned SHA-256 before execution | CI checksum checks fail the job on mismatch |
+| Altered downloaded tool binary or action | Versioned Anchor/Agave/cargo-audit downloads checked against pinned SHA-256; actions pinned to verified full commits | CI checksum checks fail on mismatch; official tag provenance in [supply-chain policy](testing/SUPPLY-CHAIN.md) |
+| Known vulnerable dependency | Production npm and RustSec audits; explicit dated exceptions with executable mitigation guards | Unknown/error/expired cases fail closed; raw findings remain public |
 
 ## Residual risks
 
@@ -50,14 +55,23 @@ The program enforces signers and the recorded verdict. It cannot read HTTP or ve
 - Upgrade authority can replace code. No deployment or multisig is created. Original multisig requirements for later milestones remain outside this stage.
 - Pinned download hashes verify the downloaded bytes against reviewed pins, not the integrity of upstream build systems. Dependency/source compromise remains possible. solana-verify is deferred to the first deployment and has not been executed here.
 - LiteSVM executes real SBF/SPL with synthetic ProgramData/time. These simulated-time tests do not prove distributed-network behavior, live upgrade control, Squads CPI, or production security. The separate ten-mission campaign exercises a real, isolated local RPC validator.
-- Instruction/scenario coverage is not line/branch coverage, formal verification, fuzzing or an independent audit.
+- The 15-instruction assertion matrix measures instruction/scenario coverage. Property tests add generated sequences and shrinking; neither is Rust line/branch coverage, formal verification or an independent audit.
 - SDK builds instructions/decodes data and requires mission-ID history. FileMissionIdHistory provides durable Node storage; InMemoryMissionIdHistory is only for ephemeral tests. It holds no keys and sends no transactions.
 
-Step 3 covers validator/schema correctness, rehashed local storage, the scripted agent, two injected recovery points and ten local CI missions. Evidence and execution limits are recorded in CHECKIN-3. No public deployment, paid service, $MULE, staking, bonds, marketplace or site changes.
+The historical [CHECKIN-3](checkins/CHECKIN-3.md) records validator/schema correctness, rehashed local storage, the scripted agent, two injected recovery points and ten local CI missions. M-1.1 adds two recovery points, property testing, supply-chain enforcement and admin-proposal cancellation. Current execution evidence is recorded in [CHECKIN-4](checkins/CHECKIN-4-hardening.md); the configured weekly campaign and future managed Dependabot run must not be represented as already executed. No public deployment, paid service, $MULE, staking, bonds, marketplace or site changes.
+
+## Property-testing boundaries
+
+The [fuzz harness](testing/FUZZING.md) executes actual SBF in isolated LiteSVM workers. Its independent model checks token conservation, exact live vault amounts, legitimate recipients, one settlement, allowed/refused state transitions, current-validator entry guards and rent returned to the client after every instruction and clock jump. Actors, amounts, deadlines, config changes and exact time boundaries vary. Seeds, actual operation counts and reduced failures are retained as public evidence.
+
+Three scopes are deliberate: external vault donations are excluded from the generated alphabet because they legitimately increase vault balances (deterministic sweep tests cover them); settlement finality assumes the SDK's no-ID-reuse history because the protocol permits recreation after closure; validator separation is checked at creation/acceptance, not retroactively after rotation. Fuzzing does not cover consensus, forks, distributed RPC, concurrent drivers, Squads CPI, an indexer, document truth or a compromised host. A finite campaign can miss defects.
+
+The temporary [bigint-buffer exception](testing/SUPPLY-CHAIN.md#audit-policy-and-exceptions) leaves its high advisory visible. It applies only to version 1.1.5, the pinned JavaScript entrypoint, disabled build scripts and verified absence of every native-binding candidate, with fallback checks. Review is due 2026-11-06; a failed guard or expired entry blocks CI. This is a conditional mitigation for the local test runtime, not a claim that the dependency is patched or generally safe.
 
 ## Local pipeline boundaries
 
 - Curated criteria must match their reviewed fixture version exactly. Monetary strings are compared as integer cents; address.v1 currently uses twelve French rows with five-digit postcodes. These choices do not validate document authenticity, governing-law suitability or physical addresses.
 - Stored JSON uses sorted object keys, UTF-8 and a trailing newline, not a claim of RFC 8785 conformance. Every read verifies the SHA-256 of the actual bytes, including on recovery. Main-branch raw URIs are future public references until the owner merges; local validation never fetches them.
-- The two injected faults are after report persistence and after chain confirmation before journal confirmation. Recovery rereads the mission and checks the report hash and original signature. This is not a general crash-safety proof: a crash between SDK ID reservation and signed-journal persistence, or after closure before campaign-manifest persistence, can need manual reconciliation. Expired transactions with uncertain outcome are not rebuilt automatically.
+- Four injected faults cover report persistence, verdict confirmation before journal confirmation, ID reservation before signed-journal persistence, and closure before campaign-manifest persistence. Recovery checks hashes and signatures, marks a reserved identity with no creation as consumed-never-created, and reconstructs a closed mission from its original terminal transaction. The original ID is never released; token and rent evidence comes from that transaction's pre/post metadata.
+- A confirmed transaction is recovered as soon as its receipt is available. An outcome that remains unknown is treated as non-execution only after finalized blockhash expiry and checks of signature status, transaction lookup, PDA state and full retained mission history. A signature is broadcast at most once by the runner. A replacement is signed only when non-execution is established; expired creations consume their ID and receive a fresh ID/deadline. Inconsistent RPC views, missing evidence or pruned required history stop replacement and retain state. These checks assume an honest local RPC and preserved keys/history/journal on the same ledger; they do not prove recovery from arbitrary storage loss or distributed forks.
 - The standard public CI runner uses an ephemeral local ledger and genesis-funded test keys. Artifact paths allow only public reports/data plus build/coverage evidence. The unavoidable Agave internal faucet has zero balance and caps and is never called; see the sourced local runbook. No paid/external account or wallet is connected.
