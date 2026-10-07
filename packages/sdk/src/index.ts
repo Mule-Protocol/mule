@@ -65,13 +65,19 @@ export class MuleClient {
     for (const arg of definition.args) {
       let value = field(args, arg.name);
       if (value === undefined) throw new Error('Missing argument: ' + arg.name);
-      if (typeof value === 'bigint') value = new BN(value.toString());
       if (arg.type === 'u64' || arg.type === 'i64') {
-        if (!BN.isBN(value)) throw new TypeError('64-bit integers require bigint or BN');
-        const integer = BigInt(value.toString());
         const min = arg.type === 'u64' ? 0n : -(1n << 63n);
         const max = arg.type === 'u64' ? MAX_U64 : (1n << 63n) - 1n;
-        if (integer < min || integer > max) throw new RangeError('64-bit integer out of range');
+        if (typeof value === 'bigint') {
+          if (value < min || value > max) throw new RangeError('64-bit integer out of range');
+          // Preserve bits; do not round-trip a BN through decimal text for range checks.
+          value = new BN(value.toString(16), 16);
+        } else {
+          if (!BN.isBN(value)) throw new TypeError('64-bit integers require bigint or BN');
+          if (value.lt(new BN(min.toString(16), 16)) || value.gt(new BN(max.toString(16), 16))) {
+            throw new RangeError('64-bit integer out of range');
+          }
+        }
       }
       encodedArgs[arg.name] = value;
     }

@@ -33,7 +33,7 @@ Linux CI installs the exact tools in [architecture](docs/architecture.md). Then:
     anchor test --skip-build --skip-deploy --skip-local-validator
     pnpm coverage:instructions
 
-Tests run compiled SBF in LiteSVM; no node deployment or RPC is required. Test keys live in memory. ProgramData/time are synthetic fixtures. Artifacts contain coverage, IDL, binary and lockfile, never wallet files.
+Tests run compiled SBF in LiteSVM; no node deployment or RPC is required. Keys used by the scenarios are generated in memory. Anchor may create a disposable build keypair under ignored target/deploy; it is never used, uploaded or cached. ProgramData/time are synthetic fixtures. Artifacts contain coverage, IDL, binary and lockfile, never wallet files.
 
 [State machine](docs/state-machine.md) · [Threat model](docs/threat-model.md) · [Architecture](docs/architecture.md)
 

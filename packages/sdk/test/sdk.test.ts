@@ -76,3 +76,20 @@ test('event decoding requires a successful transaction result',()=>{
   assert.deepEqual(sdk.events(logs,{InstructionError:[1,'Custom']}),[]);
   assert.deepEqual(sdk.events(logs,undefined),[]);
 });
+test('64-bit endpoint values preserve their exact wire bytes for bigint and BN callers',()=>{
+  const def=idl.instructions.find(i=>i.name.replaceAll('_','').toLowerCase()==='createmission');assert(def);
+  const accounts=Object.fromEntries(def.accounts.map(a=>[a.name,client]));
+  for(const asBN of [false,true]){
+    const integer=(value:bigint)=>asBN?new BN(value.toString(16),16):value;
+    const args={mission_id:integer((1n<<64n)-1n),amount:integer((1n<<64n)-1n),
+      criteria_hash:Array<number>(32).fill(0),criteria_uri:'x',deadline:integer((1n<<63n)-1n),
+      dispute_window:integer(-(1n<<63n))};
+    const ix=sdk.instruction('create_mission',accounts,args);
+    assert.equal(ix.data.readBigUInt64LE(8),(1n<<64n)-1n);
+    assert.equal(ix.data.readBigUInt64LE(16),(1n<<64n)-1n);
+    assert.equal(ix.data.readBigInt64LE(ix.data.length-16),(1n<<63n)-1n);
+    assert.equal(ix.data.readBigInt64LE(ix.data.length-8),-(1n<<63n));
+    assert.throws(()=>sdk.instruction('create_mission',accounts,{...args,amount:integer(1n<<64n)}),/out of range/);
+    assert.throws(()=>sdk.instruction('create_mission',accounts,{...args,deadline:integer(-(1n<<63n)-1n)}),/out of range/);
+  }
+});
