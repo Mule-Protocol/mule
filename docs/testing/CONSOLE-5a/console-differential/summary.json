@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "engine": "LiteSVM 0.8.0; compiled SBF; one Linux Node 24 process per scenario",
+  "sourcePaths": {
+    "sbf": "target/deploy/mule_escrow.so",
+    "idl": "target/idl/mule_escrow.json",
+    "bundle": "packages/console-core/dist/console-core.mjs"
+  },
+  "sourceSha256": {
+    "sbf": "7c93e61315ea26fcb7092380ffe02a7efba7c938e9c66e197dbc7b3db4381ab8",
+    "idl": "0bf513e2d5138be9b4eeb44c3814aa04176ec3329444924213d528ce68275cba",
+    "bundle": "11fd73a2ee21035ff8fe07f696e0c13ef979bed055f8ce4bb33c58ffc368f47c"
+  },
+  "expectedScenarios": 7,
+  "passed": 7,
+  "failed": 0,
+  "scenarios": [
+    {
+      "id": "invoice-honest",
+      "passed": true,
+      "evidence": "invoice-honest.json",
+      "statesCompared": 10,
+      "deltasCompared": 5,
+      "jsonArtifactsCompared": 3,
+      "hashesCompared": 3,
+      "outcome": "settled",
+      "reportHash": "24bebc6d6cf244296d79d550a5a0103d2ad5b5da6fe843f75a3ad90dc21230b7",
+      "validatorMessage": "6/6 FIELDS VALID",
+      "designatedAgent": false
+    },
+    {
+      "id": "invoice-dishonest",
+      "passed": true,
+      "evidence": "invoice-dishonest.json",
+      "statesCompared": 10,
+      "deltasCompared": 5,
+      "jsonArtifactsCompared": 3,
+      "hashesCompared": 3,
+      "outcome": "refunded",
+      "reportHash": "d0916655daaa815b0bb0283eb44e3f688898c18ef74c5c3a0dcf568489919710",
+      "validatorMessage": "5/6 · MISSING: total_amount",
+      "designatedAgent": false
+    },
+    {
+      "id": "contract-honest",
+      "passed": true,
+      "evidence": "contract-honest.json",
+      "statesCompared": 10,
+      "deltasCompared": 5,
+      "jsonArtifactsCompared": 3,
+      "hashesCompared": 3,
+      "outcome": "settled",
+      "reportHash": "23a95be05289196b66ae237cf8fff9a834a0c0fa2880e64b3c99a032b0813886",
+      "validatorMessage": "5/5 FIELDS VALID",
+      "designatedAgent": false
+    },
+    {
+      "id": "contract-dishonest",
+      "passed": true,
+      "evidence": "contract-dishonest.json",
+      "statesCompared": 10,
+      "deltasCompared": 5,
+      "jsonArtifactsCompared": 3,
+      "hashesCompared": 3,
+      "outcome": "refunded",
+      "reportHash": "ea5c542098cabc13e6d87cd0c46cc709208319390db5ebc57ebc031ff21850da",
+      "validatorMessage": "4/5 · MISSING: governing_law",
+      "designatedAgent": false
+    },
+    {
+      "id": "address-honest",
+      "passed": true,
+      "evidence": "address-honest.json",
+      "statesCompared": 10,
+      "deltasCompared": 5,
+      "jsonArtifactsCompared": 3,
+      "hashesCompared": 3,
+      "outcome": "settled",
+      "reportHash": "0430753bc25ae77fc674d0b6c8d0c9bf8a16ae43f1de4b753853f326e65eaddf",
+      "validatorMessage": "12/12 ROWS VALID",
+      "designatedAgent": false
+    },
+    {
+      "id": "address-dishonest",
+      "passed": true,
+      "evidence": "address-dishonest.json",
+      "statesCompared": 10,
+      "deltasCompared": 5,
+      "jsonArtifactsCompared": 3,
+      "hashesCompared": 3,
+      "outcome": "refunded",
+      "reportHash": "16f88af6d2436ddf1d3bc6dafb51d4fb43f82dd8a3ef5bb3fb430c5d1227cdbe",
+      "validatorMessage": "11/12 · INVALID POSTCODE, ROW 7",
+      "designatedAgent": false
+    },
+    {
+      "id": "invoice-designated",
+      "passed": true,
+      "evidence": "invoice-designated.json",
+      "statesCompared": 10,
+      "deltasCompared": 5,
+      "jsonArtifactsCompared": 3,
+      "hashesCompared": 3,
+      "outcome": "settled",
+      "reportHash": "4bc5292a24c79b782edaaf7b6c35f4dbd5a8f4b07d7bee2c2eaf24265468cefd",
+      "validatorMessage": "6/6 FIELDS VALID",
+      "designatedAgent": true
+    }
+  ]
+}

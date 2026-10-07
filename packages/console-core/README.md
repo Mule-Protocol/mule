@@ -38,7 +38,15 @@ pnpm install --frozen-lockfile
 pnpm build:console
 pnpm check:console-bundle
 pnpm --filter @mule/console-core test
+```
+
+Pour les parités complètes, construire aussi les adaptateurs Node et installer le navigateur de test :
+
+```sh
+pnpm build
+pnpm exec playwright install chromium
 pnpm test:console-browser
+# Après compilation du SBF/IDL, sous Linux/Node 24 :
 pnpm test:console-differential
 ```
 

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T23:04:03.555Z",
+  "policy": "npm high/critical/unknown block; all RustSec vulnerabilities block; informational warnings retained",
+  "passed": true,
+  "findings": [
+    {
+      "ecosystem": "npm",
+      "advisory": "GHSA-3gc7-fjrx-p6mg",
+      "package": "bigint-buffer",
+      "version": "1.1.5",
+      "severity": "high",
+      "title": "bigint-buffer Vulnerable to Buffer Overflow via toBigIntLE() Function",
+      "paths": [
+        "packages__runner>@solana/spl-token>@solana/buffer-layout-utils>bigint-buffer"
+      ],
+      "disposition": "temporary-exception",
+      "reviewBy": "2026-11-06"
+    }
+  ],
+  "rawNpmCounts": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 1,
+    "critical": 0
+  },
+  "cargoDatabase": {
+    "advisory-count": 1294,
+    "last-commit": "b8a1a33e246a0a9a3b5f377248c41a503defec74",
+    "last-updated": "2026-10-07T16:40:27+02:00"
+  },
+  "cargoWarnings": {
+    "unmaintained": [
+      {
+        "kind": "unmaintained",
+        "package": {
+          "name": "bincode",
+          "version": "1.3.3",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "b1f45e9417d87227c7a56d22e471c6206462cba514c7590c09aff4cf6d1ddcad",
+          "dependencies": [
+            {
+              "name": "serde",
+              "version": "1.0.229",
+              "source": "registry+https://github.com/rust-lang/crates.io-index"
+            }
+          ],
+          "replace": null
+        },
+        "advisory": {
+          "id": "RUSTSEC-2025-0141",
+          "package": "bincode",
+          "title": "Bincode is unmaintained",
+          "description": "Due to a doxxing and harassment incident, the bincode team has taken the decision to cease development permanently.\n\nThe team considers version 1.3.3 a complete version of bincode that is not in need of any updates.\n\n## Alternatives to consider\n\n* [wincode](https://crates.io/crates/wincode)\n* [postcard](https://crates.io/crates/postcard)\n* [bitcode](https://crates.io/crates/bitcode)\n* [rkyv](https://crates.io/crates/rkyv)",
+          "date": "2025-12-16",
+          "aliases": [],
+          "related": [],
+          "collection": "crates",
+          "categories": [],
+          "keywords": [],
+          "cvss": null,
+          "informational": "unmaintained",
+          "references": [],
+          "source": null,
+          "url": "https://git.sr.ht/~stygianentity/bincode/tree/v3.0/item/README.md",
+          "withdrawn": null,
+          "license": "CC0-1.0",
+          "expect-deleted": false
+        },
+        "affected": null,
+        "versions": {
+          "patched": [],
+          "unaffected": []
+        }
+      }
+    ]
+  },
+  "exceptions": [
+    {
+      "ecosystem": "npm",
+      "advisory": "GHSA-3gc7-fjrx-p6mg",
+      "package": "bigint-buffer",
+      "versions": [
+        "1.1.5"
+      ],
+      "reason": "No patched npm release exists (latest 1.1.5). The vulnerable native C/C++ converter is prohibited: pnpm ignores this package's build scripts and the audit resolves every binding candidate without loading it, failing if any native binary exists. The exact audited JavaScript fallback is SHA-256 checked and tested on boundary lengths. This exception covers only that verified pure-JavaScript installation and the current local-only test scope; it does not declare bigint-buffer generally safe.",
+      "reviewBy": "2026-11-06",
+      "mitigation": "bigint-buffer-js-only",
+      "sources": [
+        "https://github.com/advisories/GHSA-3gc7-fjrx-p6mg",
+        "https://github.com/no2chem/bigint-buffer/blob/v1.1.5/src/index.ts",
+        "https://registry.npmjs.org/bigint-buffer/1.1.5"
+      ]
+    }
+  ],
+  "mitigations": {
+    "bigint-buffer-js-only": true
+  },
+  "bigintFallbackEvidence": {
+    "package": "bigint-buffer",
+    "version": "1.1.5",
+    "nativeBindingAbsent": true,
+    "entrySha256": "6882e3d44987bbb7c47580928fd5e3be126bdae26a448f8a31228cf879a85210",
+    "lengthsChecked": [
+      0,
+      1,
+      7,
+      8,
+      31,
+      32,
+      33,
+      128
+    ]
+  }
+}

@@ -10,7 +10,9 @@ MULE holds a client's tokens and pays the accepted agent after a signed passing 
 - Test-only identity: Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL.
 - Settlement fixture: **local dUSDC, six decimals, no value**.
 - [Merged step 1 PR](https://github.com/Mule-Protocol/mule/pull/6) · [Milestone](https://github.com/Mule-Protocol/mule/milestone/1).
-- [M-1.1 draft PR](https://github.com/Mule-Protocol/mule/pull/21) · [Hardening milestone](https://github.com/Mule-Protocol/mule/milestone/2).
+- [Merged M-1.1 PR](https://github.com/Mule-Protocol/mule/pull/21) · [Hardening milestone](https://github.com/Mule-Protocol/mule/milestone/2).
+- [M-1.2 A draft PR](https://github.com/Mule-Protocol/mule/pull/31) · [Real-logic console milestone](https://github.com/Mule-Protocol/mule/milestone/3).
+- [Check-in 5a — console-core](docs/checkins/CHECKIN-5a-console-core.md) · [Browser module and rebuild instructions](packages/console-core/README.md).
 - [Check-in 4 — hardening](docs/checkins/CHECKIN-4-hardening.md) · [15-instruction coverage](docs/testing/INSTRUCTION-COVERAGE-4.md).
 - [Check-in 3](docs/checkins/CHECKIN-3.md) · [Check-in 1b](docs/checkins/CHECKIN-1b.md) · [Historical check-in 1](docs/checkins/CHECKIN-1.md).
 - [CI runs and evidence](https://github.com/Mule-Protocol/mule/actions/workflows/ci.yml).
@@ -18,9 +20,9 @@ MULE holds a client's tokens and pays the accepted agent after a signed passing 
 
 ## Scope and sources
 
-The [owner's local-only update](docs/spec/M1_LOCAL_ONLY_UPDATE.md) supersedes deployment in the [free architecture request](docs/spec/M1_FREE_ARCHITECTURE.md). Original [v2](docs/spec/SPEC_M-1_devnet_v2.md) and [v1](docs/spec/PROMPT_M-1_devnet.md) remain byte-for-byte preserved. Check-in 3 completes that scope. The current [M-1.1 hardening request](docs/spec/M1_1_HARDENING.md) adds property testing, automatic crash reconciliation, supply-chain checks and admin-proposal cancellation.
+The [owner's local-only update](docs/spec/M1_LOCAL_ONLY_UPDATE.md) supersedes deployment in the [free architecture request](docs/spec/M1_FREE_ARCHITECTURE.md). Original [v2](docs/spec/SPEC_M-1_devnet_v2.md) and [v1](docs/spec/PROMPT_M-1_devnet.md) remain byte-for-byte preserved. Check-in 3 completes that scope. The completed [M-1.1 hardening request](docs/spec/M1_1_HARDENING.md) adds property testing, automatic crash reconciliation, supply-chain checks and admin-proposal cancellation.
 
-No public deployment, devnet mint, external faucet, devnet-run workflow, GitHub secrets, paid provider, mainnet, $MULE or site modification. Only the owner merges. This hardening pass stops at CHECKIN-4. `solana-verify` is deferred until the first deployment. The mandated Agave test binary has an unavoidable internal faucet service: [the runbook](docs/runbook-local.md) documents the accepted cost-free local case with zero funding/caps and no calls; no airdrop is used.
+No public deployment, devnet mint, external faucet, devnet-run workflow, GitHub secrets, paid provider, mainnet, $MULE or site modification. Only the owner merges. The current [M-1.2 request](docs/spec/M1_2_REAL_LOGIC_CONSOLE.md) authorizes only part A in this repository and stops at CHECKIN-5a. Site integration (part B) requires the owner’s explicit go-ahead and merged part-A commit. `solana-verify` is deferred until the first deployment. The mandated Agave test binary has an unavoidable internal faucet service: [the runbook](docs/runbook-local.md) documents the accepted cost-free local case with zero funding/caps and no calls; no airdrop is used.
 
 ## Build and test
 
@@ -45,6 +47,12 @@ The program suite runs compiled SBF in LiteSVM with synthetic clock/ProgramData 
 [Property tests](docs/testing/FUZZING.md) compare real SBF transitions with an independent state model and check seven invariants after each instruction. PR/main CI requests 64 sequences with fixed seed 20261007; the weekly configuration requests 512 sequences with a logged random seed. Executed counts, seeds and minimized failures are public artifacts. These finite tests do not establish line/branch coverage or distributed-network behavior. The long scheduled campaign becomes active on the default branch after the owner's merge; a workflow definition is not execution evidence.
 
 The [supply-chain policy](docs/testing/SUPPLY-CHAIN.md) pins GitHub Actions to full commits and verifies cargo-audit 0.22.2 before running `pnpm audit:dependencies`. npm high/critical findings and RustSec vulnerabilities block unless an explicit, unexpired exception passes its mitigation checks. The temporary `bigint-buffer@1.1.5` exception requires its native binding to be absent and its reviewed JavaScript fallback to match the pinned bytes; the raw high finding remains visible. Managed Dependabot confirmation requires a run against the merged default-branch configuration.
+
+## Browser console core
+
+[@mule/console-core](packages/console-core/README.md) shares the actual fixtures, scripted producer, validation rules/messages and canonical JSON with the Node packages. WebCrypto hashes exact UTF-8 bytes. Ajv standalone validators are generated at build time, then bundled into one versioned [ES module](packages/console-core/dist/console-core.mjs) with its [SHA-256](packages/console-core/dist/console-core.mjs.sha256). CI checks byte-identical reconstruction, the absence of dynamic compilation/Node/network APIs, and a maximum of 40,000 gzip bytes.
+
+The module uses a scoped TypeScript escrow model, not the Anchor program or a chain. CI compares all six template/behavior cases and a designated-agent case with real SBF in LiteSVM: successive states, exact SPL deltas, terminal status, validator message and stored report hash. Real Chromium compares Node/browser canonical bytes and hashes under a strict CSP, offline after loading the local test assets. Finite scenario parity is not a universal equivalence proof. The package cannot send transactions or hold real funds; the site remains unchanged in part A.
 
 ## Ten local missions
 
