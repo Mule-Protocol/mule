@@ -30,7 +30,7 @@ jobs:
             target/debug
             target/release
             target/sbf-solana-solana
-          key: mule-anchor0322-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'programs/*/Cargo.toml') }}
+          key: mule-anchor0322-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'programs/*/Cargo.toml', 'programs/*/src/*.rs') }}
           restore-keys: mule-anchor0322-
       - name: Install pinned Anchor and Solana build tools
         run: |

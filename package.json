@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test packages/sdk/test/*.test.ts",
-    "test:program": "tsx --test tests/escrow.test.ts",
+    "test:program": "node scripts/test-program.mjs",
     "coverage:instructions": "node scripts/instruction-coverage.mjs"
   },
   "devDependencies": {

@@ -13,13 +13,8 @@ const hash = Array<number>(32).fill(7);
 const evidence: Array<{ test: string; instruction: InstructionName; outcome: string; events: string[] }> = [];
 const cases: Array<{ name: string; passed: boolean }> = [];
 let activeTest = '';
-function check(name: string, body: () => void): void {
-  test(name, () => {
-    activeTest = name;
-    const item = { name, passed: false }; cases.push(item);
-    body(); item.passed = true;
-  });
-}
+const definitions: Array<{name:string;body:()=>void}> = [];
+function check(name:string,body:()=>void):void { definitions.push({name,body}); }
 class Fixture {
   svm = new LiteSVM();
   payer = Keypair.generate();
@@ -356,7 +351,21 @@ for(const [state,instructions] of Object.entries(invalidByState)) check('state m
     assert.deepEqual(Buffer.from(f.svm.getAccount(f.mission)!.data),before,'failure must roll back');
   }
 });
-after(()=>{
-  mkdirSync('coverage',{recursive:true});
-  writeFileSync('coverage/instructions.json',JSON.stringify({engine:'LiteSVM 0.8.0, compiled SBF',cases,evidence},null,2));
-});
+if(process.env.MULE_LIST_TESTS==='1') {
+  console.log(JSON.stringify(definitions.map(d=>d.name)));
+} else {
+  const selected=process.env.MULE_CASE_INDEX;
+  for(const [index,definition] of definitions.entries()) {
+    if(selected!==undefined && Number(selected)!==index)continue;
+    test(definition.name,()=>{
+      activeTest=definition.name;
+      const item={name:definition.name,passed:false};cases.push(item);
+      definition.body();item.passed=true;
+    });
+  }
+  after(()=>{
+    mkdirSync('coverage',{recursive:true});
+    writeFileSync(process.env.MULE_COVERAGE_PART??'coverage/instructions.json',
+      JSON.stringify({engine:'LiteSVM 0.8.0, compiled SBF',cases,evidence},null,2));
+  });
+}
