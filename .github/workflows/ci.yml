@@ -73,12 +73,8 @@ jobs:
           name: m1-step1-evidence
           path: |
             coverage/
-            target/debug
-            target/release
-            target/sbf-solana-solana/idl/mule_escrow.json
-            target/debug
-            target/release
-            target/sbf-solana-solana/deploy/mule_escrow.so
+            target/idl/mule_escrow.json
+            target/deploy/mule_escrow.so
             Cargo.lock
             programs/mule_escrow/src/lib.rs
           if-no-files-found: warn
