@@ -43,3 +43,7 @@ CI's `local-missions` job downloads the compiled SBF and IDL from the successful
 The seven-day stale refund and fourteen-day disputed fallback are **not** tested by waiting on this local network. LiteSVM exercises their exact clock boundaries and the sweep selection/execution with a simulated chain clock. The reference report and CHECKIN-3 separate these assertions from the ten actual local-network missions.
 
 The process exits nonzero if any assertion or child process fails. The test tools never retry an invalid mission into a passing result. A failed campaign is not a successful check-in.
+
+## Recovery limits
+
+Use one campaign driver per private journal directory. The two injected verdict failures are tested with real process restarts and retained keys, history and journal on the same ledger. This does not prove recovery from every possible crash: a crash between SDK ID reservation and signed-journal persistence, or between account closure and campaign-manifest persistence, can require manual reconciliation. An expired transaction with uncertain outcome is retained for inspection and never rebuilt automatically. Starting the outer launcher again intentionally creates a different, disposable network.
