@@ -1,6 +1,8 @@
 name: CI
 on:
   pull_request:
+  push:
+    branches: [main]
 permissions:
   contents: read
 concurrency:
@@ -26,19 +28,34 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cache/solana
-            ~/.local/share/solana/install
             target/debug
             target/release
             target/sbf-solana-solana
           key: mule-anchor0322-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'programs/*/Cargo.toml', 'programs/*/src/*.rs') }}
           restore-keys: mule-anchor0322-
       - name: Install pinned Anchor and Solana build tools
+        shell: bash
+        env:
+          # Official release assets; provenance and checksum update procedure:
+          # docs/testing/BUILD-TOOLS.md
+          ANCHOR_SHA256: b3cdc15f3db924c2b11a7c16ceff21ad3da239ddde4e53f33df18e52e0461645
+          SOLANA_SHA256: 56241fbe862495ff01b2b875195e44f94c22e9f2a504591a3ade1b9d82862730
         run: |
-          curl -fLsS https://github.com/otter-sec/anchor/releases/download/v0.32.2/anchor-0.32.2-x86_64-unknown-linux-gnu -o /tmp/anchor
-          chmod +x /tmp/anchor
-          sudo mv /tmp/anchor /usr/local/bin/anchor
-          sh -c "$(curl -fLsS https://release.anza.xyz/v2.3.0/install)"
-          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+          set -euo pipefail
+          tools_dir="$RUNNER_TEMP/mule-build-tools"
+          mkdir -p "$tools_dir/bin"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 \
+            https://github.com/otter-sec/anchor/releases/download/v0.32.2/anchor-0.32.2-x86_64-unknown-linux-gnu \
+            --output "$tools_dir/anchor"
+          printf '%s  %s\n' "$ANCHOR_SHA256" "$tools_dir/anchor" | sha256sum --check --strict
+          install -m 755 "$tools_dir/anchor" "$tools_dir/bin/anchor"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 \
+            https://github.com/anza-xyz/agave/releases/download/v2.3.0/solana-release-x86_64-unknown-linux-gnu.tar.bz2 \
+            --output "$tools_dir/solana-release.tar.bz2"
+          printf '%s  %s\n' "$SOLANA_SHA256" "$tools_dir/solana-release.tar.bz2" | sha256sum --check --strict
+          tar --extract --bzip2 --file "$tools_dir/solana-release.tar.bz2" --directory "$tools_dir"
+          echo "$tools_dir/bin" >> "$GITHUB_PATH"
+          echo "$tools_dir/solana-release/bin" >> "$GITHUB_PATH"
       - name: Build Anchor program and IDL (no deployment)
         id: build
         run: |
@@ -86,7 +103,6 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             ~/.cache/solana
-            ~/.local/share/solana/install
             target/debug
             target/release
             target/sbf-solana-solana
