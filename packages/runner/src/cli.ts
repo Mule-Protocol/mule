@@ -2,9 +2,8 @@ import { resolve } from 'node:path';
 import { PublicKey } from '@solana/web3.js';
 import { LocalContentStore } from '@mule/validator';
 import { RpcRunner } from './rpc.js';
-import { campaign } from './campaign.js';
+import { campaign, createMission, settleMission, sweepCampaign, type CampaignReport } from './campaign.js';
 import { validateMission, TestFault } from './validate.js';
-import { sweep } from './sweep.js';
 
 function required(name:string):string {
   const value=process.env[name];if(!value)throw new Error('Missing environment variable: '+name);return value;
@@ -22,15 +21,22 @@ async function main():Promise<void> {
     return;
   }
   await runner.bindChain();
-  const saved=runner.journal.read<{mint:string;missions:Array<{address:string}>}>('campaign');
+  const saved=runner.journal.read<CampaignReport>('campaign');
   if(!saved)throw new Error('No retained campaign manifest');
   runner.mint=new PublicKey(saved.mint);
   if(command==='validate') {
     const address=process.argv[3];if(!address)throw new Error('validate requires a mission address');
     console.log(JSON.stringify(await validateMission(runner,store,new PublicKey(address))));
+  } else if(command==='create'||command==='settle') {
+    const number=Number(process.argv[3]);
+    const row=saved.missions.find(entry=>entry.number===number);
+    if(!row)throw new Error('Unknown campaign mission number');
+    if(command==='create')await createMission(runner,saved,row);
+    else await settleMission(runner,saved,row);
+    console.log(JSON.stringify({mission:row.address,missionId:row.missionId,status:row.finalStatus??'created'}));
   } else if(command==='sweep') {
-    console.log(JSON.stringify(await sweep(runner,saved.missions.map(row=>new PublicKey(row.address)))));
-  } else throw new Error('Usage: cli.ts campaign | validate <mission> | sweep');
+    console.log(JSON.stringify(await sweepCampaign(runner,saved)));
+  } else throw new Error('Usage: cli.ts campaign | validate <mission> | create <number> | settle <number> | sweep');
 }
 main().catch((error:unknown)=>{
   console.error(error instanceof Error?error.message:String(error));

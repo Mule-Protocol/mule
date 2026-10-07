@@ -8,7 +8,7 @@ import { MINT_SIZE, createInitializeMint2Instruction, createAssociatedTokenAccou
 import { TOKEN_PROGRAM_ID, configPda, missionPda, missionStatus, vaultPda } from '@mule/sdk';
 import { LocalContentStore, loadFixture } from '@mule/validator';
 import { createDelivery } from '@mule/agent';
-import { RpcRunner, pause, type TransactionRecord } from './rpc.js';
+import { RpcRunner, pause, CreationExpiredWithoutExecution, type TransactionRecord } from './rpc.js';
 import { durableJson } from './journal.js';
 import { sweep, type Receipt } from './sweep.js';
 import { validateMission, type ValidationResult } from './validate.js';
@@ -16,14 +16,18 @@ import { validateMission, type ValidationResult } from './validate.js';
 type Model = 'invoice.v1' | 'contract.v1' | 'address.v1';
 type Mode = 'honest' | 'dishonest' | 'never-accepted' | 'never-delivered';
 type Balance = Awaited<ReturnType<RpcRunner['balances']>>;
-interface Evidence {
-  number: number; model: Model; mode: Mode; designated: boolean; dispute: boolean; address: string;
+export interface Evidence {
+  number: number; missionId: string; model: Model; mode: Mode; designated: boolean; dispute: boolean; address: string;
   amount: string; criteriaHash: string; criteriaUri: string; deliveryHash?: string; deliveryUri?: string;
   deadline: string; reportHash?: string; reportUri?: string; validatorMessage?: string; pass?: boolean;
   beforeCreate?: Balance; afterCreate?: Balance; beforeSettlement?: Balance; afterSettlement?: Balance;
   rentExpected?: string; rentReturned?: string; vaultClosed?: boolean; missionClosed?: boolean;
   finalStatus?: string; finalEvent?: string; recipient?: string; terminalInstruction?: string;
   transactions: Array<{instruction: string; signature: string}>;
+  consumedIds?: Array<{id:string;address:string;status:'consumed-never-created';signatureCount:number;
+    expiredSignature?:string;lastValidBlockHeight?:number;finalizedHeight?:number}>;
+  reserveRecovery?: {fault:'after-reserve';firstExitCode:number;consumedId:string;consumedAddress:string;replacementId:string;chainSignaturesBefore:number;chainSignaturesAfter:number;neverReused:boolean};
+  closeRecovery?: {fault:'after-close';firstExitCode:number;manifestStateAtCrash:'pending';terminalSignature:string;chainSignaturesBefore:number;chainSignaturesAfter:number;missionClosed:boolean;vaultClosed:boolean};
   idempotence?: {fault: string; firstExitCode: number; verdictsBeforeRestart: number; verdictsAfterRestart: number;
     originalReportHash: string; recoveredReportHash: string; sameReportHash: boolean; chainTransactionCount: number; uniqueSignatures: number; transactionJournalAtCrash: string; transactionJournalAfterRestart: string};
 }
@@ -71,12 +75,12 @@ async function setup(runner: RpcRunner): Promise<Array<{instruction: string; sig
   return result;
 }
 
-async function childValidation(address: string, fault?: string): Promise<{code: number; output: string}> {
+async function childCommand(command: string, argument: string, fault?: string): Promise<{code: number; output: string}> {
   const env: NodeJS.ProcessEnv = {...process.env, MULE_TEST_MODE: '1'};
   if (fault) env.MULE_TEST_FAULT = fault;
   else delete env.MULE_TEST_FAULT;
   return new Promise((resolveResult, reject) => {
-    const child = spawn(process.execPath, ['--import', 'tsx', resolve('packages/runner/src/cli.ts'), 'validate', address],
+    const child = spawn(process.execPath, ['--import', 'tsx', resolve('packages/runner/src/cli.ts'), command, argument],
       {env, stdio: ['ignore', 'pipe', 'pipe']});
     let output = '';
     child.stdout.on('data', chunk => { output += String(chunk); });
@@ -89,7 +93,7 @@ async function checkedValidation(runner: RpcRunner, store: LocalContentStore, ro
   const address = new PublicKey(row.address);
   const fault = row.number === 1 ? 'after-report' : row.number === 2 ? 'after-verdict' : undefined;
   if (!fault || row.idempotence) return validateMission(runner, store, address);
-  const interrupted = await childValidation(row.address, fault);
+  const interrupted = await childCommand('validate', row.address, fault);
   assert.equal(interrupted.code, 42, 'Fault process must exit at the requested checkpoint: ' + interrupted.output);
   const previous = runner.journal.read<ValidationResult>('validation:' + row.address);
   assert(previous?.reportHash);
@@ -97,7 +101,7 @@ async function checkedValidation(runner: RpcRunner, store: LocalContentStore, ro
   assert.equal(before.length, fault === 'after-report' ? 0 : 1);
   const crashedTransaction = runner.journal.read<TransactionRecord>('tx:' + row.address + ':record_verdict');
   assert.equal(crashedTransaction?.state ?? 'absent', fault === 'after-report' ? 'absent' : 'signed');
-  const resumed = await childValidation(row.address);
+  const resumed = await childCommand('validate', row.address);
   assert.equal(resumed.code, 0, 'Restarted validation failed: ' + resumed.output);
   const result = runner.journal.read<ValidationResult>('validation:' + row.address);
   assert(result);
@@ -119,7 +123,10 @@ async function checkedValidation(runner: RpcRunner, store: LocalContentStore, ro
 async function closeEvidence(runner: RpcRunner, row: Evidence, instruction: string, receipt: Receipt): Promise<void> {
   remember(row, instruction, receipt);
   row.terminalInstruction = instruction;
-  row.afterSettlement = await runner.balances();
+  assert(row.beforeSettlement, 'Retained settlement intent is required');
+  const snapshots = await runner.settlementBalances(receipt.signature, row.beforeSettlement);
+  row.beforeSettlement = snapshots.before;
+  row.afterSettlement = snapshots.after;
   const address = new PublicKey(row.address);
   const [mission, vault] = await Promise.all([runner.connection.getAccountInfo(address), runner.connection.getAccountInfo(vaultPda(address)[0])]);
   row.missionClosed = mission === null; row.vaultClosed = vault === null;
@@ -147,6 +154,172 @@ async function closeEvidence(runner: RpcRunner, row: Evidence, instruction: stri
   assert.equal(new Set(signatures.map(signature => signature.signature)).size, row.transactions.length);
 }
 
+/** Recover an interrupted reservation without ever releasing or reusing that identity. */
+export async function createMission(runner:RpcRunner,report:CampaignReport,row:Evidence):Promise<void> {
+  const save=():void=>runner.journal.write('campaign',report);
+  for(;;) {
+    const address=new PublicKey(row.address);
+    const operation=row.address+':create_mission';
+    const signed=runner.journal.read<TransactionRecord>('tx:'+operation);
+    if((!signed && runner.isReserved(BigInt(row.missionId))) || signed?.state==='expired-not-landed') {
+      const account=await runner.connection.getAccountInfo(address,'finalized');
+      const history=await runner.missionHistory(address,'finalized');
+      if(account || history.length) {
+        // A retained chain creation is authoritative even when an earlier local record is missing.
+        const creation=history.find(entry=>entry.receipt.events.some(event=>event.name.replaceAll('_','').toLowerCase()==='missioncreated'));
+        assert(creation,'Reserved identity has chain evidence without a creation event; retain state and retry');
+        remember(row,'create_mission',creation.receipt);
+        break;
+      }
+      const proof=signed?.state==='expired-not-landed'?signed.expiredAttempts?.at(-1):undefined;
+      if(signed?.state==='expired-not-landed')assert(proof&&proof.finalizedHeight>proof.lastValidBlockHeight,'Missing finalized non-execution proof');
+      const consumed={id:row.missionId,address:row.address,status:'consumed-never-created' as const,signatureCount:history.length,
+        ...(proof?{expiredSignature:proof.signature,lastValidBlockHeight:proof.lastValidBlockHeight,finalizedHeight:proof.finalizedHeight}:{})};
+      runner.journal.write('creation:'+row.address,consumed);
+      row.consumedIds=[...(row.consumedIds??[]),consumed];
+      const ids=report.missions.flatMap(mission=>[BigInt(mission.missionId),...(mission.consumedIds??[]).map(item=>BigInt(item.id))]);
+      const next=ids.reduce((maximum,id)=>id>maximum?id:maximum,0n)+1n;
+      row.missionId=next.toString();
+      row.address=missionPda(runner.keys.client.publicKey,next)[0].toBase58();
+      delete row.beforeCreate;delete row.afterCreate;delete row.rentExpected;
+      save();
+      continue;
+    }
+    if(!row.beforeCreate) {
+      row.beforeCreate=await runner.balances();
+      row.deadline=String(await runner.now()+(row.number>=9?10n:600n));
+      save();
+    }
+    runner.journal.write('creation:'+row.address,{id:row.missionId,address:row.address,status:'planned'});
+    let creation:Receipt;
+    try {
+      creation=await runner.instruction(operation,'create_mission',address,runner.keys.client,
+        {mission_id:BigInt(row.missionId),amount:BigInt(row.amount),criteria_hash:hashBytes(row.criteriaHash),criteria_uri:row.criteriaUri,
+          deadline:BigInt(row.deadline),dispute_window:60n,designated_agent:row.designated?runner.keys.agent.publicKey:null});
+    } catch(error) {
+      if(error instanceof CreationExpiredWithoutExecution)continue;
+      throw error;
+    }
+    remember(row,'create_mission',creation);
+    runner.journal.write('creation:'+row.address,{id:row.missionId,address:row.address,status:'created',signature:creation.signature});
+    break;
+  }
+  if(!row.afterCreate) {
+    assert(row.beforeCreate);
+    row.afterCreate=await runner.balances();
+    assert.equal(BigInt(row.beforeCreate.client)-BigInt(row.afterCreate.client),BigInt(row.amount));
+    assert.equal(row.beforeCreate.agent,row.afterCreate.agent);
+    const address=new PublicKey(row.address);
+    const accounts=await runner.connection.getMultipleAccountsInfo([address,vaultPda(address)[0]]);
+    assert(accounts[0]&&accounts[1]);
+    row.rentExpected=String(accounts[0].lamports+accounts[1].lamports);
+    assert.equal(BigInt(row.beforeCreate.clientLamports)-BigInt(row.afterCreate.clientLamports),BigInt(row.rentExpected));
+  }
+  save();
+}
+
+/** Terminal events and transaction metadata reconstruct a manifest interrupted after on-chain closure. */
+export async function reconcileClosed(runner:RpcRunner,report:CampaignReport,row:Evidence):Promise<boolean> {
+  if(row.finalStatus)return true;
+  const address=new PublicKey(row.address);
+  if(await runner.mission(address))return false;
+  const history=await runner.missionHistory(address);
+  const terminal=history.filter(entry=>entry.receipt.events.some(event=>
+    ['missionsettled','missionrefunded','missioncancelled'].includes(event.name.replaceAll('_','').toLowerCase())));
+  if(!terminal.length)return false;
+  assert.equal(terminal.length,1,'Exactly one terminal transaction is allowed');
+  const settled=terminal[0]!;
+  for(const entry of [...history].reverse())remember(row,entry.instruction,entry.receipt);
+  await closeEvidence(runner,row,settled.instruction,settled.receipt);
+  runner.journal.write('campaign',report);
+  return true;
+}
+
+export async function settleMission(runner:RpcRunner,report:CampaignReport,row:Evidence):Promise<void> {
+  if(await reconcileClosed(runner,report,row))return;
+  if(!row.beforeSettlement) {
+    row.beforeSettlement=await runner.balances();
+    runner.journal.write('campaign',report);
+  }
+  const address=new PublicKey(row.address);
+  if(row.dispute) {
+    const receipt=await runner.instruction(row.address+':resolve_dispute','resolve_dispute',address,runner.keys.admin,{pay_agent:false});
+    await closeEvidence(runner,row,'resolve_dispute',receipt);
+  } else {
+    const results=await sweep(runner,[address]);assert.equal(results.length,1,'The mission must be due for settlement');
+    const result=results[0]!;
+    await closeEvidence(runner,row,result.instruction,result);
+  }
+  runner.journal.write('campaign',report);
+}
+
+export async function sweepCampaign(runner:RpcRunner,report:CampaignReport):Promise<Array<{mission:string;instruction:string;signature:string}>> {
+  for(const row of report.missions)if(!row.finalStatus)await reconcileClosed(runner,report,row);
+  const rows=report.missions.filter(row=>!row.finalStatus);
+  return sweep({
+    now:()=>runner.now(),mission:address=>runner.mission(address),
+    execute:async(address,instruction)=>{
+      const row=rows.find(entry=>entry.address===address.toBase58());assert(row);
+      row.beforeSettlement=await runner.balances();runner.journal.write('campaign',report);
+      const receipt=await runner.execute(address,instruction);
+      await closeEvidence(runner,row,instruction,receipt);
+      runner.journal.write('campaign',report);
+      return receipt;
+    },
+  },rows.map(row=>new PublicKey(row.address)));
+}
+
+async function checkedCreation(runner:RpcRunner,report:CampaignReport,row:Evidence):Promise<void> {
+  if(row.number!==3 || row.reserveRecovery || runner.isReserved(BigInt(row.missionId)) || row.transactions.some(entry=>entry.instruction==='create_mission')) {
+    await createMission(runner,report,row);return;
+  }
+  const consumedId=row.missionId,consumedAddress=row.address;
+  const interruption=await childCommand('create',String(row.number),'after-reserve');
+  assert.equal(interruption.code,42,'after-reserve process must stop after durable ID reservation: '+interruption.output);
+  assert(runner.isReserved(BigInt(consumedId)));
+  assert.equal(runner.journal.read('tx:'+consumedAddress+':create_mission'),null,'No signed transaction may exist at reservation crash');
+  assert.equal(await runner.mission(new PublicKey(consumedAddress)),null);
+  const before=await runner.connection.getSignaturesForAddress(new PublicKey(consumedAddress));
+  assert.equal(before.length,0);
+  const resumed=await childCommand('create',String(row.number));
+  assert.equal(resumed.code,0,'Reservation restart failed: '+resumed.output);
+  const saved=runner.journal.read<CampaignReport>('campaign');assert(saved);
+  const recovered=saved.missions.find(entry=>entry.number===row.number);assert(recovered);
+  Object.assign(row,recovered);
+  const after=await runner.connection.getSignaturesForAddress(new PublicKey(consumedAddress));
+  assert.equal(after.length,0);
+  assert.notEqual(row.missionId,consumedId);
+  assert(row.consumedIds?.some(item=>item.id===consumedId&&item.status==='consumed-never-created'));
+  row.reserveRecovery={fault:'after-reserve',firstExitCode:interruption.code,consumedId,consumedAddress,
+    replacementId:row.missionId,chainSignaturesBefore:before.length,chainSignaturesAfter:after.length,neverReused:true};
+  runner.journal.write('campaign',report);
+}
+
+async function checkedSettlement(runner:RpcRunner,report:CampaignReport,row:Evidence):Promise<void> {
+  if(row.number!==4 || row.closeRecovery || row.finalStatus) {await settleMission(runner,report,row);return;}
+  const interruption=await childCommand('settle',String(row.number),'after-close');
+  assert.equal(interruption.code,42,'after-close process must stop before manifest completion: '+interruption.output);
+  const crashed=runner.journal.read<CampaignReport>('campaign')?.missions.find(entry=>entry.number===row.number);assert(crashed);
+  assert.equal(crashed.finalStatus,undefined);
+  const address=new PublicKey(row.address);
+  assert.equal(await runner.mission(address),null);
+  assert.equal(await runner.connection.getAccountInfo(vaultPda(address)[0]),null);
+  const history=await runner.missionHistory(address);
+  const terminal=history.filter(entry=>entry.receipt.events.some(event=>['missionsettled','missionrefunded'].includes(event.name.replaceAll('_','').toLowerCase())));
+  assert.equal(terminal.length,1);
+  const signature=terminal[0]!.receipt.signature;
+  const resumed=await childCommand('settle',String(row.number));
+  assert.equal(resumed.code,0,'Closure restart failed: '+resumed.output);
+  const recovered=runner.journal.read<CampaignReport>('campaign')?.missions.find(entry=>entry.number===row.number);assert(recovered);
+  Object.assign(row,recovered);
+  const after=await runner.missionHistory(address);
+  assert.equal(after.length,history.length,'Reconciliation must not broadcast a duplicate transaction');
+  assert.equal(row.transactions.find(entry=>entry.instruction===row.terminalInstruction)?.signature,signature);
+  row.closeRecovery={fault:'after-close',firstExitCode:interruption.code,manifestStateAtCrash:'pending',terminalSignature:signature,
+    chainSignaturesBefore:history.length,chainSignaturesAfter:after.length,missionClosed:row.missionClosed===true,vaultClosed:row.vaultClosed===true};
+  runner.journal.write('campaign',report);
+}
+
 export async function campaign(runner: RpcRunner, store: LocalContentStore, runDirectory: string, runId: string): Promise<CampaignReport> {
   if (!/^[A-Za-z0-9_-]{1,80}$/.test(runId)) throw new Error('Invalid public run ID');
   await runner.bindChain();
@@ -169,7 +342,7 @@ export async function campaign(runner: RpcRunner, store: LocalContentStore, runD
     ];
     for (const [index, example] of cases.entries()) {
       const criteria = store.put(loadFixture(example.model).criteria);
-      report.missions.push({number:index+1, ...example, designated: index===6, dispute:index===7,
+      report.missions.push({number:index+1, missionId:String(index+1), ...example, designated: index===6, dispute:index===7,
         address:missionPda(runner.keys.client.publicKey,BigInt(index+1))[0].toBase58(), amount:'5000000',
         criteriaHash:criteria.hash,criteriaUri:criteria.uri,deadline:'0',transactions:[]});
     }
@@ -179,22 +352,9 @@ export async function campaign(runner: RpcRunner, store: LocalContentStore, runD
   const save = ():void => runner.journal.write('campaign', report);
   for (const row of report.missions) {
     if (row.finalStatus) continue;
+    if (await reconcileClosed(runner,report,row)) continue;
+    await checkedCreation(runner,report,row);
     const address = new PublicKey(row.address);
-    if (!row.beforeCreate) { row.beforeCreate = await runner.balances(); row.deadline = String(await runner.now() + (row.number >= 9 ? 10n : 600n)); save(); }
-    const creation = await runner.instruction(row.address + ':create_mission', 'create_mission', address, runner.keys.client,
-      {mission_id:BigInt(row.number),amount:BigInt(row.amount),criteria_hash:hashBytes(row.criteriaHash),criteria_uri:row.criteriaUri,
-        deadline:BigInt(row.deadline),dispute_window:60n,designated_agent:row.designated?runner.keys.agent.publicKey:null});
-    remember(row,'create_mission',creation);
-    if (!row.afterCreate) {
-      row.afterCreate = await runner.balances();
-      assert.equal(BigInt(row.beforeCreate.client)-BigInt(row.afterCreate.client),BigInt(row.amount));
-      assert.equal(row.beforeCreate.agent,row.afterCreate.agent);
-      const accounts = await runner.connection.getMultipleAccountsInfo([address,vaultPda(address)[0]]);
-      assert(accounts[0] && accounts[1]);
-      row.rentExpected = String(accounts[0].lamports + accounts[1].lamports);
-      assert.equal(BigInt(row.beforeCreate.clientLamports)-BigInt(row.afterCreate.clientLamports),BigInt(row.rentExpected));
-      save();
-    }
     if (row.number===9) { row.validatorMessage='Not accepted; expiry refund'; save(); continue; }
     remember(row,'accept_mission',await runner.instruction(row.address+':accept_mission','accept_mission',address,runner.keys.agent));
     if (row.designated) {
@@ -223,9 +383,7 @@ export async function campaign(runner: RpcRunner, store: LocalContentStore, runD
     if(row.dispute) {
       remember(row,'open_dispute',await runner.instruction(row.address+':open_dispute','open_dispute',address,runner.keys.client));
       assert.equal(missionStatus((await runner.mission(address))!),'disputed');
-      row.beforeSettlement=await runner.balances();save();
-      const resolution=await runner.instruction(row.address+':resolve_dispute','resolve_dispute',address,runner.keys.admin,{pay_agent:false});
-      await closeEvidence(runner,row,'resolve_dispute',resolution);save();
+      await settleMission(runner,report,row);save();
     }
   }
   // All normal verdict windows overlap. Wait on the chain Clock once, then sweep every due mission.
@@ -241,10 +399,12 @@ export async function campaign(runner: RpcRunner, store: LocalContentStore, runD
     await pause(500);
   }
   for(const row of report.missions.filter(row=>!row.finalStatus)) {
-    row.beforeSettlement=await runner.balances();save();
-    const results=await sweep(runner,[new PublicKey(row.address)]);assert.equal(results.length,1);
-    const result=results[0]!;
-    await closeEvidence(runner,row,result.instruction,result);save();
+    await checkedSettlement(runner,report,row);
+  }
+  for(const consumed of report.missions.flatMap(row=>row.consumedIds??[])) {
+    assert(runner.isReserved(BigInt(consumed.id)));
+    assert.equal(await runner.mission(new PublicKey(consumed.address)),null);
+    assert.equal((await runner.connection.getSignaturesForAddress(new PublicKey(consumed.address))).length,0,'Consumed identity must never appear on-chain');
   }
   assert.equal(report.missions.length,10);
   assert.equal(report.missions.filter(row=>row.finalStatus==='settled').length,4);
@@ -286,6 +446,9 @@ export function renderReport(report:CampaignReport):string {
     lines.push('- Terminal: '+row.terminalInstruction+' / '+row.finalEvent+' / '+row.finalStatus);
     for(const tx of row.transactions)lines.push('- '+tx.instruction+': '+tx.signature);
     if(row.idempotence)lines.push('- Restart evidence: '+JSON.stringify(row.idempotence));
+    if(row.reserveRecovery)lines.push('- Reservation recovery: '+JSON.stringify(row.reserveRecovery));
+    if(row.closeRecovery)lines.push('- Closure recovery: '+JSON.stringify(row.closeRecovery));
+    if(row.consumedIds?.length)lines.push('- Consumed IDs (never created): '+JSON.stringify(row.consumedIds));
     lines.push('');
   }
   lines.push('## Scope of execution','','The ten missions above used the actual local RPC ledger and real SBF instructions. The command sweep settled all due normal verdicts and both expiry cases.',

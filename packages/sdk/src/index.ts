@@ -31,6 +31,11 @@ export function u64le(value: bigint): Buffer {
   if (value < 0n || value > MAX_U64) throw new RangeError('u64 out of range');
   const result = Buffer.alloc(8); result.writeBigUInt64LE(value); return result;
 }
+/** Canonical durable reservation identity, shared by SDK and recovery code. */
+export function missionIdHistoryKey(programId: PublicKey, client: PublicKey, missionId: bigint): string {
+  if (missionId < 0n || missionId > MAX_U64) throw new RangeError('u64 out of range');
+  return JSON.stringify([programId.toBase58(), client.toBase58(), missionId.toString(16).padStart(16, '0')]);
+}
 export function configPda(programId = PROGRAM_ID): [PublicKey, number] {
   return PublicKey.findProgramAddressSync([Buffer.from('config')], programId);
 }
@@ -92,7 +97,7 @@ export class MuleClient {
       const id = field(encodedArgs, 'mission_id');
       if (!(client instanceof PublicKey) || !BN.isBN(id)) throw new Error('Invalid mission identity');
       // Hex avoids any decimal conversion or JavaScript number truncation.
-      const key = JSON.stringify([this.programId.toBase58(), client.toBase58(), id.toString(16).padStart(16, '0')]);
+      const key = missionIdHistoryKey(this.programId, client, BigInt('0x' + id.toString(16)));
       if (!this.history.reserve(key)) throw new MissionIdAlreadyUsedError();
     }
     return instruction;

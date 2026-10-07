@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { closeSync, fsyncSync, mkdirSync, openSync, writeFileSync } from 'node:fs';
+import { closeSync, fsyncSync, lstatSync, mkdirSync, openSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import type { MissionIdHistory } from './history.js';
 
@@ -22,6 +22,15 @@ export class FileMissionIdHistory implements MissionIdHistory {
     if (directory.trim() === '') throw new Error('A retained mission-history directory is required');
     this.directory = resolve(directory);
     mkdirSync(this.directory, { recursive: true });
+  }
+  /** Existing empty/corrupt reservations still mean consumed. I/O errors fail closed. */
+  isReserved(key: string): boolean {
+    const filename = createHash('sha256').update(key).digest('hex') + '.reserved';
+    try { lstatSync(join(this.directory, filename)); return true; }
+    catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false;
+      throw error;
+    }
   }
   reserve(key: string): boolean {
     const filename = createHash('sha256').update(key).digest('hex') + '.reserved';

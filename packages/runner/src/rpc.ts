@@ -6,7 +6,7 @@ import { Connection, Keypair, PublicKey, SendTransactionError, SystemProgram, SY
   type TransactionInstruction } from '@solana/web3.js';
 import { getAccount, getAssociatedTokenAddressSync } from '@solana/spl-token';
 import { MuleClient, PROGRAM_ID, TOKEN_PROGRAM_ID, BN, configPda, programDataPda, vaultPda,
-  type Idl, type InstructionName, type Mission } from '@mule/sdk';
+  missionIdHistoryKey, type Idl, type InstructionName, type Mission } from '@mule/sdk';
 import { FileMissionIdHistory } from '@mule/sdk/file-history';
 import { Journal } from './journal.js';
 import { testFault } from './faults.js';
@@ -16,7 +16,13 @@ export interface LocalKeys { admin: Keypair; validator: Keypair; client: Keypair
 export interface RunnerOptions { rpcUrl: string; idlPath: string; keyDirectory: string; stateDirectory: string }
 export interface TransactionRecord {
   operation: string; signature: string; bytes: string; blockhash: string; lastValidBlockHeight: number;
-  state: 'signed' | 'confirmed'; receipt?: Receipt;
+  state: 'signed' | 'confirmed' | 'expired-not-landed'; receipt?: Receipt;
+  broadcastAttempted?: boolean; signedSlot?: number;
+  expiredAttempts?: Array<{signature:string; lastValidBlockHeight:number; finalizedHeight:number; outcome:'expired-not-landed'}>;
+}
+/** A creation proven absent after finalized expiry must get a fresh identity and deadline. */
+export class CreationExpiredWithoutExecution extends Error {
+  constructor(readonly signature:string) { super('Creation expired without execution; consume this identity and allocate a fresh one: '+signature); }
 }
 function jsonEvent(value: unknown): unknown {
   if (value instanceof PublicKey) return value.toBase58();
@@ -33,6 +39,7 @@ export class RpcRunner implements SweepPort {
   readonly keys: LocalKeys;
   readonly sdk: MuleClient;
   readonly journal: Journal;
+  readonly history: FileMissionIdHistory;
   mint: PublicKey | undefined;
   constructor(readonly options: RunnerOptions) {
     const rpc = new URL(options.rpcUrl);
@@ -43,8 +50,17 @@ export class RpcRunner implements SweepPort {
     const identities = Object.values(this.keys).map(key => key.publicKey.toBase58());
     if (new Set(identities).size !== identities.length) throw new Error('Local role keys must be distinct');
     this.journal = new Journal(options.stateDirectory);
-    this.sdk = new MuleClient(JSON.parse(readFileSync(options.idlPath, 'utf8')) as Idl, PROGRAM_ID,
-      new FileMissionIdHistory(join(options.stateDirectory, 'mission-ids')));
+    this.history = new FileMissionIdHistory(join(options.stateDirectory, 'mission-ids'));
+    this.sdk = new MuleClient(JSON.parse(readFileSync(options.idlPath, 'utf8')) as Idl, PROGRAM_ID, {
+      reserve: key => {
+        const reserved = this.history.reserve(key);
+        if (reserved) testFault('after-reserve');
+        return reserved;
+      },
+    });
+  }
+  isReserved(id: bigint): boolean {
+    return this.history.isReserved(missionIdHistoryKey(this.sdk.programId, this.keys.client.publicKey, id));
   }
   async bindChain(): Promise<void> {
     const genesis = await this.connection.getGenesisHash();
@@ -103,10 +119,11 @@ export class RpcRunner implements SweepPort {
     }
     throw new Error('Confirmed transaction details unavailable; retain journal and retry: ' + signature);
   }
-  /** Persist signed bytes BEFORE broadcast. An ambiguous submission only ever resends those exact bytes. */
+  /** One broadcast attempt per signature. Unknown outcomes wait for finalized expiry before reconciliation. */
   async transact(operation: string, build: () => TransactionInstruction[], signers: Keypair[]): Promise<Receipt> {
     let record = this.journal.read<TransactionRecord>('tx:' + operation);
     if (record?.state === 'confirmed' && record.receipt) return record.receipt;
+    if (record?.state === 'expired-not-landed') throw new CreationExpiredWithoutExecution(record.signature);
     if (!record) {
       const latest = await this.connection.getLatestBlockhash();
       const transaction = new Transaction({feePayer: this.keys.admin.publicKey, ...latest}).add(...build());
@@ -114,15 +131,15 @@ export class RpcRunner implements SweepPort {
       transaction.sign(...unique.values());
       assert(transaction.signature);
       record = {operation, signature: bs58.encode(transaction.signature), bytes: transaction.serialize().toString('base64'),
-        ...latest, state: 'signed'};
+        ...latest, state: 'signed', broadcastAttempted: false, signedSlot: await this.connection.getSlot('confirmed')};
       this.journal.write('tx:' + operation, record);
     }
-    const bytes = Buffer.from(record.bytes, 'base64');
-    const decoded = Transaction.from(bytes);
-    assert(decoded.verifySignatures(), 'Corrupted signed-transaction journal');
-    assert(decoded.signature && bs58.encode(decoded.signature) === record.signature, 'Signature journal mismatch');
-    let lastSend = 0;
-    for (let attempt = 0; attempt < 240; attempt++) {
+    const started = Date.now();
+    while (Date.now() - started < 300_000) {
+      const bytes = Buffer.from(record.bytes, 'base64');
+      const decoded = Transaction.from(bytes);
+      assert(decoded.verifySignatures(), 'Corrupted signed-transaction journal');
+      assert(decoded.signature && bs58.encode(decoded.signature) === record.signature, 'Signature journal mismatch');
       const status = (await this.connection.getSignatureStatuses([record.signature], {searchTransactionHistory: true})).value[0];
       if (status?.err) throw new Error('Transaction rejected: ' + record.signature + ' ' + JSON.stringify(status.err));
       if (status?.confirmationStatus === 'confirmed' || status?.confirmationStatus === 'finalized') {
@@ -130,28 +147,141 @@ export class RpcRunner implements SweepPort {
         if (operation.endsWith(':record_verdict')) testFault('after-verdict');
         record = {...record, state: 'confirmed', receipt};
         this.journal.write('tx:' + operation, record);
+        if (['finalize', 'resolve_dispute', 'refund_expired', 'refund_stale', 'cancel_mission']
+          .some(name => operation.endsWith(':' + name))) testFault('after-close');
         return receipt;
       }
-      if (await this.connection.getBlockHeight() > record.lastValidBlockHeight) {
-        // Never create a replacement transaction while outcome remains ambiguous.
-        throw new Error('Signed transaction expired without a confirmed outcome; manual reconciliation required: ' + record.signature);
+      const finalizedHeight = await this.connection.getBlockHeight('finalized');
+      if (finalizedHeight > record.lastValidBlockHeight) {
+        const observed = await this.reconcileExpired(record, finalizedHeight);
+        if (observed) {
+          record = {...record, state: 'confirmed', receipt: observed};
+          this.journal.write('tx:' + operation, record);
+          return observed;
+        }
+        const expiredAttempts: NonNullable<TransactionRecord['expiredAttempts']> = [...(record.expiredAttempts ?? []), {signature: record.signature,
+          lastValidBlockHeight: record.lastValidBlockHeight, finalizedHeight, outcome: 'expired-not-landed' as const}];
+        if (operation.endsWith(':create_mission')) {
+          // Its absolute delivery deadline may already be past. Preserve the consumed ID and let
+          // the campaign allocate a new one through the normal SDK path with a fresh deadline.
+          record = {...record, state:'expired-not-landed', expiredAttempts};
+          this.journal.write('tx:' + operation, record);
+          throw new CreationExpiredWithoutExecution(record.signature);
+        }
+        // Both finalized signature lookup and retained account history prove non-execution.
+        // Non-creation instructions can retain their original arguments.
+        const latest = await this.connection.getLatestBlockhash();
+        decoded.recentBlockhash = latest.blockhash;
+        decoded.lastValidBlockHeight = latest.lastValidBlockHeight;
+        decoded.signatures = [];
+        const unique = new Map([this.keys.admin, ...signers].map(key => [key.publicKey.toBase58(), key]));
+        decoded.sign(...unique.values());
+        assert(decoded.signature);
+        record = {operation, signature: bs58.encode(decoded.signature), bytes: decoded.serialize().toString('base64'),
+          ...latest, state: 'signed', broadcastAttempted: false, signedSlot: await this.connection.getSlot('confirmed'), expiredAttempts};
+        this.journal.write('tx:' + operation, record);
+        continue;
       }
-      if (Date.now() - lastSend >= 2_000) {
+      if (record.broadcastAttempted === false) {
+        // Persist BEFORE send: a process killed between here and the RPC call waits for expiry on restart.
+        record = {...record, broadcastAttempted: true};
+        this.journal.write('tx:' + operation, record);
         try {
           const sent = await this.connection.sendRawTransaction(bytes, {skipPreflight: false, maxRetries: 0, preflightCommitment: 'confirmed'});
           assert.equal(sent, record.signature);
         } catch (error) {
-          // A deterministic preflight failure means these bytes cannot land; expose its logs immediately.
           if (error instanceof SendTransactionError) throw new Error(error.message + '\n' + (error.logs ?? []).join('\n'));
-          // An RPC transport failure can occur after acceptance: only recheck/resend the original bytes.
-          if (attempt === 239) throw error;
+          // Transport error is ambiguous. Do not send these bytes again.
         }
-        lastSend = Date.now();
       }
       await pause(250);
     }
-    throw new Error('Transaction outcome pending; retain journal and rerun: ' + record.signature);
+    throw new Error('RPC has not provided a definitive chain outcome yet; retained state resumes automatically: ' + record.signature);
   }
+
+  async reconcileExpired(record: TransactionRecord, finalizedHeight: number): Promise<Receipt | null> {
+    assert(finalizedHeight > record.lastValidBlockHeight, 'Never reconcile absence before finalized blockhash expiry');
+    const transaction = await this.connection.getTransaction(record.signature, {commitment: 'finalized', maxSupportedTransactionVersion: 0});
+    if (transaction?.meta) {
+      if (transaction.meta.err !== null) throw new Error('Expired transaction actually failed on-chain: ' + record.signature);
+      return this.receipt(record.signature);
+    }
+    const status = (await this.connection.getSignatureStatuses([record.signature], {searchTransactionHistory: true})).value[0];
+    if (status) throw new Error('RPC signature views disagree; preserve journal until they converge');
+    assert(record.signedSlot !== undefined, 'A transaction without its recorded slot cannot prove retained history');
+    const earliest = await this.connection.getFirstAvailableBlock();
+    assert(earliest <= record.signedSlot, 'RPC ledger pruned required history; no replacement transaction is permitted');
+    const [addressText, instruction] = record.operation.split(':');
+    if (addressText && instruction && addressText !== 'setup') {
+      const address = new PublicKey(addressText);
+      // The finalized PDA and its full retained signature history are both consulted.
+      const account = await this.connection.getAccountInfo(address, 'finalized');
+      const history = await this.missionHistory(address, 'finalized');
+      const exact = history.find(entry => entry.receipt.signature === record.signature);
+      if (exact) return exact.receipt;
+      const terminal = history.find(entry => entry.receipt.events.some(event =>
+        ['missionsettled', 'missionrefunded', 'missioncancelled'].includes(event.name.replaceAll('_', '').toLowerCase())));
+      if (terminal || (instruction === 'create_mission' && account !== null)) {
+        throw new Error('Mission already transitioned under another signature; do not recreate it');
+      }
+    }
+    return null;
+  }
+
+  async missionHistory(address: PublicKey, commitment: 'confirmed' | 'finalized' = 'confirmed'):
+    Promise<Array<{instruction: string; receipt: Receipt}>> {
+    const result: Array<{instruction: string; receipt: Receipt}> = [];
+    let before: string | undefined;
+    for (;;) {
+      const signatures = await this.connection.getSignaturesForAddress(address, {limit: 1000, before}, commitment);
+      for (const entry of signatures) {
+        if (entry.err !== null) continue;
+        const transaction = await this.connection.getTransaction(entry.signature, {commitment, maxSupportedTransactionVersion: 0});
+        if (!transaction?.meta) throw new Error('RPC account history has not exposed transaction details yet');
+        const keys = transaction.transaction.message.staticAccountKeys;
+        const instructions = transaction.transaction.message.compiledInstructions;
+        for (const instruction of instructions) {
+          if (!keys[instruction.programIdIndex]?.equals(this.sdk.programId)) continue;
+          const decoded = this.sdk.coder.instruction.decode(Buffer.from(instruction.data));
+          if (!decoded) continue;
+          const receipt = await this.receipt(entry.signature);
+          if (receipt.events.some(event => String(event.data.mission) === address.toBase58())) {
+            result.push({instruction: decoded.name, receipt});
+          }
+        }
+      }
+      if (signatures.length < 1000) return result;
+      before = signatures.at(-1)!.signature;
+    }
+  }
+
+  async settlementBalances(signature: string, fallback: {client:string;agent:string;clientLamports:string}):
+    Promise<{before:typeof fallback;after:typeof fallback}> {
+    assert(this.mint);
+    const transaction = await this.connection.getTransaction(signature, {commitment:'confirmed',maxSupportedTransactionVersion:0});
+    assert(transaction?.meta && transaction.meta.err === null, 'Missing successful settlement metadata');
+    const keys=transaction.transaction.message.staticAccountKeys;
+    const clientIndex=keys.findIndex(key=>key.equals(this.keys.client.publicKey));
+    assert(clientIndex>=0);
+    const tokenAmount=(owner:PublicKey, side:'preTokenBalances'|'postTokenBalances', missing:string):string=>{
+      const address=getAssociatedTokenAddressSync(this.mint!,owner);
+      const index=keys.findIndex(key=>key.equals(address));
+      if(index<0)return missing; // Refund instructions do not include the unchanged agent token account.
+      const balance=transaction.meta![side]?.find(entry=>entry.accountIndex===index);
+      assert(balance,'Token balance metadata missing for settlement recipient');
+      assert.equal(balance.mint,this.mint!.toBase58());
+      return balance.uiTokenAmount.amount;
+    };
+    return {
+      before:{client:tokenAmount(this.keys.client.publicKey,'preTokenBalances',fallback.client),
+        agent:tokenAmount(this.keys.agent.publicKey,'preTokenBalances',fallback.agent),
+        clientLamports:String(transaction.meta.preBalances[clientIndex])},
+      after:{client:tokenAmount(this.keys.client.publicKey,'postTokenBalances',fallback.client),
+        agent:tokenAmount(this.keys.agent.publicKey,'postTokenBalances',fallback.agent),
+        clientLamports:String(transaction.meta.postBalances[clientIndex])},
+    };
+  }
+
   async verdictReceipts(address: PublicKey): Promise<Receipt[]> {
     const signatures = await this.connection.getSignaturesForAddress(address, {limit: 100});
     const receipts: Receipt[] = [];

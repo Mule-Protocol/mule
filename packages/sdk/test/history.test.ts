@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test, type TestContext } from 'node:test';
 import { PublicKey } from '@solana/web3.js';
-import { BN, MuleClient, MissionIdAlreadyUsedError, PROGRAM_ID, type Idl } from '../src/index.js';
+import { BN, MuleClient, MissionIdAlreadyUsedError, PROGRAM_ID, missionIdHistoryKey, type Idl } from '../src/index.js';
 import { FileMissionIdHistory } from '../src/file-history.js';
 
 const idl=JSON.parse(readFileSync('target/idl/mule_escrow.json','utf8')) as Idl;
@@ -88,4 +88,19 @@ test('history storage failure prevents an instruction from being returned',()=>{
   const error=new Error('durable storage unavailable');
   const sdk=new MuleClient(idl,PROGRAM_ID,{reserve:()=>{throw error;}});
   assert.throws(()=>sdk.instruction('create_mission',accounts,args),candidate=>candidate===error);
+});
+
+test('read-only reservation lookup shares exact SDK identity and treats damaged entries as consumed',t=>{
+  const directory=historyDirectory(t),history=new FileMissionIdHistory(directory);
+  const key=missionIdHistoryKey(PROGRAM_ID,client,123n);
+  assert.equal(history.isReserved(key),false);
+  const builder=new MuleClient(idl,PROGRAM_ID,history);
+  builder.instruction('create_mission',accounts,args);
+  assert.equal(history.isReserved(key),true);
+  assert.equal(new FileMissionIdHistory(directory).isReserved(key),true);
+  const filename=createHash('sha256').update(key).digest('hex')+'.reserved';
+  writeFileSync(join(directory,filename),'');
+  assert.equal(history.isReserved(key),true);assert.equal(history.reserve(key),false);
+  assert.throws(()=>missionIdHistoryKey(PROGRAM_ID,client,-1n),RangeError);
+  assert.throws(()=>missionIdHistoryKey(PROGRAM_ID,client,1n<<64n),RangeError);
 });
