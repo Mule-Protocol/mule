@@ -97,6 +97,10 @@ export class MuleClient {
     }
     return instruction;
   }
+  /** Acceptance always reads the canonical Config, including current validator rotation. */
+  acceptMissionInstruction(actor: PublicKey, mission: PublicKey): TransactionInstruction {
+    return this.instruction('accept_mission', { actor, config: configPda(this.programId)[0], mission });
+  }
   decodeMission(data: Buffer): Mission {
     const name = this.idl.accounts?.find(a => normalized(a.name) === 'mission')?.name;
     if (!name) throw new Error('Mission account missing from IDL');

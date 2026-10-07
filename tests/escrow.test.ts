@@ -463,6 +463,38 @@ check('admin transfer: no proposal, replacement, default rejection and replay',(
   f.call('accept_admin',f.agent);assert(f.config().admin.equals(f.agent.publicKey));
 });
 
+
+check('validator conflict: current validator cannot create as client; rotation releases the old key',()=>{
+  const f=new Fixture();
+  f.client=f.validator;f.clientToken=f.newToken(f.client.publicKey);
+  f.mission=missionPda(f.client.publicKey,f.id)[0];f.vault=vaultPda(f.mission)[0];
+  f.send([createMintToInstruction(f.mint,f.clientToken,f.deployer.publicKey,1_000_000_000n)],[f.deployer]);
+  f.create({},'ValidatorCannotBeClient');assert.equal(f.balance(f.clientToken),1_000_000_000n);f.closed();
+  f.update(false,undefined,f.deployer,{validator:f.stranger.publicKey});f.create();
+  assert(f.state().client.equals(f.validator.publicKey));f.refund('cancel_mission');
+  f.client=f.stranger;f.clientToken=f.newToken(f.client.publicKey);
+  f.mission=missionPda(f.client.publicKey,f.id)[0];f.vault=vaultPda(f.mission)[0];
+  f.create({},'ValidatorCannotBeClient');f.closed();
+});
+check('validator conflict: designated validator rejected before and after rotation',()=>{
+  const f=new Fixture();f.create({designated_agent:f.validator.publicKey},'ValidatorCannotBeDesignatedAgent');f.closed();
+  f.update(false,undefined,f.deployer,{validator:f.stranger.publicKey});
+  f.create({designated_agent:f.stranger.publicKey},'ValidatorCannotBeDesignatedAgent');
+  f.create({designated_agent:f.validator.publicKey});f.accept(undefined,f.validator);
+  assert(f.state().agent?.equals(f.validator.publicKey));
+});
+check('validator conflict: acceptance reads current Config and releases old validator after rotation',()=>{
+  const f=new Fixture();f.create();f.accept('ValidatorCannotAccept',f.validator);
+  f.update(false,undefined,f.deployer,{validator:f.stranger.publicKey});
+  f.accept('ValidatorCannotAccept',f.stranger);f.accept(undefined,f.validator);
+  assert(f.state().agent?.equals(f.validator.publicKey));
+});
+check('validator conflict: a previously designated agent cannot accept after becoming validator',()=>{
+  const f=new Fixture();f.create({designated_agent:f.agent.publicKey});
+  f.update(false,undefined,f.deployer,{validator:f.agent.publicKey});
+  f.accept('ValidatorCannotAccept');assert.equal(missionStatus(f.state()),'open');
+});
+
 if(process.env.MULE_LIST_TESTS==='1') {
   console.log(JSON.stringify(definitions.map(d=>d.name)));
 } else {

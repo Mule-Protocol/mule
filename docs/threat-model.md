@@ -18,6 +18,7 @@ The program enforces signers and the recorded verdict. It cannot read HTTP or ve
 | Agent impersonation | Agent bound once; signature on submission | Wrong agent, reaccept, resubmit |
 | Third party accepts then withholds delivery | Optional immutable designated_agent restricts acceptance | Designated signer accepted; other agent rejected; None retains open acceptance |
 | Self-dealing | Client cannot accept its own mission or designate itself | Self-accept and self-designation rejected |
+| Validator takes a party role | create_mission excludes current validator as client/designated agent; accept_mission reads canonical Config and excludes current validator | Three refusals plus old/new validator after rotation |
 | Unauthorized verdict/ruling | Config validator/current-admin signature | Wrong signers and rotation |
 | Lost or inactive dispute admin | Permissionless finalize after 14 days from disputed_at applies the preserved original verdict | Too early rejected; exact threshold pays agent for Passed and client for Failed |
 | Admin transfer hijack | Current admin proposes non-default key; only pending admin accepts; acceptance clears pending and revokes old admin | Wrong proposer/accepter, default key, old admin after transfer |
@@ -38,6 +39,7 @@ The program enforces signers and the recorded verdict. It cannot read HTTP or ve
 - A dishonest validator can approve bad work. Parties must dispute in time; admin may override the verdict. If no ruling succeeds within 14 days, anyone may apply that same original verdict. The timeout improves recovery from admin inactivity; it does not establish content truth.
 - The timeout requires a transaction and valid recipient token accounts. It does not automatically settle a mission. Admin resolution remains possible after the timeout until the mission closes; the first successful serialized resolution/finalization wins.
 - With designated_agent = None, any non-client signer can still accept and withhold delivery until the expiry refund. Designation removes acceptance by outsiders but cannot force the selected agent to deliver.
+- Entry guards use the current Config validator. They do not retroactively remove an existing client/accepted agent if an admin later rotates the validator to that party; administrators must avoid this conflict on existing missions. No additional record_verdict rule was added beyond the requested creation/acceptance guards.
 - Validator rotation affects already-submitted missions. Admin transfer affects existing disputes. Mint cannot be changed. If the current admin key is lost before a proposal, admin transfer is unavailable, while the dispute timeout remains callable.
 - A mint freeze authority could halt transfers. Tests create a mint without one; no real mint policy is exercised.
 - A recipient needs a valid token account. A future keeper could recreate an ATA; no keeper is implemented now.

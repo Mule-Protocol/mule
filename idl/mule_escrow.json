@@ -64,6 +64,24 @@
           "signer": true
         },
         {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
           "name": "mission",
           "writable": true,
           "pda": {
@@ -1536,6 +1554,21 @@
       "code": 6019,
       "name": "DisputeTimeoutNotReached",
       "msg": "Dispute timeout has not elapsed"
+    },
+    {
+      "code": 6020,
+      "name": "ValidatorCannotBeClient",
+      "msg": "The current validator cannot create a mission as client"
+    },
+    {
+      "code": 6021,
+      "name": "ValidatorCannotBeDesignatedAgent",
+      "msg": "The current validator cannot be designated as agent"
+    },
+    {
+      "code": 6022,
+      "name": "ValidatorCannotAccept",
+      "msg": "The current validator cannot accept a mission"
     }
   ],
   "types": [
