@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "exceptions": [
+    {
+      "ecosystem": "npm",
+      "advisory": "GHSA-3gc7-fjrx-p6mg",
+      "package": "bigint-buffer",
+      "versions": [
+        "1.1.5"
+      ],
+      "reason": "No patched npm release exists (latest 1.1.5). The vulnerable native C/C++ converter is prohibited: pnpm ignores this package's build scripts and the audit resolves every binding candidate without loading it, failing if any native binary exists. The exact audited JavaScript fallback is SHA-256 checked and tested on boundary lengths. This exception covers only that verified pure-JavaScript installation and the current local-only test scope; it does not declare bigint-buffer generally safe.",
+      "reviewBy": "2026-11-06",
+      "mitigation": "bigint-buffer-js-only",
+      "sources": [
+        "https://github.com/advisories/GHSA-3gc7-fjrx-p6mg",
+        "https://github.com/no2chem/bigint-buffer/blob/v1.1.5/src/index.ts",
+        "https://registry.npmjs.org/bigint-buffer/1.1.5"
+      ]
+    }
+  ]
+}

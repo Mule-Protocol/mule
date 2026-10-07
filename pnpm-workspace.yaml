@@ -1,2 +1,14 @@
 packages:
   - packages/*
+
+# Match Dependabot's three-day release cooldown; reviewed pins below are older.
+minimumReleaseAge: 4320
+ignoredBuiltDependencies:
+  - bigint-buffer
+
+# Security fixes and a release already eligible for the shared cooldown.
+# Compatibility is exercised by the complete SDK and real local RPC campaign.
+overrides:
+  '@coral-xyz/anchor@0.32.1>toml': 4.2.0
+  '@solana/web3.js@1.98.4>jayson': 5.0.0
+  acorn: 8.18.0
