@@ -4,6 +4,7 @@ use anchor_spl::token::{self, CloseAccount, Mint, Token, TokenAccount, TransferC
 
 declare_id!("Fg6PaFpoGXkYsidMpWxTWqkZ7FEfcYkgMQHGho8KDXgL");
 pub const STALE_SECONDS: i64 = 7 * 24 * 60 * 60;
+pub const DISPUTE_TIMEOUT: i64 = 14 * 24 * 60 * 60;
 pub const MAX_URI_BYTES: usize = 200;
 pub const DEFAULT_DISPUTE_WINDOW: i64 = 3600;
 pub const DEFAULT_MAX_AMOUNT: u64 = 100_000_000;
@@ -23,6 +24,7 @@ pub mod mule_escrow {
         );
         ctx.accounts.config.set_inner(Config {
             admin,
+            pending_admin: None,
             validator,
             mint: ctx.accounts.mint.key(),
             min_dispute_window: DEFAULT_DISPUTE_WINDOW,
@@ -69,6 +71,33 @@ pub mod mule_escrow {
         Ok(())
     }
 
+    pub fn propose_admin(ctx: Context<UpdateConfig>, new_admin: Pubkey) -> Result<()> {
+        require!(new_admin != Pubkey::default(), EscrowError::InvalidAuthority);
+        let config = &mut ctx.accounts.config;
+        config.pending_admin = Some(new_admin);
+        emit!(AdminProposed {
+            config: config.key(),
+            admin: config.admin,
+            pending_admin: new_admin
+        });
+        Ok(())
+    }
+
+    pub fn accept_admin(ctx: Context<AcceptAdmin>) -> Result<()> {
+        let config = &mut ctx.accounts.config;
+        let previous_admin = config.admin;
+        config.admin = ctx.accounts.pending_admin.key();
+        config.pending_admin = None;
+        emit!(AdminAccepted {
+            config: config.key(),
+            previous_admin,
+            admin: config.admin
+        });
+        Ok(())
+    }
+
+    // The reviewed ABI has seven arguments plus Context, exceeding Clippy's default.
+    #[allow(clippy::too_many_arguments)]
     pub fn create_mission(
         ctx: Context<CreateMission>,
         mission_id: u64,
@@ -77,6 +106,7 @@ pub mod mule_escrow {
         criteria_uri: String,
         deadline: i64,
         dispute_window: i64,
+        designated_agent: Option<Pubkey>,
     ) -> Result<()> {
         let config = &ctx.accounts.config;
         require!(!config.paused, EscrowError::Paused);
@@ -99,10 +129,15 @@ pub mod mule_escrow {
             .checked_add(dispute_window)
             .ok_or(EscrowError::ArithmeticOverflow)?;
         validate_uri(&criteria_uri)?;
+        require!(
+            designated_agent != Some(ctx.accounts.client.key()),
+            EscrowError::ClientCannotDesignateSelf
+        );
         let mission = &mut ctx.accounts.mission;
         mission.set_inner(Mission {
             client: ctx.accounts.client.key(),
             agent: None,
+            designated_agent,
             mission_id,
             amount,
             criteria_hash,
@@ -113,6 +148,8 @@ pub mod mule_escrow {
             deadline,
             dispute_window,
             verdict_at: None,
+            original_verdict: None,
+            disputed_at: None,
             status: Status::Open,
             bump: ctx.bumps.mission,
             vault_bump: ctx.bumps.vault,
@@ -135,7 +172,8 @@ pub mod mule_escrow {
             amount,
             status: mission.status,
             client: mission.client,
-            mission_id
+            mission_id,
+            designated_agent
         });
         Ok(())
     }
@@ -167,6 +205,13 @@ pub mod mule_escrow {
             ctx.accounts.actor.key() != mission.client,
             EscrowError::ClientCannotAccept
         );
+        if let Some(designated_agent) = mission.designated_agent {
+            require_keys_eq!(
+                ctx.accounts.actor.key(),
+                designated_agent,
+                EscrowError::NotDesignatedAgent
+            );
+        }
         // No work can start once the delivery deadline has elapsed.
         require!(
             Clock::get()?.unix_timestamp < mission.deadline,
@@ -228,6 +273,7 @@ pub mod mule_escrow {
         now.checked_add(mission.dispute_window)
             .ok_or(EscrowError::ArithmeticOverflow)?;
         mission.verdict_at = Some(now);
+        mission.original_verdict = Some(pass);
         mission.report_hash = Some(report_hash);
         mission.status = if pass { Status::Passed } else { Status::Failed };
         emit!(VerdictRecorded {
@@ -252,10 +298,11 @@ pub mod mule_escrow {
             matches!(mission.status, Status::Passed | Status::Failed),
             EscrowError::InvalidState
         );
-        require!(
-            Clock::get()?.unix_timestamp < mission.window_end()?,
-            EscrowError::WindowClosed
-        );
+        let now = Clock::get()?.unix_timestamp;
+        require!(now < mission.window_end()?, EscrowError::WindowClosed);
+        now.checked_add(DISPUTE_TIMEOUT)
+            .ok_or(EscrowError::ArithmeticOverflow)?;
+        mission.disputed_at = Some(now);
         mission.status = Status::Disputed;
         emit!(DisputeOpened {
             mission: mission.key(),
@@ -279,15 +326,22 @@ pub mod mule_escrow {
     }
 
     pub fn finalize(ctx: Context<Settle>) -> Result<()> {
-        require!(
-            matches!(ctx.accounts.mission.status, Status::Passed | Status::Failed),
-            EscrowError::InvalidState
-        );
-        require!(
-            Clock::get()?.unix_timestamp >= ctx.accounts.mission.window_end()?,
-            EscrowError::WindowStillOpen
-        );
-        let pay_agent = ctx.accounts.mission.status == Status::Passed;
+        let mission = &ctx.accounts.mission;
+        let now = Clock::get()?.unix_timestamp;
+        let pay_agent = match mission.status {
+            Status::Passed | Status::Failed => {
+                require!(now >= mission.window_end()?, EscrowError::WindowStillOpen);
+                mission.status == Status::Passed
+            }
+            Status::Disputed => {
+                require!(
+                    now >= mission.dispute_end()?,
+                    EscrowError::DisputeTimeoutNotReached
+                );
+                mission.original_verdict.ok_or(EscrowError::InvalidState)?
+            }
+            _ => return err!(EscrowError::InvalidState),
+        };
         finish(ctx.accounts, pay_agent)
     }
 
@@ -453,6 +507,14 @@ pub struct UpdateConfig<'info> {
 }
 
 #[derive(Accounts)]
+pub struct AcceptAdmin<'info> {
+    pub pending_admin: Signer<'info>,
+    #[account(mut, seeds = [b"config"], bump = config.bump,
+        constraint = config.pending_admin == Some(pending_admin.key()) @ EscrowError::Unauthorized)]
+    pub config: Account<'info, Config>,
+}
+
+#[derive(Accounts)]
 #[instruction(mission_id: u64)]
 pub struct CreateMission<'info> {
     #[account(mut)]
@@ -538,6 +600,7 @@ pub struct Settle<'info> {
 #[derive(InitSpace)]
 pub struct Config {
     pub admin: Pubkey,
+    pub pending_admin: Option<Pubkey>,
     pub validator: Pubkey,
     pub mint: Pubkey,
     pub min_dispute_window: i64,
@@ -551,6 +614,7 @@ pub struct Config {
 pub struct Mission {
     pub client: Pubkey,
     pub agent: Option<Pubkey>,
+    pub designated_agent: Option<Pubkey>,
     pub mission_id: u64,
     pub amount: u64,
     pub criteria_hash: [u8; 32],
@@ -563,12 +627,21 @@ pub struct Mission {
     pub deadline: i64,
     pub dispute_window: i64,
     pub verdict_at: Option<i64>,
+    pub original_verdict: Option<bool>,
+    pub disputed_at: Option<i64>,
     pub status: Status,
     pub bump: u8,
     pub vault_bump: u8,
 }
 
 impl Mission {
+    fn dispute_end(&self) -> Result<i64> {
+        self.disputed_at
+            .ok_or(EscrowError::InvalidState)?
+            .checked_add(DISPUTE_TIMEOUT)
+            .ok_or_else(|| error!(EscrowError::ArithmeticOverflow))
+    }
+
     fn window_end(&self) -> Result<i64> {
         self.verdict_at
             .ok_or(EscrowError::InvalidState)?
@@ -606,12 +679,25 @@ pub struct ConfigUpdated {
     pub paused: bool,
 }
 #[event]
+pub struct AdminProposed {
+    pub config: Pubkey,
+    pub admin: Pubkey,
+    pub pending_admin: Pubkey,
+}
+#[event]
+pub struct AdminAccepted {
+    pub config: Pubkey,
+    pub previous_admin: Pubkey,
+    pub admin: Pubkey,
+}
+#[event]
 pub struct MissionCreated {
     pub mission: Pubkey,
     pub amount: u64,
     pub status: Status,
     pub client: Pubkey,
     pub mission_id: u64,
+    pub designated_agent: Option<Pubkey>,
 }
 #[event]
 pub struct MissionAccepted {
@@ -697,4 +783,10 @@ pub enum EscrowError {
     InvalidConfig,
     #[msg("Authority cannot be the default public key")]
     InvalidAuthority,
+    #[msg("Only the designated agent may accept this mission")]
+    NotDesignatedAgent,
+    #[msg("Client cannot designate themselves as agent")]
+    ClientCannotDesignateSelf,
+    #[msg("Dispute timeout has not elapsed")]
+    DisputeTimeoutNotReached,
 }

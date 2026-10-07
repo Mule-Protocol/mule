@@ -6,9 +6,16 @@ import { Keypair, PublicKey, SystemProgram, Transaction, type TransactionInstruc
 import { ACCOUNT_SIZE, AccountLayout, MINT_SIZE, createInitializeMint2Instruction,
   createInitializeAccount3Instruction, createMintToInstruction, createTransferInstruction } from '@solana/spl-token';
 import { MuleClient, PROGRAM_ID, TOKEN_PROGRAM_ID, UPGRADEABLE_LOADER_ID, configPda, missionPda,
-  vaultPda, programDataPda, missionStatus, STALE_SECONDS, type Idl, type InstructionName } from '../packages/sdk/src/index.js';
+  vaultPda, programDataPda, missionStatus, STALE_SECONDS, DISPUTE_TIMEOUT, InMemoryMissionIdHistory, type Idl, type InstructionName } from '../packages/sdk/src/index.js';
 
 const sdk = new MuleClient(JSON.parse(readFileSync('target/idl/mule_escrow.json', 'utf8')) as Idl);
+// Fresh histories are intentional ONLY in this on-chain harness: negative/replay tests
+// must reach the program. Durable production history is tested separately in the SDK.
+function testInstruction(name: InstructionName, accounts: Record<string,PublicKey>, args: Record<string,unknown> = {}) {
+  const builder = name === 'create_mission'
+    ? new MuleClient(sdk.idl, PROGRAM_ID, new InMemoryMissionIdHistory()) : sdk;
+  return builder.instruction(name, accounts, args);
+}
 const hash = Array<number>(32).fill(7);
 const evidence: Array<{ test: string; instruction: InstructionName; outcome: string; events: string[] }> = [];
 const cases: Array<{ name: string; passed: boolean }> = [];
@@ -86,7 +93,7 @@ class Fixture {
     return key.publicKey;
   }
   accounts(signer: Keypair): Record<string, PublicKey> {
-    return { deployer:signer.publicKey, admin:signer.publicKey, actor:signer.publicKey,
+    return { deployer:signer.publicKey, admin:signer.publicKey, pending_admin:signer.publicKey, actor:signer.publicKey,
       validator:signer.publicKey, caller:signer.publicKey, config:configPda()[0], program_data:programDataPda()[0],
       mint:this.mint, client:this.client.publicKey, mission:this.mission, vault:this.vault,
       client_token:this.clientToken, agent_token:this.agentToken, token_program:TOKEN_PROGRAM_ID,
@@ -95,9 +102,10 @@ class Fixture {
   call(name: InstructionName, signer: Keypair, args: Record<string,unknown> = {},
     changes: Record<string,PublicKey> = {}, error?: string): TransactionMetadata | undefined {
     const previous = this.svm.getAccount(this.mission);
-    const priorStatus = previous && previous.data.length > 0
-      ? missionStatus(sdk.decodeMission(Buffer.from(previous.data))) : undefined;
-    const ix = sdk.instruction(name, {...this.accounts(signer),...changes}, args);
+    const priorMission = previous && previous.data.length > 0
+      ? sdk.decodeMission(Buffer.from(previous.data)) : undefined;
+    const priorStatus = priorMission ? missionStatus(priorMission) : undefined;
+    const ix = testInstruction(name, {...this.accounts(signer),...changes}, args);
     const result = this.raw([ix],[signer]);
     if (error !== undefined) {
       assert(result instanceof FailedTransactionMetadata, name + ' unexpectedly succeeded');
@@ -109,7 +117,7 @@ class Fixture {
     if (result instanceof FailedTransactionMetadata) assert.fail(name + '\n' + result.meta().logs().join('\n'));
     const events=sdk.events(result.logs(), null);
     assert.equal(events.length,1,'one MULE event per successful instruction');
-    if (!name.endsWith('_config')) {
+    if (!name.endsWith('_config') && !name.endsWith('_admin')) {
       assert((events[0]?.data.mission as PublicKey).equals(this.mission));
       assert.equal(String(events[0]?.data.amount),'5000000');
       const expected:Record<string,[string,string]>={
@@ -117,13 +125,22 @@ class Fixture {
         submit_delivery:['DeliverySubmitted','submitted'],record_verdict:['VerdictRecorded',args.pass?'passed':'failed'],
         open_dispute:['DisputeOpened','disputed'],cancel_mission:['MissionCancelled','cancelled'],
         refund_expired:['MissionRefunded','refunded'],refund_stale:['MissionRefunded','refunded'],
-        finalize:priorStatus==='passed'?['MissionSettled','settled']:['MissionRefunded','refunded'],
+        finalize:(priorStatus==='passed'||(priorStatus==='disputed'&&priorMission?.originalVerdict===true))?['MissionSettled','settled']:['MissionRefunded','refunded'],
         resolve_dispute:args.pay_agent?['MissionSettled','settled']:['MissionRefunded','refunded'],
       };
       const expectedEvent=expected[name];assert(expectedEvent);
       assert.equal(events[0]?.name.replaceAll('_','').toLowerCase(),expectedEvent[0].toLowerCase());
       const status=Object.keys(events[0]?.data.status as object)[0];
       assert.equal(status?.toLowerCase(),expectedEvent[1]);
+    }
+    if (name === 'propose_admin' || name === 'accept_admin') {
+      const event = events[0]; assert(event);
+      assert.equal(event.name.replaceAll('_','').toLowerCase(),name==='propose_admin'?'adminproposed':'adminaccepted');
+      assert((event.data.config as PublicKey).equals(configPda()[0]));
+      if(name==='propose_admin') {
+        assert((event.data.admin as PublicKey).equals(signer.publicKey));
+        assert((event.data.pendingAdmin as PublicKey).equals(args.new_admin as PublicKey));
+      } else assert((event.data.admin as PublicKey).equals(signer.publicKey));
     }
     evidence.push({test:activeTest,instruction:name,outcome:'success',events:events.map(e=>e.name)});
     return result;
@@ -136,7 +153,7 @@ class Fixture {
   }
   create(changes: Record<string,unknown>={}, error?: string, accounts: Record<string,PublicKey>={}) {
     return this.call('create_mission',this.client,{mission_id:this.id,amount:5_000_000n,criteria_hash:hash,
-      criteria_uri:'https://example.invalid/criteria.json',deadline:this.deadline,dispute_window:3600n,...changes},accounts,error);
+      criteria_uri:'https://example.invalid/criteria.json',deadline:this.deadline,dispute_window:3600n,designated_agent:null,...changes},accounts,error);
   }
   accept(error?: string, signer=this.agent) { return this.call('accept_mission',signer,{}, {},error); }
   submit(error?: string, signer=this.agent, uri='https://example.invalid/delivery.json') {
@@ -153,6 +170,10 @@ class Fixture {
     changes:Record<string,PublicKey>={}) { return this.call(name,signer,{},changes,error); }
   resolve(pay_agent=true,error?:string,signer=this.deployer,changes:Record<string,PublicKey>={}) {
     return this.call('resolve_dispute',signer,{pay_agent},changes,error);
+  }
+  config() {
+    const account=this.svm.getAccount(configPda()[0]); assert(account);
+    return sdk.decodeConfig(Buffer.from(account.data));
   }
   state() {
     const account=this.svm.getAccount(this.mission); assert(account);
@@ -184,7 +205,7 @@ check('initialize_config: defaults, authority and six-decimal mint',()=>{
   assert(config.admin.equals(f.deployer.publicKey)); assert(config.validator.equals(f.validator.publicKey));
   assert(config.mint.equals(f.mint)); assert.equal(config.minDisputeWindow.toString(),'3600');
   assert.equal(config.maxAmount.toString(),'100000000'); assert.equal(config.paused,false);
-  const ix=sdk.instruction('initialize_config',f.accounts(f.deployer),{admin:f.deployer.publicKey,validator:f.validator.publicKey});
+  const ix=testInstruction('initialize_config',f.accounts(f.deployer),{admin:f.deployer.publicKey,validator:f.validator.publicKey});
   assert(f.raw([ix],[f.deployer]) instanceof FailedTransactionMetadata,'config cannot be initialized twice');
 });
 check('initialize_config: forged ProgramData PDA rejected',()=>{
@@ -196,7 +217,7 @@ check('initialize_config: zero authority rejected',()=>{
   const f=new Fixture(false);
   f.call('initialize_config',f.deployer,{admin:PublicKey.default,validator:f.validator.publicKey},{},'InvalidAuthority');
 });
-check('update_config: restricted, immutable mint/admin, bounds and validator rotation',()=>{
+check('update_config: restricted, unchanged mint/admin, bounds and validator rotation',()=>{
   const f=new Fixture(); f.update(false,'Unauthorized',f.stranger);
   f.update(false,'InvalidConfig',f.deployer,{min_dispute_window:0n});
   f.update(false,'InvalidConfig',f.deployer,{max_amount:0n});
@@ -209,8 +230,8 @@ check('create_mission: exact escrow, immutable criteria and initialized state',(
   const m=f.state(); assert.equal(missionStatus(m),'open'); assert.equal(m.agent,null);
   assert.equal(m.amount.toString(),'5000000'); assert.deepEqual(m.criteriaHash,hash);
   assert.equal(f.balance(f.clientToken),balance-5_000_000n); assert.equal(f.balance(f.vault),5_000_000n);
-  const ix=sdk.instruction('create_mission',f.accounts(f.client),{mission_id:1n,amount:5_000_000n,
-    criteria_hash:hash,criteria_uri:'x',deadline:f.deadline,dispute_window:3600n});
+  const ix=testInstruction('create_mission',f.accounts(f.client),{mission_id:1n,amount:5_000_000n,
+    criteria_hash:hash,criteria_uri:'x',deadline:f.deadline,dispute_window:3600n,designated_agent:null});
   assert(f.raw([ix],[f.client]) instanceof FailedTransactionMetadata,'duplicate open mission rejected');
 });
 check('create_mission: invalid amount, deadline, window, URI and overflow',()=>{
@@ -234,8 +255,8 @@ check('create_mission: wrong mint, token authority and PDA substitutions',()=>{
 });
 check('create_mission: missing client signature rejected',()=>{
   const f=new Fixture();
-  const ix=sdk.instruction('create_mission',f.accounts(f.client),{mission_id:1n,amount:5_000_000n,criteria_hash:hash,
-    criteria_uri:'x',deadline:f.deadline,dispute_window:3600n});
+  const ix=testInstruction('create_mission',f.accounts(f.client),{mission_id:1n,amount:5_000_000n,criteria_hash:hash,
+    criteria_uri:'x',deadline:f.deadline,dispute_window:3600n,designated_agent:null});
   for(const key of ix.keys) if(key.pubkey.equals(f.client.publicKey)) key.isSigner=false;
   const result=f.raw([ix],[]); assert(result instanceof FailedTransactionMetadata);
   assert(result.meta().logs().join('\n').includes('AccountNotSigner'));
@@ -275,7 +296,7 @@ for(const pass of [true,false]) for(const party of ['client','agent'] as const)
   check('open_dispute from '+(pass?'passed':'failed')+' by '+party,()=>{
     const f=new Fixture(); f.prepared();f.verdict(pass);f.dispute('Unauthorized',f.stranger);
     f.time(1_700_003_599n);f.dispute(undefined,f[party]);assert.equal(missionStatus(f.state()),'disputed');
-    f.time(1_700_003_600n);f.finish('InvalidState');f.refund('refund_stale','InvalidState');
+    f.time(1_700_003_600n);f.finish('DisputeTimeoutNotReached');f.refund('refund_stale','InvalidState');
   });
 check('open_dispute: exact closed boundary rejected',()=>{
   const f=new Fixture();f.prepared();f.verdict();f.time(1_700_003_600n);f.dispute('WindowClosed');
@@ -285,6 +306,7 @@ for(const pay of [true,false]) check('resolve_dispute '+(pay?'pay':'refund')+': 
   f.resolve(pay,'Unauthorized',f.stranger);f.resolve(pay);
   assert.equal(f.balance(f.agentToken),pay?5_000_000n:0n);
   assert.equal(f.balance(f.clientToken),pay?original-5_000_000n:original);f.closed();
+  f.finish('AccountNotInitialized');
 });
 for(const state of ['open','accepted']) check('refund_expired from '+state+': deadline and permissionless refund',()=>{
   const f=new Fixture();const before=f.balance(f.clientToken);f.prepared(state);
@@ -302,14 +324,15 @@ for(const pass of [true,false]) check('refund_stale: cannot bypass recorded '+(p
 });
 check('paused: create blocked, every exit and in-flight step remains available',()=>{
   const f=new Fixture();f.update(true);f.create({},'Paused');
-  for(const route of ['cancel','finalize-pass','finalize-fail','expired','stale','resolve-pay','resolve-refund']) {
+  for(const route of ['cancel','finalize-pass','finalize-fail','expired','stale','resolve-pay','resolve-refund','timeout-pay','timeout-refund']) {
     const g=new Fixture();g.create();g.update(true);
     if(route==='cancel') g.refund('cancel_mission');
     else if(route==='expired'){g.accept();g.time(g.deadline);g.refund('refund_expired',undefined,g.stranger);}
     else {g.accept();g.submit();
       if(route==='stale'){g.time(g.deadline+STALE_SECONDS);g.refund('refund_stale',undefined,g.stranger);}
-      else {g.verdict(route!=='finalize-fail');
-        if(route.startsWith('resolve')){g.dispute();g.resolve(route==='resolve-pay');}
+      else {g.verdict(route!=='finalize-fail'&&route!=='timeout-refund');
+        if(route.startsWith('timeout')){g.dispute();g.time(1_700_000_000n+DISPUTE_TIMEOUT);g.finish();}
+        else if(route.startsWith('resolve')){g.dispute();g.resolve(route==='resolve-pay');}
         else {g.time(1_700_003_600n);g.finish();}
       }
     }g.closed();
@@ -336,7 +359,7 @@ const invalidByState: Record<string, InstructionName[]> = {
   submitted:['cancel_mission','accept_mission','submit_delivery','open_dispute','resolve_dispute','finalize','refund_expired'],
   passed:['cancel_mission','accept_mission','submit_delivery','record_verdict','resolve_dispute','refund_expired','refund_stale'],
   failed:['cancel_mission','accept_mission','submit_delivery','record_verdict','resolve_dispute','refund_expired','refund_stale'],
-  disputed:['cancel_mission','accept_mission','submit_delivery','record_verdict','open_dispute','finalize','refund_expired','refund_stale'],
+  disputed:['cancel_mission','accept_mission','submit_delivery','record_verdict','open_dispute','refund_expired','refund_stale'],
 };
 for(const [state,instructions] of Object.entries(invalidByState)) check('state machine rejects every forbidden outgoing instruction from '+state,()=>{
   const f=new Fixture();f.prepared(state);
@@ -351,6 +374,95 @@ for(const [state,instructions] of Object.entries(invalidByState)) check('state m
     assert.deepEqual(Buffer.from(f.svm.getAccount(f.mission)!.data),before,'failure must roll back');
   }
 });
+
+check('designated agent: only the designated signer accepts; field and event agree',()=>{
+  const f=new Fixture();
+  const created=f.create({designated_agent:f.agent.publicKey});assert(created);
+  const event=sdk.events(created.logs(),null)[0];assert(event);
+  assert((event.data.designatedAgent as PublicKey).equals(f.agent.publicKey));
+  assert(f.state().designatedAgent?.equals(f.agent.publicKey));
+  const before=Buffer.from(f.svm.getAccount(f.mission)!.data);
+  f.accept('NotDesignatedAgent',f.stranger);
+  assert.deepEqual(Buffer.from(f.svm.getAccount(f.mission)!.data),before);
+  f.accept();assert(f.state().agent?.equals(f.agent.publicKey));
+});
+check('designated agent: None preserves permissionless acceptance',()=>{
+  const f=new Fixture();const created=f.create();assert(created);
+  assert.equal(f.state().designatedAgent,null);
+  assert.equal(sdk.events(created.logs(),null)[0]?.data.designatedAgent,null);
+  f.accept(undefined,f.stranger);assert(f.state().agent?.equals(f.stranger.publicKey));
+});
+check('designated agent: client self-designation rejected atomically',()=>{
+  const f=new Fixture();const before=f.balance(f.clientToken);
+  f.create({designated_agent:f.client.publicKey},'ClientCannotDesignateSelf');
+  assert.equal(f.balance(f.clientToken),before);f.closed();
+});
+for(const pass of [true,false]) check('dispute timeout '+(pass?'passed':'failed')+': opening time, exact boundary, recipient, rent and closure',()=>{
+  const f=new Fixture();const original=f.balance(f.clientToken);
+  f.prepared();f.verdict(pass);
+  assert.equal(f.state().originalVerdict,pass);assert.equal(f.state().disputedAt,null);
+  const openedAt=1_700_003_599n;f.time(openedAt);f.dispute();
+  assert.equal(f.state().disputedAt?.toString(),openedAt.toString());
+  assert.equal(f.state().originalVerdict,pass);
+  f.finish('DisputeTimeoutNotReached');
+  f.time(1_700_000_000n+DISPUTE_TIMEOUT);f.finish('DisputeTimeoutNotReached');
+  f.time(openedAt+DISPUTE_TIMEOUT-1n);f.finish('DisputeTimeoutNotReached');
+  f.time(openedAt+DISPUTE_TIMEOUT);
+  f.finish('Unauthorized',{agent_token:f.strangerToken});
+  f.finish('ConstraintTokenOwner',{client_token:f.strangerToken});
+  const rent=(f.svm.getBalance(f.mission)??0n)+(f.svm.getBalance(f.vault)??0n);
+  const sol=f.svm.getBalance(f.client.publicKey)??0n;
+  f.finish();
+  assert.equal(f.balance(f.agentToken),pass?5_000_000n:0n);
+  assert.equal(f.balance(f.clientToken),pass?original-5_000_000n:original);
+  assert.equal(f.svm.getBalance(f.client.publicKey),sol+rent);f.closed();
+  f.finish('AccountNotInitialized');f.resolve(!pass,'AccountNotInitialized');
+});
+check('dispute timeout: overflow rejected without losing original verdict',()=>{
+  const f=new Fixture();f.prepared();
+  const timestamp=(1n<<63n)-3601n;f.time(timestamp);f.verdict();
+  f.dispute('ArithmeticOverflow');
+  assert.equal(missionStatus(f.state()),'passed');
+  assert.equal(f.state().originalVerdict,true);assert.equal(f.state().disputedAt,null);
+});
+check('resolve_dispute: after timeout first resolution wins and finalization cannot replay',()=>{
+  const f=new Fixture();f.prepared('disputed');f.time(1_700_000_000n+DISPUTE_TIMEOUT);
+  f.resolve(false);assert.equal(f.balance(f.clientToken),1_000_000_000n);f.closed();
+  f.finish('AccountNotInitialized');f.resolve(true,'AccountNotInitialized');
+});
+check('admin transfer: current admin proposes, pending signer accepts, old rights revoked',()=>{
+  const f=new Fixture();f.prepared('disputed');assert.equal(f.config().pendingAdmin,null);
+  f.call('propose_admin',f.stranger,{new_admin:f.stranger.publicKey},{},'Unauthorized');
+  f.call('propose_admin',f.deployer,{new_admin:PublicKey.default},{},'InvalidAuthority');
+  assert.equal(f.config().pendingAdmin,null);
+  f.call('propose_admin',f.deployer,{new_admin:f.stranger.publicKey});
+  assert(f.config().admin.equals(f.deployer.publicKey));
+  assert(f.config().pendingAdmin?.equals(f.stranger.publicKey));
+  f.update(false,undefined,f.deployer);f.update(false,'Unauthorized',f.stranger);
+  f.call('accept_admin',f.agent,{}, {},'Unauthorized');
+  f.call('accept_admin',f.deployer,{}, {},'Unauthorized');
+  const accepted=f.call('accept_admin',f.stranger);assert(accepted);
+  assert((sdk.events(accepted.logs(),null)[0]?.data.previousAdmin as PublicKey).equals(f.deployer.publicKey));
+  assert(f.config().admin.equals(f.stranger.publicKey));assert.equal(f.config().pendingAdmin,null);
+  f.update(false,'Unauthorized',f.deployer);
+  f.call('propose_admin',f.deployer,{new_admin:f.agent.publicKey},{},'Unauthorized');
+  f.resolve(true,'Unauthorized',f.deployer);
+  f.update(false,undefined,f.stranger);
+  f.resolve(false,undefined,f.stranger);f.closed();f.finish('AccountNotInitialized');
+});
+check('admin transfer: no proposal, replacement, default rejection and replay',()=>{
+  const f=new Fixture();f.call('accept_admin',f.deployer,{}, {},'Unauthorized');
+  f.call('propose_admin',f.deployer,{new_admin:f.agent.publicKey});
+  f.call('propose_admin',f.deployer,{new_admin:PublicKey.default},{},'InvalidAuthority');
+  assert(f.config().pendingAdmin?.equals(f.agent.publicKey));
+  f.call('propose_admin',f.deployer,{new_admin:f.stranger.publicKey});
+  f.call('accept_admin',f.agent,{}, {},'Unauthorized');
+  f.call('accept_admin',f.stranger);
+  f.call('accept_admin',f.stranger,{}, {},'Unauthorized');
+  f.call('propose_admin',f.stranger,{new_admin:f.agent.publicKey});
+  f.call('accept_admin',f.agent);assert(f.config().admin.equals(f.agent.publicKey));
+});
+
 if(process.env.MULE_LIST_TESTS==='1') {
   console.log(JSON.stringify(definitions.map(d=>d.name)));
 } else {
