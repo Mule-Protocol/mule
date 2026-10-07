@@ -223,6 +223,8 @@ jobs:
         with:
           name: m1-step1-evidence
           path: .
+      - name: Test fuzz evidence persistence and boundary accounting
+        run: node --import tsx --test tests/fuzz/*.test.*
       - name: Property sequences on real SBF in LiteSVM
         timeout-minutes: ${{ inputs.extended-fuzz && 55 || 8 }}
         shell: bash
